@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<!-- saved from url=(0076)file:///Users/nickpirrie/Downloads/visibuild-onboarding-portal-merged_7.html -->
-<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<html lang="en">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Visibuild Onboarding Portal</title>
 <style>
@@ -100,6 +100,10 @@ select,input,textarea{font-family:inherit;font-size:13px;color:var(--ink);backgr
 select:focus,input:focus,textarea:focus{outline:none;border-color:var(--vb);box-shadow:0 0 0 3px var(--vb-soft)}
 .sel-status{font-size:11px;font-weight:600;padding:4px 7px;border-radius:20px;border-width:1px;cursor:pointer}
 .date-in{font-size:11px;padding:4px 6px;color:var(--ink-soft)}
+.date-badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.date-badge.overdue{background:#fcebeb;color:#a32d2d}
+.date-badge.upcoming{background:#faeeda;color:#854f0b}
+.date-badge.done-date{background:#e1f5ee;color:#0f6e56}
 .tact{display:flex;gap:2px}
 .ico{background:none;border:none;cursor:pointer;color:var(--ink-faint);padding:5px;border-radius:var(--rad-sm);display:flex;line-height:1}
 .ico:hover{color:var(--ink);background:var(--paper)}
@@ -110,8 +114,12 @@ select:focus,input:focus,textarea:focus{outline:none;border-color:var(--vb);box-
 .cpanel{margin:0 1.25rem .8rem;background:var(--paper);border:1px solid var(--line-soft);border-radius:var(--rad-sm);padding:0.8rem}
 .citem{padding:6px 0;border-bottom:1px solid var(--line-soft);font-size:12.5px;display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
 .citem-main{flex:1;min-width:0}
-.cdel{flex-shrink:0;opacity:0;transition:opacity .12s}
-.citem:hover .cdel{opacity:1}
+.cact{flex-shrink:0;display:flex;gap:2px;opacity:0;transition:opacity .12s}
+.citem:hover .cact{opacity:1}
+.cact svg{width:14px;height:14px}
+.cedit-row{display:flex;gap:6px;margin-top:4px}
+.cedit-in{flex:1;font-size:12.5px;font-family:inherit;padding:5px 8px;border:1px solid var(--vb);border-radius:6px;box-shadow:0 0 0 3px var(--vb-soft)}
+.cedit-save{flex-shrink:0}
 .cdel svg{width:14px;height:14px}
 .citem:last-of-type{border-bottom:none}
 .cauthor{font-weight:600}
@@ -188,6 +196,9 @@ select:focus,input:focus,textarea:focus{outline:none;border-color:var(--vb);box-
 .editable:hover{background:var(--vb-soft)}
 .proj-switch{font-family:inherit;font-size:12.5px;font-weight:500;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:var(--rad-sm);padding:7px 9px;max-width:200px;cursor:pointer}
 .proj-switch:focus{outline:none;border-color:var(--vb);box-shadow:0 0 0 3px var(--vb-soft)}
+.sync-pill{font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:20px;background:#f1efe8;color:#5f5e5a;letter-spacing:0.02em;white-space:nowrap}
+.share-row{display:flex;gap:8px;align-items:center;margin-top:10px}
+.share-row input{flex:1;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--ink-soft)}
 code{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;background:var(--grey-soft);padding:1px 5px;border-radius:4px}
 /* owner sub-headers + phase meta */
 .owner-head{display:flex;align-items:center;justify-content:space-between;padding:0.5rem 1.25rem 0.3rem;border-bottom:1px solid var(--line-soft);background:var(--paper)}
@@ -208,467 +219,35 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;background:var(--
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 :focus-visible{outline:2px solid var(--vb);outline-offset:2px}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* ============================================================
+   VISIBUILD ONBOARDING PORTAL — SUPABASE CONFIG
+   ------------------------------------------------------------
+   Paste your two Supabase values between the quotes below.
+   Find them in Supabase -> Project Settings -> API.
+   Leave them blank to run in local-only mode (no sync).
+   Full instructions are in SETUP-GUIDE-SUPABASE.md.
+   ============================================================ */
+const SUPABASE_URL  = "https://ucvhtspfpaetxaozjywg.supabase.co";   // e.g. https://abcdefgh.supabase.co
+const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVjdmh0c3BmcGFldHhhb3pqeXdnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIxMjY0MzAsImV4cCI6MjA5NzcwMjQzMH0.2hQuoe6v6Y7Fg-jyZih0USPqXD7aObLrkf1vh6hgNO0";   // the long "anon public" key
+</script>
 </head>
-<body style="overscroll-behavior-x: auto;">
+<body>
 <div class="wrap">
   <div class="topbar">
-    <div class="brand"><span class="brand-mark" aria-hidden="true"></span> Visibuild <span class="brand-tag">Onboarding Portal</span></div>
+    <div class="brand"><span class="brand-mark" aria-hidden="true"></span> Visibuild <span class="brand-tag">Onboarding Portal</span> <span id="syncPill" class="sync-pill">Local only</span></div>
     <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-      <select id="projSwitch" class="proj-switch" title="Switch project" onchange="switchProject(this.value)"><option value="prjmqoz8mpbeqb" selected="">Project Vista — Multiplex</option><option value="prjmqoz8vqw00x">99 City Road — Multiplex</option><option value="prjmqozec7rf7f">Untitled project</option></select>
-      <button class="btn" id="btnNew" title="Create a new blank project"><svg viewBox="0 0 24 24" fill="none" style="pointer-events:none"><path d="M12 5v14M5 12h14"></path></svg> New template</button>
-      <button class="btn" id="btnDemo99" title="Add the 99 City Road template"><svg viewBox="0 0 24 24" fill="none" style="pointer-events:none"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg> 99 City Rd</button>
-      <button class="btn" id="btnDemoVista" title="Add the Project Vista template"><svg viewBox="0 0 24 24" fill="none" style="pointer-events:none"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg> Vista</button>
-      <button class="btn" id="btnReset" title="Delete this project"><svg viewBox="0 0 24 24" fill="none" style="pointer-events:none"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg> Delete</button>
+      <select id="projSwitch" class="proj-switch" title="Switch project" onchange="switchProject(this.value)"></select>
+      <button class="btn" id="btnNew" title="Create a new blank project"><svg viewBox="0 0 24 24" fill="none" style="pointer-events:none"><path d="M12 5v14M5 12h14"/></svg> New template</button>
+      <button class="btn" id="btnDemo99" title="Add the 99 City Road template"><svg viewBox="0 0 24 24" fill="none" style="pointer-events:none"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> 99 City Rd</button>
+      <button class="btn" id="btnDemoVista" title="Add the Project Vista template"><svg viewBox="0 0 24 24" fill="none" style="pointer-events:none"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> Vista</button>
+      <button class="btn" id="btnReset" title="Delete this project"><svg viewBox="0 0 24 24" fill="none" style="pointer-events:none"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Delete</button>
     </div>
   </div>
 
   <h1 class="sr-only">Visibuild onboarding portal — interactive project tracker</h1>
-  <div id="app">
-  <div class="header">
-    <div class="header-top">
-      <div>
-        <div class="eyebrow">Implementation programme</div>
-        <div class="proj-name" id="projNameWrap">
-          <span class="editable" onclick="editHeader()" title="Click to rename">Project Vista <span class="proj-client">— Multiplex</span></span>
-          <button class="ico" onclick="editHeader()" aria-label="Edit project name" style="display:inline-flex;vertical-align:middle"><svg viewBox="0 0 24 24" class=""><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"></path></svg></button>
-        </div>
-        <div class="proj-meta">
-          <span><svg viewBox="0 0 24 24" class=""><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-3"></path></svg> Vista — principal contractor handover 1 Sept 2026</span>
-          <span><svg viewBox="0 0 24 24" class=""><path d="M8 2v4M16 2v4M3 10h18"></path><rect x="3" y="4" width="18" height="18" rx="2"></rect></svg> Construction start 1 Sept 2026</span>
-          <span><svg viewBox="0 0 24 24" class=""><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg> Nick Pirrie · nick@visibuild.com</span>
-        </div>
-      </div>
-      <div class="dial-box">
-        <div class="dial">
-          <svg width="96" height="96"><circle cx="48" cy="48" r="40" fill="none" stroke="#e2ddd2" stroke-width="8"></circle><circle cx="48" cy="48" r="40" fill="none" stroke="#a32d2d" stroke-width="8" stroke-linecap="round" stroke-dasharray="251.32741228718345" stroke-dashoffset="231.22121930420877"></circle></svg>
-          <div class="dial-num"><b style="color:#a32d2d">8%</b><small>overall</small></div>
-        </div>
-        <span class="dial-label" style="background:#fcebeb;color:#a32d2d">Needs attention</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="metrics">
-    <div class="metric"><div class="ml">Tasks complete</div><div class="mv">1<small>/38</small></div></div>
-    <div class="metric"><div class="ml">In progress</div><div class="mv">2</div></div>
-    <div class="metric"><div class="ml">Blocked</div><div class="mv" style="color:">0</div></div>
-    <div class="metric"><div class="ml">Current phase</div><div class="mv" style="font-size:15px;padding-top:5px">Days 0–30 · Foundation</div></div>
-  </div>
-
-  <nav class="nav">
-    <button class="active" onclick="go(&#39;tasks&#39;)"><svg viewBox="0 0 24 24" class=""><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"></path></svg> Tasks</button>
-    <button class="" onclick="go(&#39;programme&#39;)"><svg viewBox="0 0 24 24" class=""><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg> Programme</button>
-    <button class="" onclick="go(&#39;log&#39;)"><svg viewBox="0 0 24 24" class=""><path d="M3 3v5h5"></path><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"></path><path d="M12 7v5l4 2"></path></svg> Activity log</button>
-    <button class="" onclick="go(&#39;setup&#39;)"><svg viewBox="0 0 24 24" class=""><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg> Setup</button>
-  </nav>
-  <div><div class="phase" draggable="true" data-phaseblock="p1" onmousedown="phaseGrip=event.target.closest(&#39;.drag-handle&#39;)&amp;&amp;!event.target.closest(&#39;.tlist&#39;)&amp;&amp;!event.target.closest(&#39;.trow&#39;)" ondragstart="phaseDragStart(event,&#39;p1&#39;)" ondragend="dragEnd(event)" ondragover="phaseDragOver(event,&#39;p1&#39;)" ondrop="phaseDrop(event,&#39;p1&#39;)">
-      <div class="phase-head">
-        <div class="phase-tl">
-          <span class="drag-handle" title="Drag to reorder phase" draggable="false"><svg viewBox="0 0 24 24" class=""><circle cx="9" cy="6" r="1"></circle><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="18" r="1"></circle><circle cx="15" cy="6" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="18" r="1"></circle></svg></span>
-          <span class="dot" style="background:#1d9e75"></span>
-          <span class="phase-name editable" onclick="startPhaseEdit(&#39;p1&#39;)">Days 0–30</span>
-              <span class="phase-sub editable" onclick="startPhaseEdit(&#39;p1&#39;)">Foundation</span>
-              <button class="ico" onclick="startPhaseEdit(&#39;p1&#39;)" aria-label="Rename phase"><svg viewBox="0 0 24 24" class=""><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"></path></svg></button>
-          <span class="phase-dates">2 Jun – 1 Jul</span>
-          <span class="pill">1/17</span>
-          <span class="phase-hbadge" style="background:#fcebeb;color:#a32d2d" title="Phase health — actual progress vs where it should be by today">8%</span>
-        </div>
-        <div class="phase-tr" onclick="toggleP(&#39;p1&#39;)" style="cursor:pointer">
-          <span class="pbar"><i style="width:6%;background:#1d9e75"></i></span>
-          <span class="pct">6%</span>
-          <svg viewBox="0 0 24 24" class="chev up"><path d="M6 9l6 6 6-6"></path></svg>
-        </div>
-      </div>
-      <div class="tlist" data-list="p1" ondragover="listDragOver(event,&#39;p1&#39;)" ondrop="listDrop(event,&#39;p1&#39;)"><div class="owner-head owner-head-Visibuild"><span class="owner-chip owner-Visibuild"><svg viewBox="0 0 24 24" class=""><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>Visibuild</span><span class="owner-count">1/8</span></div><div class="trow" draggable="true" data-task="a1" data-phase="p1" ondragstart="taskDragStart(event,&#39;p1&#39;,&#39;a1&#39;)" ondragend="dragEnd(event)" ondragover="taskDragOver(event,&#39;p1&#39;,&#39;a1&#39;)" ondrop="taskDrop(event,&#39;p1&#39;,&#39;a1&#39;)">
-    <span class="drag-handle" title="Drag to reorder"><svg viewBox="0 0 24 24" class=""><circle cx="9" cy="6" r="1"></circle><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="18" r="1"></circle><circle cx="15" cy="6" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="18" r="1"></circle></svg></span>
-    <span class="tstatus-dot" style="background:#0f6e56" title="Done"></span>
-    <div>
-      <div class="tname">Send detailed onboarding plan with clear actions and timelines</div>
-      <div class="tmeta">
-        <span class="owner-tag owner-Visibuild"><svg viewBox="0 0 24 24" class=""><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>Visibuild</span>
-        
-        
-      </div>
-    </div>
-    <select class="sel-status" style="background:#e1f5ee;color:#0f6e56;border-color:#0f6e56" onchange="setStatus(&#39;p1&#39;,&#39;a1&#39;,this.value)">
-      <option value="not-started">Not started</option><option value="inprogress">In progress</option><option value="done" selected="">Done</option><option value="blocked">Blocked</option>
-    </select>
-    <input type="date" class="date-in" value="" onchange="setDue(&#39;p1&#39;,&#39;a1&#39;,this.value)" aria-label="Due date">
-    <div class="tact">
-      <button class="ico" onclick="startEdit(&#39;a1&#39;)" aria-label="Rename task"><svg viewBox="0 0 24 24" class=""><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"></path></svg></button>
-      <button class="ico " onclick="toggleC(&#39;a1&#39;)" aria-label="Comments"><svg viewBox="0 0 24 24" class=""><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></button>
-      <button class="ico" onclick="delTask(&#39;p1&#39;,&#39;a1&#39;)" aria-label="Delete"><svg viewBox="0 0 24 24" class=""><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
-    </div>
-  </div><div class="trow" draggable="true" data-task="a2" data-phase="p1" ondragstart="taskDragStart(event,&#39;p1&#39;,&#39;a2&#39;)" ondragend="dragEnd(event)" ondragover="taskDragOver(event,&#39;p1&#39;,&#39;a2&#39;)" ondrop="taskDrop(event,&#39;p1&#39;,&#39;a2&#39;)">
-    <span class="drag-handle" title="Drag to reorder"><svg viewBox="0 0 24 24" class=""><circle cx="9" cy="6" r="1"></circle><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="18" r="1"></circle><circle cx="15" cy="6" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="18" r="1"></circle></svg></span>
-    <span class="tstatus-dot" style="background:#185fa5" title="In progress"></span>
-    <div>
-      <div class="tname">Schedule model review session to understand project hierarchy</div>
-      <div class="tmeta">
-        <span class="owner-tag owner-Visibuild"><svg viewBox="0 0 24 24" class=""><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>Visibuild</span>
-        <span><svg viewBox="0 0 24 24" class=""><path d="M8 2v4M16 2v4M3 10h18"></path><rect x="3" y="4" width="18" height="18" rx="2"></rect></svg>22 Jun 2026</span>
-        
-      </div>
-    </div>
-    <select class="sel-status" style="background:#e6f1fb;color:#185fa5;border-color:#185fa5" onchange="setStatus(&#39;p1&#39;,&#39;a2&#39;,this.value)">
-      <option value="not-started">Not started</option><option value="inprogress" selected="">In progress</option><option value="done">Done</option><option value="blocked">Blocked</option>
-    </select>
-    <input type="date" class="date-in" value="2026-06-22" onchange="setDue(&#39;p1&#39;,&#39;a2&#39;,this.value)" aria-label="Due date">
-    <div class="tact">
-      <button class="ico" onclick="startEdit(&#39;a2&#39;)" aria-label="Rename task"><svg viewBox="0 0 24 24" class=""><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"></path></svg></button>
-      <button class="ico " onclick="toggleC(&#39;a2&#39;)" aria-label="Comments"><svg viewBox="0 0 24 24" class=""><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></button>
-      <button class="ico" onclick="delTask(&#39;p1&#39;,&#39;a2&#39;)" aria-label="Delete"><svg viewBox="0 0 24 24" class=""><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
-    </div>
-  </div><div class="trow" draggable="true" data-task="a3" data-phase="p1" ondragstart="taskDragStart(event,&#39;p1&#39;,&#39;a3&#39;)" ondragend="dragEnd(event)" ondragover="taskDragOver(event,&#39;p1&#39;,&#39;a3&#39;)" ondrop="taskDrop(event,&#39;p1&#39;,&#39;a3&#39;)">
-    <span class="drag-handle" title="Drag to reorder"><svg viewBox="0 0 24 24" class=""><circle cx="9" cy="6" r="1"></circle><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="18" r="1"></circle><circle cx="15" cy="6" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="18" r="1"></circle></svg></span>
-    <span class="tstatus-dot" style="background:#5f5e5a" title="Not started"></span>
-    <div>
-      <div class="tname">Configure platform: users, roles, permissions</div>
-      <div class="tmeta">
-        <span class="owner-tag owner-Visibuild"><svg viewBox="0 0 24 24" class=""><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>Visibuild</span>
-        
-        
-      </div>
-    </div>
-    <select class="sel-status" style="background:#f1efe8;color:#5f5e5a;border-color:#5f5e5a" onchange="setStatus(&#39;p1&#39;,&#39;a3&#39;,this.value)">
-      <option value="not-started" selected="">Not started</option><option value="inprogress">In progress</option><option value="done">Done</option><option value="blocked">Blocked</option>
-    </select>
-    <input type="date" class="date-in" value="" onchange="setDue(&#39;p1&#39;,&#39;a3&#39;,this.value)" aria-label="Due date">
-    <div class="tact">
-      <button class="ico" onclick="startEdit(&#39;a3&#39;)" aria-label="Rename task"><svg viewBox="0 0 24 24" class=""><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"></path></svg></button>
-      <button class="ico " onclick="toggleC(&#39;a3&#39;)" aria-label="Comments"><svg viewBox="0 0 24 24" class=""><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></button>
-      <button class="ico" onclick="delTask(&#39;p1&#39;,&#39;a3&#39;)" aria-label="Delete"><svg viewBox="0 0 24 24" class=""><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
-    </div>
-  </div><div class="trow" draggable="true" data-task="a4" data-phase="p1" ondragstart="taskDragStart(event,&#39;p1&#39;,&#39;a4&#39;)" ondragend="dragEnd(event)" ondragover="taskDragOver(event,&#39;p1&#39;,&#39;a4&#39;)" ondrop="taskDrop(event,&#39;p1&#39;,&#39;a4&#39;)">
-    <span class="drag-handle" title="Drag to reorder"><svg viewBox="0 0 24 24" class=""><circle cx="9" cy="6" r="1"></circle><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="18" r="1"></circle><circle cx="15" cy="6" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="18" r="1"></circle></svg></span>
-    <span class="tstatus-dot" style="background:#185fa5" title="In progress"></span>
-    <div>
-      <div class="tname">Build location tree aligned to Vista naming conventions</div>
-      <div class="tmeta">
-        <span class="owner-tag owner-Visibuild"><svg viewBox="0 0 24 24" class=""><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>Visibuild</span>
-        <span><svg viewBox="0 0 24 24" class=""><path d="M8 2v4M16 2v4M3 10h18"></path><rect x="3" y="4" width="18" height="18" rx="2"></rect></svg>26 Jun 2026</span>
-        
-      </div>
-    </div>
-    <select class="sel-status" style="background:#e6f1fb;color:#185fa5;border-color:#185fa5" onchange="setStatus(&#39;p1&#39;,&#39;a4&#39;,this.value)">
-      <option value="not-started">Not started</option><option value="inprogress" selected="">In progress</option><option value="done">Done</option><option value="blocked">Blocked</option>
-    </select>
-    <input type="date" class="date-in" value="2026-06-26" onchange="setDue(&#39;p1&#39;,&#39;a4&#39;,this.value)" aria-label="Due date">
-    <div class="tact">
-      <button class="ico" onclick="startEdit(&#39;a4&#39;)" aria-label="Rename task"><svg viewBox="0 0 24 24" class=""><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"></path></svg></button>
-      <button class="ico " onclick="toggleC(&#39;a4&#39;)" aria-label="Comments"><svg viewBox="0 0 24 24" class=""><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></button>
-      <button class="ico" onclick="delTask(&#39;p1&#39;,&#39;a4&#39;)" aria-label="Delete"><svg viewBox="0 0 24 24" class=""><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
-    </div>
-  </div><div class="trow" draggable="true" data-task="a5" data-phase="p1" ondragstart="taskDragStart(event,&#39;p1&#39;,&#39;a5&#39;)" ondragend="dragEnd(event)" ondragover="taskDragOver(event,&#39;p1&#39;,&#39;a5&#39;)" ondrop="taskDrop(event,&#39;p1&#39;,&#39;a5&#39;)">
-    <span class="drag-handle" title="Drag to reorder"><svg viewBox="0 0 24 24" class=""><circle cx="9" cy="6" r="1"></circle><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="18" r="1"></circle><circle cx="15" cy="6" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="18" r="1"></circle></svg></span>
-    <span class="tstatus-dot" style="background:#5f5e5a" title="Not started"></span>
-    <div>
-      <div class="tname">Digitise ITPs and critical checks</div>
-      <div class="tmeta">
-        <span class="owner-tag owner-Visibuild"><svg viewBox="0 0 24 24" class=""><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>Visibuild</span>
-        
-        <span><svg viewBox="0 0 24 24" class=""><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>1</span>
-      </div>
-    </div>
-    <select class="sel-status" style="background:#f1efe8;color:#5f5e5a;border-color:#5f5e5a" onchange="setStatus(&#39;p1&#39;,&#39;a5&#39;,this.value)">
-      <option value="not-started" selected="">Not started</option><option value="inprogress">In progress</option><option value="done">Done</option><option value="blocked">Blocked</option>
-    </select>
-    <input type="date" class="date-in" value="" onchange="setDue(&#39;p1&#39;,&#39;a5&#39;,this.value)" aria-label="Due date">
-    <div class="tact">
-      <button class="ico" onclick="startEdit(&#39;a5&#39;)" aria-label="Rename task"><svg viewBox="0 0 24 24" class=""><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"></path></svg></button>
-      <button class="ico has" onclick="toggleC(&#39;a5&#39;)" aria-label="Comments"><svg viewBox="0 0 24 24" class=""><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></button>
-      <button class="ico" onclick="delTask(&#39;p1&#39;,&#39;a5&#39;)" aria-label="Delete"><svg viewBox="0 0 24 24" class=""><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
-    </div>
-  </div><div class="cpanel">
-    <div class="citem"><div class="citem-main"><span class="cauthor Visibuild">Visibuild</span><span class="ctime">22 Jun, 09:58</span><div class="cbody">Waiting for these to be issued over, email issued to Nick,</div></div><button class="ico cdel" onclick="delComment(&#39;p1&#39;,&#39;a5&#39;,0)" aria-label="Delete comment"><svg viewBox="0 0 24 24" class=""><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button></div>
-    <div class="cinput">
-      <select id="ca_a5"><option>Visibuild</option><option>Client</option></select>
-      <input id="ct_a5" placeholder="Add a comment or query…" onkeydown="if(event.key===&#39;Enter&#39;)addComment(&#39;p1&#39;,&#39;a5&#39;)">
-      <button class="btn" onclick="addComment(&#39;p1&#39;,&#39;a5&#39;)">Post</button>
-    </div></div><div class="trow" draggable="true" data-task="a6" data-phase="p1" ondragstart="taskDragStart(event,&#39;p1&#39;,&#39;a6&#39;)" ondragend="dragEnd(event)" ondragover="taskDragOver(event,&#39;p1&#39;,&#39;a6&#39;)" ondrop="taskDrop(event,&#39;p1&#39;,&#39;a6&#39;)">
-    <span class="drag-handle" title="Drag to reorder"><svg viewBox="0 0 24 24" class=""><circle cx="9" cy="6" r="1"></circle><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="18" r="1"></circle><circle cx="15" cy="6" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="18" r="1"></circle></svg></span>
-    <span class="tstatus-dot" style="background:#5f5e5a" title="Not started"></span>
-    <div>
-      <div class="tname">JCC onboarding — schedule structure setup session</div>
-      <div class="tmeta">
-        <span class="owner-tag owner-Visibuild"><svg viewBox="0 0 24 24" class=""><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>Visibuild</span>
-        
-        
-      </div>
-    </div>
-    <select class="sel-status" style="background:#f1efe8;color:#5f5e5a;border-color:#5f5e5a" onchange="setStatus(&#39;p1&#39;,&#39;a6&#39;,this.value)">
-      <option value="not-started" selected="">Not started</option><option value="inprogress">In progress</option><option value="done">Done</option><option value="blocked">Blocked</option>
-    </select>
-    <input type="date" class="date-in" value="" onchange="setDue(&#39;p1&#39;,&#39;a6&#39;,this.value)" aria-label="Due date">
-    <div class="tact">
-      <button class="ico" onclick="startEdit(&#39;a6&#39;)" aria-label="Rename task"><svg viewBox="0 0 24 24" class=""><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"></path></svg></button>
-      <button class="ico " onclick="toggleC(&#39;a6&#39;)" aria-label="Comments"><svg viewBox="0 0 24 24" class=""><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></button>
-      <button class="ico" onclick="delTask(&#39;p1&#39;,&#39;a6&#39;)" aria-label="Delete"><svg viewBox="0 0 24 24" class=""><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
-    </div>
-  </div><div class="trow" draggable="true" data-task="a7" data-phase="p1" ondragstart="taskDragStart(event,&#39;p1&#39;,&#39;a7&#39;)" ondragend="dragEnd(event)" ondragover="taskDragOver(event,&#39;p1&#39;,&#39;a7&#39;)" ondrop="taskDrop(event,&#39;p1&#39;,&#39;a7&#39;)">
-    <span class="drag-handle" title="Drag to reorder"><svg viewBox="0 0 24 24" class=""><circle cx="9" cy="6" r="1"></circle><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="18" r="1"></circle><circle cx="15" cy="6" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="18" r="1"></circle></svg></span>
-    <span class="tstatus-dot" style="background:#5f5e5a" title="Not started"></span>
-    <div>
-      <div class="tname">Train core team members</div>
-      <div class="tmeta">
-        <span class="owner-tag owner-Visibuild"><svg viewBox="0 0 24 24" class=""><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>Visibuild</span>
-        
-        
-      </div>
-    </div>
-    <select class="sel-status" style="background:#f1efe8;color:#5f5e5a;border-color:#5f5e5a" onchange="setStatus(&#39;p1&#39;,&#39;a7&#39;,this.value)">
-      <option value="not-started" selected="">Not started</option><option value="inprogress">In progress</option><option value="done">Done</option><option value="blocked">Blocked</option>
-    </select>
-    <input type="date" class="date-in" value="" onchange="setDue(&#39;p1&#39;,&#39;a7&#39;,this.value)" aria-label="Due date">
-    <div class="tact">
-      <button class="ico" onclick="startEdit(&#39;a7&#39;)" aria-label="Rename task"><svg viewBox="0 0 24 24" class=""><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"></path></svg></button>
-      <button class="ico " onclick="toggleC(&#39;a7&#39;)" aria-label="Comments"><svg viewBox="0 0 24 24" class=""><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></button>
-      <button class="ico" onclick="delTask(&#39;p1&#39;,&#39;a7&#39;)" aria-label="Delete"><svg viewBox="0 0 24 24" class=""><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
-    </div>
-  </div><div class="trow" draggable="true" data-task="a8" data-phase="p1" ondragstart="taskDragStart(event,&#39;p1&#39;,&#39;a8&#39;)" ondragend="dragEnd(event)" ondragover="taskDragOver(event,&#39;p1&#39;,&#39;a8&#39;)" ondrop="taskDrop(event,&#39;p1&#39;,&#39;a8&#39;)">
-    <span class="drag-handle" title="Drag to reorder"><svg viewBox="0 0 24 24" class=""><circle cx="9" cy="6" r="1"></circle><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="18" r="1"></circle><circle cx="15" cy="6" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="18" r="1"></circle></svg></span>
-    <span class="tstatus-dot" style="background:#5f5e5a" title="Not started"></span>
-    <div>
-      <div class="tname">Review KPIs defined by Multiplex</div>
-      <div class="tmeta">
-        <span class="owner-tag owner-Visibuild"><svg viewBox="0 0 24 24" class=""><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>Visibuild</span>
-        
-        
-      </div>
-    </div>
-    <select class="sel-status" style="background:#f1efe8;color:#5f5e5a;border-color:#5f5e5a" onchange="setStatus(&#39;p1&#39;,&#39;a8&#39;,this.value)">
-      <option value="not-started" selected="">Not started</option><option value="inprogress">In progress</option><option value="done">Done</option><option value="blocked">Blocked</option>
-    </select>
-    <input type="date" class="date-in" value="" onchange="setDue(&#39;p1&#39;,&#39;a8&#39;,this.value)" aria-label="Due date">
-    <div class="tact">
-      <button class="ico" onclick="startEdit(&#39;a8&#39;)" aria-label="Rename task"><svg viewBox="0 0 24 24" class=""><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"></path></svg></button>
-      <button class="ico " onclick="toggleC(&#39;a8&#39;)" aria-label="Comments"><svg viewBox="0 0 24 24" class=""><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></button>
-      <button class="ico" onclick="delTask(&#39;p1&#39;,&#39;a8&#39;)" aria-label="Delete"><svg viewBox="0 0 24 24" class=""><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
-    </div>
-  </div><div class="owner-head owner-head-Client"><span class="owner-chip owner-Client"><svg viewBox="0 0 24 24" class=""><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>Client · Multiplex</span><span class="owner-count">0/8</span></div><div class="trow" draggable="true" data-task="a9" data-phase="p1" ondragstart="taskDragStart(event,&#39;p1&#39;,&#39;a9&#39;)" ondragend="dragEnd(event)" ondragover="taskDragOver(event,&#39;p1&#39;,&#39;a9&#39;)" ondrop="taskDrop(event,&#39;p1&#39;,&#39;a9&#39;)">
-    <span class="drag-handle" title="Drag to reorder"><svg viewBox="0 0 24 24" class=""><circle cx="9" cy="6" r="1"></circle><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="18" r="1"></circle><circle cx="15" cy="6" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="18" r="1"></circle></svg></span>
-    <span class="tstatus-dot" style="background:#5f5e5a" title="Not started"></span>
-    <div>
-      <div class="tname">Issue full subcontractor list for the project</div>
-      <div class="tmeta">
-        <span class="owner-tag owner-Client"><svg viewBox="0 0 24 24" class=""><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>Client</span>
-        
-        
-      </div>
-    </div>
-    <select class="sel-status" style="background:#f1efe8;color:#5f5e5a;border-color:#5f5e5a" onchange="setStatus(&#39;p1&#39;,&#39;a9&#39;,this.value)">
-      <option value="not-started" selected="">Not started</option><option value="inprogress">In progress</option><option value="done">Done</option><option value="blocked">Blocked</option>
-    </select>
-    <input type="date" class="date-in" value="" onchange="setDue(&#39;p1&#39;,&#39;a9&#39;,this.value)" aria-label="Due date">
-    <div class="tact">
-      <button class="ico" onclick="startEdit(&#39;a9&#39;)" aria-label="Rename task"><svg viewBox="0 0 24 24" class=""><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"></path></svg></button>
-      <button class="ico " onclick="toggleC(&#39;a9&#39;)" aria-label="Comments"><svg viewBox="0 0 24 24" class=""><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></button>
-      <button class="ico" onclick="delTask(&#39;p1&#39;,&#39;a9&#39;)" aria-label="Delete"><svg viewBox="0 0 24 24" class=""><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
-    </div>
-  </div><div class="trow" draggable="true" data-task="a10" data-phase="p1" ondragstart="taskDragStart(event,&#39;p1&#39;,&#39;a10&#39;)" ondragend="dragEnd(event)" ondragover="taskDragOver(event,&#39;p1&#39;,&#39;a10&#39;)" ondrop="taskDrop(event,&#39;p1&#39;,&#39;a10&#39;)">
-    <span class="drag-handle" title="Drag to reorder"><svg viewBox="0 0 24 24" class=""><circle cx="9" cy="6" r="1"></circle><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="18" r="1"></circle><circle cx="15" cy="6" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="18" r="1"></circle></svg></span>
-    <span class="tstatus-dot" style="background:#5f5e5a" title="Not started"></span>
-    <div>
-      <div class="tname">Issue project org chart</div>
-      <div class="tmeta">
-        <span class="owner-tag owner-Client"><svg viewBox="0 0 24 24" class=""><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>Client</span>
-        
-        
-      </div>
-    </div>
-    <select class="sel-status" style="background:#f1efe8;color:#5f5e5a;border-color:#5f5e5a" onchange="setStatus(&#39;p1&#39;,&#39;a10&#39;,this.value)">
-      <option value="not-started" selected="">Not started</option><option value="inprogress">In progress</option><option value="done">Done</option><option value="blocked">Blocked</option>
-    </select>
-    <input type="date" class="date-in" value="" onchange="setDue(&#39;p1&#39;,&#39;a10&#39;,this.value)" aria-label="Due date">
-    <div class="tact">
-      <button class="ico" onclick="startEdit(&#39;a10&#39;)" aria-label="Rename task"><svg viewBox="0 0 24 24" class=""><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"></path></svg></button>
-      <button class="ico " onclick="toggleC(&#39;a10&#39;)" aria-label="Comments"><svg viewBox="0 0 24 24" class=""><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></button>
-      <button class="ico" onclick="delTask(&#39;p1&#39;,&#39;a10&#39;)" aria-label="Delete"><svg viewBox="0 0 24 24" class=""><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
-    </div>
-  </div><div class="trow" draggable="true" data-task="a11" data-phase="p1" ondragstart="taskDragStart(event,&#39;p1&#39;,&#39;a11&#39;)" ondragend="dragEnd(event)" ondragover="taskDragOver(event,&#39;p1&#39;,&#39;a11&#39;)" ondrop="taskDrop(event,&#39;p1&#39;,&#39;a11&#39;)">
-    <span class="drag-handle" title="Drag to reorder"><svg viewBox="0 0 24 24" class=""><circle cx="9" cy="6" r="1"></circle><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="18" r="1"></circle><circle cx="15" cy="6" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="18" r="1"></circle></svg></span>
-    <span class="tstatus-dot" style="background:#5f5e5a" title="Not started"></span>
-    <div>
-      <div class="tname">Provide programme for sequencing alignment</div>
-      <div class="tmeta">
-        <span class="owner-tag owner-Client"><svg viewBox="0 0 24 24" class=""><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>Client</span>
-        
-        
-      </div>
-    </div>
-    <select class="sel-status" style="background:#f1efe8;color:#5f5e5a;border-color:#5f5e5a" onchange="setStatus(&#39;p1&#39;,&#39;a11&#39;,this.value)">
-      <option value="not-started" selected="">Not started</option><option value="inprogress">In progress</option><option value="done">Done</option><option value="blocked">Blocked</option>
-    </select>
-    <input type="date" class="date-in" value="" onchange="setDue(&#39;p1&#39;,&#39;a11&#39;,this.value)" aria-label="Due date">
-    <div class="tact">
-      <button class="ico" onclick="startEdit(&#39;a11&#39;)" aria-label="Rename task"><svg viewBox="0 0 24 24" class=""><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"></path></svg></button>
-      <button class="ico " onclick="toggleC(&#39;a11&#39;)" aria-label="Comments"><svg viewBox="0 0 24 24" class=""><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></button>
-      <button class="ico" onclick="delTask(&#39;p1&#39;,&#39;a11&#39;)" aria-label="Delete"><svg viewBox="0 0 24 24" class=""><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
-    </div>
-  </div><div class="trow" draggable="true" data-task="a12" data-phase="p1" ondragstart="taskDragStart(event,&#39;p1&#39;,&#39;a12&#39;)" ondragend="dragEnd(event)" ondragover="taskDragOver(event,&#39;p1&#39;,&#39;a12&#39;)" ondrop="taskDrop(event,&#39;p1&#39;,&#39;a12&#39;)">
-    <span class="drag-handle" title="Drag to reorder"><svg viewBox="0 0 24 24" class=""><circle cx="9" cy="6" r="1"></circle><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="18" r="1"></circle><circle cx="15" cy="6" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="18" r="1"></circle></svg></span>
-    <span class="tstatus-dot" style="background:#5f5e5a" title="Not started"></span>
-    <div>
-      <div class="tname">Confirm naming conventions and project zones for the location tree</div>
-      <div class="tmeta">
-        <span class="owner-tag owner-Client"><svg viewBox="0 0 24 24" class=""><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>Client</span>
-        
-        
-      </div>
-    </div>
-    <select class="sel-status" style="background:#f1efe8;color:#5f5e5a;border-color:#5f5e5a" onchange="setStatus(&#39;p1&#39;,&#39;a12&#39;,this.value)">
-      <option value="not-started" selected="">Not started</option><option value="inprogress">In progress</option><option value="done">Done</option><option value="blocked">Blocked</option>
-    </select>
-    <input type="date" class="date-in" value="" onchange="setDue(&#39;p1&#39;,&#39;a12&#39;,this.value)" aria-label="Due date">
-    <div class="tact">
-      <button class="ico" onclick="startEdit(&#39;a12&#39;)" aria-label="Rename task"><svg viewBox="0 0 24 24" class=""><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"></path></svg></button>
-      <button class="ico " onclick="toggleC(&#39;a12&#39;)" aria-label="Comments"><svg viewBox="0 0 24 24" class=""><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></button>
-      <button class="ico" onclick="delTask(&#39;p1&#39;,&#39;a12&#39;)" aria-label="Delete"><svg viewBox="0 0 24 24" class=""><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
-    </div>
-  </div><div class="trow" draggable="true" data-task="a13" data-phase="p1" ondragstart="taskDragStart(event,&#39;p1&#39;,&#39;a13&#39;)" ondragend="dragEnd(event)" ondragover="taskDragOver(event,&#39;p1&#39;,&#39;a13&#39;)" ondrop="taskDrop(event,&#39;p1&#39;,&#39;a13&#39;)">
-    <span class="drag-handle" title="Drag to reorder"><svg viewBox="0 0 24 24" class=""><circle cx="9" cy="6" r="1"></circle><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="18" r="1"></circle><circle cx="15" cy="6" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="18" r="1"></circle></svg></span>
-    <span class="tstatus-dot" style="background:#5f5e5a" title="Not started"></span>
-    <div>
-      <div class="tname">Issue MPX critical check inspections</div>
-      <div class="tmeta">
-        <span class="owner-tag owner-Client"><svg viewBox="0 0 24 24" class=""><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>Client</span>
-        
-        
-      </div>
-    </div>
-    <select class="sel-status" style="background:#f1efe8;color:#5f5e5a;border-color:#5f5e5a" onchange="setStatus(&#39;p1&#39;,&#39;a13&#39;,this.value)">
-      <option value="not-started" selected="">Not started</option><option value="inprogress">In progress</option><option value="done">Done</option><option value="blocked">Blocked</option>
-    </select>
-    <input type="date" class="date-in" value="" onchange="setDue(&#39;p1&#39;,&#39;a13&#39;,this.value)" aria-label="Due date">
-    <div class="tact">
-      <button class="ico" onclick="startEdit(&#39;a13&#39;)" aria-label="Rename task"><svg viewBox="0 0 24 24" class=""><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"></path></svg></button>
-      <button class="ico " onclick="toggleC(&#39;a13&#39;)" aria-label="Comments"><svg viewBox="0 0 24 24" class=""><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></button>
-      <button class="ico" onclick="delTask(&#39;p1&#39;,&#39;a13&#39;)" aria-label="Delete"><svg viewBox="0 0 24 24" class=""><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
-    </div>
-  </div><div class="trow" draggable="true" data-task="a14" data-phase="p1" ondragstart="taskDragStart(event,&#39;p1&#39;,&#39;a14&#39;)" ondragend="dragEnd(event)" ondragover="taskDragOver(event,&#39;p1&#39;,&#39;a14&#39;)" ondrop="taskDrop(event,&#39;p1&#39;,&#39;a14&#39;)">
-    <span class="drag-handle" title="Drag to reorder"><svg viewBox="0 0 24 24" class=""><circle cx="9" cy="6" r="1"></circle><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="18" r="1"></circle><circle cx="15" cy="6" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="18" r="1"></circle></svg></span>
-    <span class="tstatus-dot" style="background:#5f5e5a" title="Not started"></span>
-    <div>
-      <div class="tname">Issue subcontractor ITPs as they are received</div>
-      <div class="tmeta">
-        <span class="owner-tag owner-Client"><svg viewBox="0 0 24 24" class=""><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>Client</span>
-        
-        
-      </div>
-    </div>
-    <select class="sel-status" style="background:#f1efe8;color:#5f5e5a;border-color:#5f5e5a" onchange="setStatus(&#39;p1&#39;,&#39;a14&#39;,this.value)">
-      <option value="not-started" selected="">Not started</option><option value="inprogress">In progress</option><option value="done">Done</option><option value="blocked">Blocked</option>
-    </select>
-    <input type="date" class="date-in" value="" onchange="setDue(&#39;p1&#39;,&#39;a14&#39;,this.value)" aria-label="Due date">
-    <div class="tact">
-      <button class="ico" onclick="startEdit(&#39;a14&#39;)" aria-label="Rename task"><svg viewBox="0 0 24 24" class=""><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"></path></svg></button>
-      <button class="ico " onclick="toggleC(&#39;a14&#39;)" aria-label="Comments"><svg viewBox="0 0 24 24" class=""><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></button>
-      <button class="ico" onclick="delTask(&#39;p1&#39;,&#39;a14&#39;)" aria-label="Delete"><svg viewBox="0 0 24 24" class=""><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
-    </div>
-  </div><div class="trow" draggable="true" data-task="a15" data-phase="p1" ondragstart="taskDragStart(event,&#39;p1&#39;,&#39;a15&#39;)" ondragend="dragEnd(event)" ondragover="taskDragOver(event,&#39;p1&#39;,&#39;a15&#39;)" ondrop="taskDrop(event,&#39;p1&#39;,&#39;a15&#39;)">
-    <span class="drag-handle" title="Drag to reorder"><svg viewBox="0 0 24 24" class=""><circle cx="9" cy="6" r="1"></circle><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="18" r="1"></circle><circle cx="15" cy="6" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="18" r="1"></circle></svg></span>
-    <span class="tstatus-dot" style="background:#5f5e5a" title="Not started"></span>
-    <div>
-      <div class="tname">Define quality KPIs to be tracked for Vista</div>
-      <div class="tmeta">
-        <span class="owner-tag owner-Client"><svg viewBox="0 0 24 24" class=""><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>Client</span>
-        
-        
-      </div>
-    </div>
-    <select class="sel-status" style="background:#f1efe8;color:#5f5e5a;border-color:#5f5e5a" onchange="setStatus(&#39;p1&#39;,&#39;a15&#39;,this.value)">
-      <option value="not-started" selected="">Not started</option><option value="inprogress">In progress</option><option value="done">Done</option><option value="blocked">Blocked</option>
-    </select>
-    <input type="date" class="date-in" value="" onchange="setDue(&#39;p1&#39;,&#39;a15&#39;,this.value)" aria-label="Due date">
-    <div class="tact">
-      <button class="ico" onclick="startEdit(&#39;a15&#39;)" aria-label="Rename task"><svg viewBox="0 0 24 24" class=""><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"></path></svg></button>
-      <button class="ico " onclick="toggleC(&#39;a15&#39;)" aria-label="Comments"><svg viewBox="0 0 24 24" class=""><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></button>
-      <button class="ico" onclick="delTask(&#39;p1&#39;,&#39;a15&#39;)" aria-label="Delete"><svg viewBox="0 0 24 24" class=""><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
-    </div>
-  </div><div class="trow" draggable="true" data-task="a16" data-phase="p1" ondragstart="taskDragStart(event,&#39;p1&#39;,&#39;a16&#39;)" ondragend="dragEnd(event)" ondragover="taskDragOver(event,&#39;p1&#39;,&#39;a16&#39;)" ondrop="taskDrop(event,&#39;p1&#39;,&#39;a16&#39;)">
-    <span class="drag-handle" title="Drag to reorder"><svg viewBox="0 0 24 24" class=""><circle cx="9" cy="6" r="1"></circle><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="18" r="1"></circle><circle cx="15" cy="6" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="18" r="1"></circle></svg></span>
-    <span class="tstatus-dot" style="background:#5f5e5a" title="Not started"></span>
-    <div>
-      <div class="tname">Confirm hold point designation vs surveillance approach</div>
-      <div class="tmeta">
-        <span class="owner-tag owner-Client"><svg viewBox="0 0 24 24" class=""><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>Client</span>
-        
-        
-      </div>
-    </div>
-    <select class="sel-status" style="background:#f1efe8;color:#5f5e5a;border-color:#5f5e5a" onchange="setStatus(&#39;p1&#39;,&#39;a16&#39;,this.value)">
-      <option value="not-started" selected="">Not started</option><option value="inprogress">In progress</option><option value="done">Done</option><option value="blocked">Blocked</option>
-    </select>
-    <input type="date" class="date-in" value="" onchange="setDue(&#39;p1&#39;,&#39;a16&#39;,this.value)" aria-label="Due date">
-    <div class="tact">
-      <button class="ico" onclick="startEdit(&#39;a16&#39;)" aria-label="Rename task"><svg viewBox="0 0 24 24" class=""><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"></path></svg></button>
-      <button class="ico " onclick="toggleC(&#39;a16&#39;)" aria-label="Comments"><svg viewBox="0 0 24 24" class=""><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></button>
-      <button class="ico" onclick="delTask(&#39;p1&#39;,&#39;a16&#39;)" aria-label="Delete"><svg viewBox="0 0 24 24" class=""><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
-    </div>
-  </div><div class="owner-head owner-head-Shared"><span class="owner-chip owner-Shared"><svg viewBox="0 0 24 24" class=""><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>Shared</span><span class="owner-count">0/1</span></div><div class="trow" draggable="true" data-task="a17" data-phase="p1" ondragstart="taskDragStart(event,&#39;p1&#39;,&#39;a17&#39;)" ondragend="dragEnd(event)" ondragover="taskDragOver(event,&#39;p1&#39;,&#39;a17&#39;)" ondrop="taskDrop(event,&#39;p1&#39;,&#39;a17&#39;)">
-    <span class="drag-handle" title="Drag to reorder"><svg viewBox="0 0 24 24" class=""><circle cx="9" cy="6" r="1"></circle><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="18" r="1"></circle><circle cx="15" cy="6" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="18" r="1"></circle></svg></span>
-    <span class="tstatus-dot" style="background:#5f5e5a" title="Not started"></span>
-    <div>
-      <div class="tname">Align on Dome / Visibuild system overlay</div>
-      <div class="tmeta">
-        <span class="owner-tag owner-Shared"><svg viewBox="0 0 24 24" class=""><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>Shared</span>
-        
-        
-      </div>
-    </div>
-    <select class="sel-status" style="background:#f1efe8;color:#5f5e5a;border-color:#5f5e5a" onchange="setStatus(&#39;p1&#39;,&#39;a17&#39;,this.value)">
-      <option value="not-started" selected="">Not started</option><option value="inprogress">In progress</option><option value="done">Done</option><option value="blocked">Blocked</option>
-    </select>
-    <input type="date" class="date-in" value="" onchange="setDue(&#39;p1&#39;,&#39;a17&#39;,this.value)" aria-label="Due date">
-    <div class="tact">
-      <button class="ico" onclick="startEdit(&#39;a17&#39;)" aria-label="Rename task"><svg viewBox="0 0 24 24" class=""><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"></path></svg></button>
-      <button class="ico " onclick="toggleC(&#39;a17&#39;)" aria-label="Comments"><svg viewBox="0 0 24 24" class=""><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></button>
-      <button class="ico" onclick="delTask(&#39;p1&#39;,&#39;a17&#39;)" aria-label="Delete"><svg viewBox="0 0 24 24" class=""><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
-    </div>
-  </div><div class="addrow">
-        <input id="an_p1" placeholder="Add a task…" onkeydown="if(event.key===&#39;Enter&#39;)addTask(&#39;p1&#39;)">
-        <select id="ao_p1"><option>Visibuild</option><option>Client</option><option>Shared</option></select>
-        <button class="btn btn-vb" onclick="addTask(&#39;p1&#39;)"><svg viewBox="0 0 24 24" class=""><path d="M12 5v14M5 12h14"></path></svg>Add</button>
-      </div></div>
-    </div><div class="phase" draggable="true" data-phaseblock="p2" onmousedown="phaseGrip=event.target.closest(&#39;.drag-handle&#39;)&amp;&amp;!event.target.closest(&#39;.tlist&#39;)&amp;&amp;!event.target.closest(&#39;.trow&#39;)" ondragstart="phaseDragStart(event,&#39;p2&#39;)" ondragend="dragEnd(event)" ondragover="phaseDragOver(event,&#39;p2&#39;)" ondrop="phaseDrop(event,&#39;p2&#39;)">
-      <div class="phase-head">
-        <div class="phase-tl">
-          <span class="drag-handle" title="Drag to reorder phase" draggable="false"><svg viewBox="0 0 24 24" class=""><circle cx="9" cy="6" r="1"></circle><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="18" r="1"></circle><circle cx="15" cy="6" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="18" r="1"></circle></svg></span>
-          <span class="dot" style="background:#185fa5"></span>
-          <span class="phase-name editable" onclick="startPhaseEdit(&#39;p2&#39;)">Days 31–60</span>
-              <span class="phase-sub editable" onclick="startPhaseEdit(&#39;p2&#39;)">Rollout &amp; engagement</span>
-              <button class="ico" onclick="startPhaseEdit(&#39;p2&#39;)" aria-label="Rename phase"><svg viewBox="0 0 24 24" class=""><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"></path></svg></button>
-          <span class="phase-dates">2 Jul – 31 Jul</span>
-          <span class="pill">0/10</span>
-          <span class="phase-hbadge" style="background:#f1efe8;color:#5f5e5a" title="Not due to start yet">—</span>
-        </div>
-        <div class="phase-tr" onclick="toggleP(&#39;p2&#39;)" style="cursor:pointer">
-          <span class="pbar"><i style="width:0%;background:#185fa5"></i></span>
-          <span class="pct">0%</span>
-          <svg viewBox="0 0 24 24" class="chev"><path d="M6 9l6 6 6-6"></path></svg>
-        </div>
-      </div>
-      
-    </div><div class="phase" draggable="true" data-phaseblock="p3" onmousedown="phaseGrip=event.target.closest(&#39;.drag-handle&#39;)&amp;&amp;!event.target.closest(&#39;.tlist&#39;)&amp;&amp;!event.target.closest(&#39;.trow&#39;)" ondragstart="phaseDragStart(event,&#39;p3&#39;)" ondragend="dragEnd(event)" ondragover="phaseDragOver(event,&#39;p3&#39;)" ondrop="phaseDrop(event,&#39;p3&#39;)">
-      <div class="phase-head">
-        <div class="phase-tl">
-          <span class="drag-handle" title="Drag to reorder phase" draggable="false"><svg viewBox="0 0 24 24" class=""><circle cx="9" cy="6" r="1"></circle><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="18" r="1"></circle><circle cx="15" cy="6" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="18" r="1"></circle></svg></span>
-          <span class="dot" style="background:#ba7517"></span>
-          <span class="phase-name editable" onclick="startPhaseEdit(&#39;p3&#39;)">Days 61–90</span>
-              <span class="phase-sub editable" onclick="startPhaseEdit(&#39;p3&#39;)">Optimisation</span>
-              <button class="ico" onclick="startPhaseEdit(&#39;p3&#39;)" aria-label="Rename phase"><svg viewBox="0 0 24 24" class=""><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"></path></svg></button>
-          <span class="phase-dates">1 Aug – 31 Aug</span>
-          <span class="pill">0/11</span>
-          <span class="phase-hbadge" style="background:#f1efe8;color:#5f5e5a" title="Not due to start yet">—</span>
-        </div>
-        <div class="phase-tr" onclick="toggleP(&#39;p3&#39;)" style="cursor:pointer">
-          <span class="pbar"><i style="width:0%;background:#ba7517"></i></span>
-          <span class="pct">0%</span>
-          <svg viewBox="0 0 24 24" class="chev"><path d="M6 9l6 6 6-6"></path></svg>
-        </div>
-      </div>
-      
-    </div></div></div>
+  <div id="app"></div>
 </div>
 
 <script>
@@ -775,17 +354,23 @@ demoVista.phases[2].tasks=[
 // keep `demo` as an alias used by Load buttons (defaults to 99 City Road)
 const demo=demo99;
 
-// ---- Storage (local, multi-project) ----
+// ---- Storage: local multi-project, OR Supabase-synced single project per ?p= link ----
 const STORE='vb_onboarding_store_v4';
 function newId(){return 'prj'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)}
 function freshProject(seed){const s=JSON.parse(JSON.stringify(seed||blank));s._id=newId();return s}
+
+// URL ?p=KEY identifies a single shared client project (Supabase row)
+const urlParams=new URLSearchParams(location.search);
+const PROJECT_KEY=urlParams.get('p')||'';
+const SYNC=!!(SUPABASE_URL&&SUPABASE_ANON&&PROJECT_KEY);
+let sb=null, syncStatus='local', applyingRemote=false, saveTimer=null, channel=null;
 
 function loadStore(){
   try{
     const raw=localStorage.getItem(STORE);
     if(raw){const s=JSON.parse(raw);if(s&&s.projects&&s.current&&s.projects[s.current])return s}
   }catch{}
-  // fresh issue — seed with both projects
+  // fresh issue — seed with both projects (local mode only)
   const a=freshProject(demo99), b=freshProject(demoVista);
   return {projects:{[a._id]:a,[b._id]:b},order:[a._id,b._id],current:a._id};
 }
@@ -793,10 +378,60 @@ let store=loadStore();
 try{localStorage.setItem(STORE,JSON.stringify(store))}catch{}
 function load(){return store.projects[store.current]}
 
-function persist(){try{store.projects[store.current]=state;localStorage.setItem(STORE,JSON.stringify(store))}catch{}}
+// always cache to localStorage; in sync mode also debounce-push to Supabase
+function persistLocal(){try{store.projects[store.current]=state;localStorage.setItem(STORE,JSON.stringify(store))}catch{}}
+function persist(){
+  persistLocal();
+  if(SYNC&&sb&&!applyingRemote){clearTimeout(saveTimer);saveTimer=setTimeout(pushRemote,600)}
+}
+async function pushRemote(){
+  if(!sb)return;
+  try{
+    syncStatus='saving';updateSyncPill();
+    const{error}=await sb.from('portals').upsert({key:PROJECT_KEY,data:state,updated_at:new Date().toISOString()},{onConflict:'key'});
+    syncStatus=error?'error':'synced';updateSyncPill();
+  }catch{syncStatus='error';updateSyncPill()}
+}
+async function pullRemote(){
+  if(!sb)return null;
+  try{const{data,error}=await sb.from('portals').select('data').eq('key',PROJECT_KEY).maybeSingle();if(error)return null;return data?data.data:null}catch{return null}
+}
+async function initSync(){
+  if(!SYNC)return;
+  try{
+    sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
+    syncStatus='connecting';updateSyncPill();
+    const remote=await pullRemote();
+    if(remote){
+      remote._id=remote._id||newId();
+      store={projects:{[remote._id]:remote},order:[remote._id],current:remote._id};
+      state=remote;persistLocal();render();
+    }else{
+      // first open of this key — seed from whatever this file currently shows, push it up
+      state._id=state._id||newId();
+      await pushRemote();
+    }
+    syncStatus='synced';updateSyncPill();
+    channel=sb.channel('portal_'+PROJECT_KEY)
+      .on('postgres_changes',{event:'*',schema:'public',table:'portals',filter:'key=eq.'+PROJECT_KEY},payload=>{
+        const incoming=payload.new&&payload.new.data;if(!incoming)return;
+        if(editing||editingPhase||editingComment)return; // don't clobber an in-progress edit
+        applyingRemote=true;
+        incoming._id=state._id;
+        store.projects[store.current]=incoming;state=incoming;persistLocal();render();
+        applyingRemote=false;syncStatus='synced';updateSyncPill();
+      }).subscribe();
+  }catch{syncStatus='error';updateSyncPill()}
+}
+function updateSyncPill(){
+  const el=document.getElementById('syncPill');if(!el)return;
+  const map={local:['Local only','#5f5e5a','#f1efe8'],connecting:['Connecting…','#854f0b','#faeeda'],saving:['Saving…','#185fa5','#e6f1fb'],synced:['Synced ✓','#0f6e56','#e1f5ee'],error:['Offline','#a32d2d','#fcebeb']};
+  const[txt,c,bg]=map[syncStatus]||map.local;
+  el.textContent=txt;el.style.color=c;el.style.background=bg;
+}
 
 let state=load(); let tab='tasks';
-let editing=null, editingPhase=null;
+let editing=null, editingPhase=null, editingComment=null;
 let dragTask=null, dragPhase=null;
 
 const ST={'not-started':{l:'Not started',c:'#5f5e5a',bg:'#f1efe8'},'inprogress':{l:'In progress',c:'#185fa5',bg:'#e6f1fb'},'done':{l:'Done',c:'#0f6e56',bg:'#e1f5ee'},'blocked':{l:'Blocked',c:'#a32d2d',bg:'#fcebeb'}};
@@ -876,6 +511,7 @@ function hBgPhase(h){return h>=75?'#e1f5ee':h>=40?'#faeeda':'#fcebeb'}
 const esc=s=>!s?'':String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const uid=()=>'t'+Date.now()+Math.random().toString(36).slice(2,5);
 function fdate(d){if(!d)return '';try{return new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}catch{return d}}
+function dateBadge(due,status){if(!due)return '';const today=new Date();today.setHours(0,0,0,0);const d=new Date(due);d.setHours(0,0,0,0);const cls=status==='done'?'done-date':d<today?'overdue':'upcoming';return `<span class="date-badge ${cls}">${svg(I.cal)}${fdate(due)}</span>`;}
 function fdateShort(d){if(!d)return '';try{return new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}catch{return d}}
 function now(){return new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}
 function logIt(m){state.log.unshift({t:now(),m});if(state.log.length>60)state.log.length=60}
@@ -957,7 +593,7 @@ function taskRow(ph,t){
         :`<div class="tname">${esc(t.name)}</div>`}
       <div class="tmeta">
         <span class="owner-tag owner-${t.owner}">${svg(I.user)}${t.owner}</span>
-        ${t.due?`<span>${svg(I.cal)}${fdate(t.due)}</span>`:''}
+        ${t.due?dateBadge(t.due,t.status):''}
         ${t.comments.length?`<span>${svg(I.msg)}${t.comments.length}</span>`:''}
       </div>
     </div>
@@ -1028,7 +664,21 @@ function tasks(){
 
 function comments(pid,t){
   return `<div class="cpanel">
-    ${t.comments.length?t.comments.map((c,ci)=>`<div class="citem"><div class="citem-main"><span class="cauthor ${c.author}">${esc(c.author)}</span><span class="ctime">${c.time}</span><div class="cbody">${esc(c.text)}</div></div><button class="ico cdel" onclick="delComment('${pid}','${t.id}',${ci})" aria-label="Delete comment">${svg(I.trash)}</button></div>`).join(''):'<div class="cempty">No comments or queries yet.</div>'}
+    ${t.comments.length?t.comments.map((c,ci)=>{
+      const isEd=editingComment===t.id+'#'+ci;
+      return `<div class="citem">
+        <div class="citem-main">
+          <span class="cauthor ${c.author}">${esc(c.author)}</span><span class="ctime">${c.time}${c.edited?' · edited':''}</span>
+          ${isEd
+            ? `<div class="cedit-row"><input class="cedit-in" id="ce_${t.id}_${ci}" value="${esc(c.text)}" onkeydown="if(event.key==='Enter')saveComment('${pid}','${t.id}',${ci},this.value);if(event.key==='Escape'){editingComment=null;render()}"><button class="btn btn-vb cedit-save" onclick="saveComment('${pid}','${t.id}',${ci},document.getElementById('ce_${t.id}_${ci}').value)">Save</button></div>`
+            : `<div class="cbody">${esc(c.text)}</div>`}
+        </div>
+        <div class="cact">
+          <button class="ico" onclick="startCommentEdit('${t.id}',${ci})" aria-label="Edit comment">${svg(I.edit)}</button>
+          <button class="ico cdel" onclick="delComment('${pid}','${t.id}',${ci})" aria-label="Delete comment">${svg(I.trash)}</button>
+        </div>
+      </div>`;
+    }).join(''):'<div class="cempty">No comments or queries yet.</div>'}
     <div class="cinput">
       <select id="ca_${t.id}"><option>Visibuild</option><option>Client</option></select>
       <input id="ct_${t.id}" placeholder="Add a comment or query…" onkeydown="if(event.key==='Enter')addComment('${pid}','${t.id}')">
@@ -1108,9 +758,28 @@ function setup(){
     </div>`).join('')}
   </div>
   <div class="setup-block">
+    <div class="ptitle">Data backup</div>
+    <p style="font-size:13px;color:var(--ink-soft);line-height:1.6">Your projects, tasks and comments are stored in this browser. <b>Before opening a new version of this file</b>, export a backup here — then import it into the new file to restore everything exactly. This protects your data across updates.</p>
+    <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+      <button class="btn btn-vb" onclick="exportData()">${svg(I.dl)}Export data (backup)</button>
+      <button class="btn" onclick="document.getElementById('importFile').click()">${svg(I.dl)}Import data (restore)</button>
+      <input type="file" id="importFile" accept="application/json,.json" style="display:none" onchange="importData(event)">
+    </div>
+    <p style="font-size:11.5px;color:var(--ink-faint);margin-top:8px">Exports all projects as a .json file. Importing replaces everything currently in this browser with the backup's contents.</p>
+  </div>
+  <div class="setup-block">
     <div class="ptitle">Saving & sharing</div>
-    <p style="font-size:13px;color:var(--ink-soft);line-height:1.6">This portal saves automatically in this browser, and the dropdown at the top holds multiple projects. To share with the team or a client, put the file on a shared drive (SharePoint, Google Drive, Dropbox) — one person edits at a time, since data is stored per-browser and doesn't sync live between people. Use <b>Export summary</b> to drop a snapshot into meeting minutes or Notion.</p>
-    <button class="btn btn-vb" style="margin-top:12px" onclick="exportTxt()">${svg(I.dl)}Export summary</button>
+    ${SYNC?`
+      <p style="font-size:13px;color:var(--ink-soft);line-height:1.6">This project is <b>live-synced</b> via Supabase. Anyone who opens the link below sees and edits the same data, with changes appearing in real time. Send it to your team and the client.</p>
+      <div class="share-row">
+        <input id="shareLink" readonly value="${esc(location.origin+location.pathname+'?p='+PROJECT_KEY)}">
+        <button class="btn btn-vb" onclick="copyShare(event)">${svg(I.dl)}Copy link</button>
+      </div>
+      <p style="font-size:11.5px;color:var(--ink-faint);margin-top:8px">Project key: <code>${esc(PROJECT_KEY)}</code>. To start another client, open the same page with a different <code>?p=</code> key (e.g. <code>?p=skanska-tower</code>).</p>
+    `:`
+      <p style="font-size:13px;color:var(--ink-soft);line-height:1.6">Running in <b>local-only</b> mode — data saves to this browser and the dropdown holds multiple projects, but nothing syncs between people. To turn on live shared access: add your Supabase keys near the top of the HTML file and open it with <code>?p=clientname</code> on the end of the URL. Full steps are in the setup guide.</p>
+    `}
+    <button class="btn" style="margin-top:12px" onclick="exportTxt()">${svg(I.dl)}Export summary (text)</button>
   </div>`;
 }
 
@@ -1120,12 +789,14 @@ window.toggleC=id=>{state.openC[id]=!state.openC[id];persist();render()};
 window.setStatus=(p,id,v)=>{const t=state.phases.find(x=>x.id===p).tasks.find(x=>x.id===id);logIt(`Status · "${t.name}" → ${ST[v].l}`);t.status=v;persist();render()};
 window.setDue=(p,id,v)=>{const t=state.phases.find(x=>x.id===p).tasks.find(x=>x.id===id);t.due=v;logIt(`Due date · "${t.name}" → ${fdate(v)||'cleared'}`);persist();render()};
 window.addTask=p=>{const n=document.getElementById('an_'+p),o=document.getElementById('ao_'+p);if(!n.value.trim())return;const ph=state.phases.find(x=>x.id===p);const t={id:uid(),name:n.value.trim(),owner:o.value,status:'not-started',due:'',comments:[]};ph.tasks.push(t);logIt(`Task added · "${t.name}" (${t.owner})`);persist();render()};
-window.delTask=(p,id)=>{const ph=state.phases.find(x=>x.id===p),t=ph.tasks.find(x=>x.id===id);if(confirm(`Delete "${t.name}"?`)){logIt(`Task deleted · "${t.name}"`);ph.tasks=ph.tasks.filter(x=>x.id!==id);persist();render()}};
+window.delTask=(p,id)=>{const ph=state.phases.find(x=>x.id===p),t=ph.tasks.find(x=>x.id===id);showConfirm(`Delete "${t.name}"?`,'This removes the task and its comments.','Delete',()=>{logIt(`Task deleted · "${t.name}"`);ph.tasks=ph.tasks.filter(x=>x.id!==id);persist();render()})};
 window.addComment=(p,id)=>{const t=state.phases.find(x=>x.id===p).tasks.find(x=>x.id===id);const inp=document.getElementById('ct_'+id),a=document.getElementById('ca_'+id);if(!inp.value.trim())return;t.comments.push({author:a.value,text:inp.value.trim(),time:now()});logIt(`Comment by ${a.value} · "${t.name}"`);persist();render();const ni=document.getElementById('ct_'+id);if(ni)ni.focus()};
 window.setProj=(k,v)=>{state.project[k]=v;persist();if(['name','client','startDate','building','contact','email'].includes(k)){clearTimeout(window._rt);window._rt=setTimeout(render,400)}};
 window.setPhase=(id,k,v)=>{state.phases.find(x=>x.id===id)[k]=v;persist();if(k==='start'||k==='end'){clearTimeout(window._pt);window._pt=setTimeout(render,300)}};
 
-window.delComment=(p,id,ci)=>{const t=state.phases.find(x=>x.id===p).tasks.find(x=>x.id===id);if(!t.comments[ci])return;if(confirm('Delete this comment?')){t.comments.splice(ci,1);logIt(`Comment deleted · "${t.name}"`);persist();render()}};
+window.delComment=(p,id,ci)=>{const t=state.phases.find(x=>x.id===p).tasks.find(x=>x.id===id);if(!t.comments[ci])return;showConfirm('Delete this comment?','This removes the comment permanently.','Delete',()=>{t.comments.splice(ci,1);logIt(`Comment deleted · "${t.name}"`);editingComment=null;persist();render()})};
+window.startCommentEdit=(id,ci)=>{editingComment=id+'#'+ci;render();const el=document.getElementById('ce_'+id+'_'+ci);if(el){el.focus();el.select()}};
+window.saveComment=(p,id,ci,v)=>{const t=state.phases.find(x=>x.id===p).tasks.find(x=>x.id===id);const c=t.comments[ci];if(!c)return;const nv=(v||'').trim();if(nv&&nv!==c.text){c.text=nv;c.edited=true;logIt(`Comment edited · "${t.name}"`)}editingComment=null;persist();render()};
 
 function projName(s){return s.project.name||'Untitled project'}
 function refreshProjSwitch(){
@@ -1179,6 +850,35 @@ document.getElementById('btnDemo99').addEventListener('click',window.load99);
 document.getElementById('btnDemoVista').addEventListener('click',window.loadVista);
 document.getElementById('btnNew').addEventListener('click',window.newProject);
 window.exportTxt=()=>{const p=state.project,h=health();let x=`VISIBUILD ONBOARDING SUMMARY\n${'='.repeat(40)}\nProject: ${p.name}\nClient: ${p.client}\nHealth score: ${h}% — ${hLabel(h)}\nExported: ${new Date().toLocaleString('en-GB')}\n\n`;state.phases.forEach(ph=>{x+=`${ph.name} — ${ph.sub} (${phaseProg(ph)}% complete)\n`;ph.tasks.forEach(t=>{x+=`  [${ST[t.status].l}] ${t.name} · ${t.owner}${t.due?' · due '+fdate(t.due):''}\n`});x+='\n'});const a=document.createElement('a');a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(x);a.download=`visibuild-onboarding-${(p.name||'project').replace(/\s+/g,'-').toLowerCase()}.txt`;a.click()};
+window.exportData=()=>{
+  persist();
+  const payload={app:'visibuild-onboarding-portal',version:1,exported:new Date().toISOString(),store};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`visibuild-portal-backup-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+};
+window.importData=(ev)=>{
+  const file=ev.target.files&&ev.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    let data;
+    try{data=JSON.parse(reader.result)}catch{showConfirm('Import failed','That file could not be read as a valid backup.','OK',()=>{});ev.target.value='';return}
+    const incoming=data&&data.store&&data.store.projects?data.store:(data&&data.projects?data:null);
+    if(!incoming||!incoming.projects||!incoming.current){showConfirm('Import failed','That file does not look like a portal backup.','OK',()=>{});ev.target.value='';return}
+    const n=Object.keys(incoming.projects).length;
+    showConfirm('Restore this backup?',`This replaces everything currently in this browser with the backup (${n} project${n===1?'':'s'}). Your current data will be overwritten.`,'Restore',()=>{
+      store=incoming;
+      if(!store.order)store.order=Object.keys(store.projects);
+      if(!store.projects[store.current])store.current=store.order[0];
+      state=load();tab='tasks';editing=null;editingPhase=null;editingComment=null;
+      try{localStorage.setItem(STORE,JSON.stringify(store))}catch{}
+      render();
+    });
+    ev.target.value='';
+  };
+  reader.readAsText(file);
+};
 
 window.startEdit=id=>{editing=id;render();const el=document.getElementById('edit_'+id);if(el){el.focus();el.select()}};
 window.saveEdit=(p,id,v)=>{const t=state.phases.find(x=>x.id===p).tasks.find(x=>x.id===id);const nv=v.trim();if(nv&&nv!==t.name){logIt(`Renamed · "${t.name}" → "${nv}"`);t.name=nv}editing=null;persist();render()};
@@ -1271,8 +971,22 @@ window.phaseDrop=(e,pid)=>{
   persist();render();dragEnd(e);
 };
 
+window.copyShare=(ev)=>{
+  const el=document.getElementById('shareLink');if(!el)return;
+  el.select();
+  try{navigator.clipboard.writeText(el.value)}catch{try{document.execCommand('copy')}catch{}}
+  const b=ev&&ev.target&&ev.target.closest('button');
+  if(b){const o=b.innerHTML;b.textContent='Copied ✓';setTimeout(()=>b.innerHTML=o,1400)}
+};
+
+// In sync mode each link is one shared project — hide local multi-project controls
+if(SYNC){
+  ['projSwitch','btnNew','btnDemo99','btnDemoVista','btnReset'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none'});
+}
+
 render();
+updateSyncPill();
+initSync();
 </script>
-
-
-</body></html>
+</body>
+</html>
