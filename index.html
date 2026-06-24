@@ -1042,13 +1042,14 @@ if(IS_DASHBOARD){
   <div class="db-modal-bg" id="dbModal" onclick="if(event.target===this)dbCloseModal()">
     <div class="db-modal">
       <h3>New client portal</h3>
+      <div class="db-field"><label>Seed from template</label><select id="dbTemplate" onchange="dbPickTemplate()" style="width:100%;font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--line);border-radius:var(--rad-sm);background:var(--surface);color:var(--ink)"><option value="">Blank</option><option value="vista">Project Vista (Multiplex)</option><option value="99">99 City Road (Multiplex)</option></select></div>
       <div class="db-field"><label>Client name</label><input type="text" id="dbClient" placeholder="e.g. Multiplex" oninput="dbUpdatePreview()"></div>
       <div class="db-field"><label>Project name</label><input type="text" id="dbProject" placeholder="e.g. Vista" oninput="dbUpdatePreview()"></div>
       <div class="db-field"><label>Portal key</label><input type="text" id="dbKey" placeholder="e.g. multiplex-vista" oninput="dbKeyManual=true;dbUpdatePreview()"><div class="hint">Lowercase, hyphens only.</div></div>
       <div class="db-preview" id="dbPreview"></div>
       <div class="db-modal-actions">
         <button class="btn" onclick="dbCloseModal()">Cancel</button>
-        <button class="btn btn-vb" onclick="dbOpenPortal()">Open portal →</button>
+        <button class="btn btn-vb" onclick="dbOpenPortal()">Create &amp; open →</button>
       </div>
     </div>
   </div>`;
@@ -1083,8 +1084,14 @@ if(IS_DASHBOARD){
       }).join('');
     }catch(e){document.getElementById('dbCards').innerHTML=`<div class="db-empty">Could not load portals.<br><small>${e.message}</small></div>`;}
   }
-  window.dbOpenModal=()=>{document.getElementById('dbModal').classList.add('open');document.getElementById('dbClient').focus();}
+  window.dbOpenModal=()=>{document.getElementById('dbModal').classList.add('open');dbKeyManual=false;document.getElementById('dbTemplate').value='';document.getElementById('dbClient').value='';document.getElementById('dbProject').value='';document.getElementById('dbKey').value='';document.getElementById('dbPreview').style.display='none';}
   window.dbCloseModal=()=>document.getElementById('dbModal').classList.remove('open');
+  window.dbPickTemplate=()=>{
+    const t=document.getElementById('dbTemplate').value;
+    if(t==='vista'){document.getElementById('dbClient').value='Multiplex';document.getElementById('dbProject').value='Project Vista';}
+    else if(t==='99'){document.getElementById('dbClient').value='Multiplex';document.getElementById('dbProject').value='99 City Road';}
+    dbKeyManual=false;dbUpdatePreview();
+  }
   window.dbUpdatePreview=()=>{
     const c=document.getElementById('dbClient').value.trim(),p=document.getElementById('dbProject').value.trim();
     const kEl=document.getElementById('dbKey');
@@ -1092,7 +1099,21 @@ if(IS_DASHBOARD){
     const k=kEl.value.trim(),prev=document.getElementById('dbPreview');
     if(k){prev.style.display='block';prev.textContent=BASE_PORTAL+'?p='+k;}else{prev.style.display='none';}
   }
-  window.dbOpenPortal=()=>{const k=document.getElementById('dbKey').value.trim();if(!k){alert('Enter a portal key.');return;}window.open(BASE_PORTAL+'?p='+encodeURIComponent(k),'_blank');dbCloseModal();setTimeout(dbLoad,3000);}
+  window.dbOpenPortal=async()=>{
+    const k=document.getElementById('dbKey').value.trim();
+    if(!k){alert('Enter a portal key.');return;}
+    const t=document.getElementById('dbTemplate').value;
+    const sb2=supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
+    let seedData=null;
+    if(t==='vista')seedData=JSON.parse(JSON.stringify(demoVista));
+    else if(t==='99')seedData=JSON.parse(JSON.stringify(demo99));
+    if(seedData){
+      seedData._id=seedData._id||('p'+Date.now());
+      await sb2.from('portals').upsert({key:k,data:seedData,updated_at:new Date().toISOString()},{onConflict:'key'});
+    }
+    window.open(BASE_PORTAL+'?p='+encodeURIComponent(k),'_blank');
+    dbCloseModal();setTimeout(dbLoad,2000);
+  }
   dbLoad();
 
 } else {
