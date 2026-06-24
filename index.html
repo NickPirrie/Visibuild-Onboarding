@@ -99,7 +99,8 @@ body{
 select,input,textarea{font-family:inherit;font-size:13px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:var(--rad-sm);padding:6px 8px}
 select:focus,input:focus,textarea:focus{outline:none;border-color:var(--vb);box-shadow:0 0 0 3px var(--vb-soft)}
 .sel-status{font-size:11px;font-weight:600;padding:4px 7px;border-radius:20px;border-width:1px;cursor:pointer}
-.date-in{font-size:11px;padding:4px 6px;color:var(--ink-soft)}
+.date-in{font-size:11px;padding:4px 6px;color:var(--ink-soft);background:transparent;border-color:transparent}
+.date-in::-webkit-calendar-picker-indicator{opacity:0.35;cursor:pointer;filter:invert(0.3)}
 .date-badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
 .date-badge.overdue{background:#fcebeb;color:#a32d2d}
 .date-badge.upcoming{background:#faeeda;color:#854f0b}
