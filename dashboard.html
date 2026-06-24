@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Visibuild — Portal Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --vb:#1d9e75;--vb-dark:#0f6e56;--vb-soft:#e1f5ee;
+    --ink:#1a2420;--ink-soft:#42514c;--ink-faint:#7a8f89;
+    --surface:#fff;--paper:#f7f6f2;--line:#e2e0d8;--line-soft:#eeede8;
+    --red:#a32d2d;--red-soft:#fcebeb;
+    --orange:#854f0b;--orange-soft:#faeeda;
+    --rad:10px;--rad-sm:6px;
+  }
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh}
+  .topbar{background:var(--surface);border-bottom:1px solid var(--line);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between;gap:16px;position:sticky;top:0;z-index:10}
+  .brand{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;letter-spacing:-0.01em}
+  .brand-mark{width:22px;height:22px;background:var(--vb);border-radius:5px;display:inline-block}
+  .brand-tag{font-size:11px;color:var(--ink-faint);font-weight:400}
+  .wrap{max-width:960px;margin:0 auto;padding:32px 24px}
+  h1{font-size:20px;font-weight:700;margin-bottom:4px}
+  .sub{font-size:13px;color:var(--ink-faint);margin-bottom:28px}
+  .toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+  .toolbar h2{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint)}
+  .btn{padding:7px 14px;font-size:13px;font-weight:500;font-family:inherit;border:1px solid var(--line);border-radius:var(--rad-sm);background:var(--surface);color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .12s;text-decoration:none}
+  .btn:hover{border-color:var(--ink-faint)}
+  .btn-vb{background:var(--vb);border-color:var(--vb);color:#fff}
+  .btn-vb:hover{background:var(--vb-dark);border-color:var(--vb-dark)}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--rad);padding:18px;display:flex;flex-direction:column;gap:12px;transition:box-shadow .15s}
+  .card:hover{box-shadow:0 2px 12px rgba(0,0,0,.07)}
+  .card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+  .card-title{font-size:14px;font-weight:700;line-height:1.3}
+  .card-client{font-size:12px;color:var(--ink-faint);margin-top:2px}
+  .health-badge{font-size:12px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+  .card-meta{display:flex;flex-direction:column;gap:5px}
+  .meta-row{display:flex;justify-content:space-between;font-size:12px}
+  .meta-label{color:var(--ink-faint)}
+  .meta-val{font-weight:500;color:var(--ink-soft)}
+  .card-footer{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--line-soft)}
+  .key-tag{font-family:ui-monospace,Menlo,monospace;font-size:10px;color:var(--ink-faint);background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:2px 6px}
+  .open-btn{font-size:12px;font-weight:600;color:var(--vb-dark);text-decoration:none;display:flex;align-items:center;gap:4px}
+  .open-btn:hover{color:var(--vb)}
+  .progress-bar{height:4px;background:var(--line-soft);border-radius:4px;overflow:hidden}
+  .progress-fill{height:100%;border-radius:4px;transition:width .3s}
+  .empty{text-align:center;padding:60px 20px;color:var(--ink-faint);font-size:13px}
+  .loading{text-align:center;padding:60px 20px;color:var(--ink-faint);font-size:13px}
+  .new-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:100;align-items:center;justify-content:center}
+  .new-modal.open{display:flex}
+  .modal-box{background:var(--surface);border-radius:var(--rad);padding:24px;width:100%;max-width:380px;box-shadow:0 8px 40px rgba(0,0,0,.18)}
+  .modal-box h3{font-size:15px;font-weight:700;margin-bottom:16px}
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:5px}
+  .field input{width:100%;font-family:inherit;font-size:13px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:var(--rad-sm);padding:8px 10px}
+  .field input:focus{outline:none;border-color:var(--vb);box-shadow:0 0 0 3px var(--vb-soft)}
+  .field .hint{font-size:11px;color:var(--ink-faint);margin-top:4px}
+  .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
+  .url-preview{font-family:ui-monospace,Menlo,monospace;font-size:11px;background:var(--paper);border:1px solid var(--line);border-radius:var(--rad-sm);padding:8px 10px;color:var(--ink-soft);margin-top:10px;word-break:break-all;display:none}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <span class="brand-mark"></span>
+    Visibuild
+    <span class="brand-tag">Portal Dashboard</span>
+  </div>
+  <button class="btn btn-vb" onclick="openNewModal()">+ New portal</button>
+</div>
+
+<div class="wrap">
+  <h1>Client Portals</h1>
+  <p class="sub">All live synced portals. Click a card to open.</p>
+
+  <div class="toolbar">
+    <h2 id="portalCount">Loading…</h2>
+    <button class="btn" onclick="loadPortals()">↻ Refresh</button>
+  </div>
+
+  <div class="cards" id="cards">
+    <div class="loading">Loading portals from Supabase…</div>
+  </div>
+</div>
+
+<!-- New portal modal -->
+<div class="new-modal" id="newModal" onclick="if(event.target===this)closeNewModal()">
+  <div class="modal-box">
+    <h3>New client portal</h3>
+    <div class="field">
+      <label>Client name</label>
+      <input type="text" id="newClient" placeholder="e.g. Multiplex" oninput="updatePreview()">
+    </div>
+    <div class="field">
+      <label>Project name</label>
+      <input type="text" id="newProject" placeholder="e.g. Vista" oninput="updatePreview()">
+    </div>
+    <div class="field">
+      <label>Portal key <span style="text-transform:none;font-weight:400">(auto-generated)</span></label>
+      <input type="text" id="newKey" placeholder="e.g. multiplex-vista" oninput="updatePreview()">
+      <div class="hint">Lowercase, hyphens only. This is part of the URL.</div>
+    </div>
+    <div class="url-preview" id="urlPreview"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeNewModal()">Cancel</button>
+      <button class="btn btn-vb" onclick="openNewPortal()">Open portal →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL  = "https://ucvhtspfpaetxaozjywg.supabase.co";
+const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVjdmh0c3BmcGFldHhhb3pqeXdnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIxMjY0MzAsImV4cCI6MjA5NzcwMjQzMH0.2hQuoe6v6Y7Fg-jyZih0USPqXD7aObLrkf1vh6hgNO0";
+const BASE_URL = "https://nickpirrie.github.io/Visibuild-Onboarding/";
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+function healthColor(h){
+  if(h===null||h===undefined)return{bg:'#f1efe8',c:'#5f5e5a'};
+  if(h>=75)return{bg:'#e1f5ee',c:'#0f6e56'};
+  if(h>=40)return{bg:'#faeeda',c:'#854f0b'};
+  return{bg:'#fcebeb',c:'#a32d2d'};
+}
+
+function taskStats(data){
+  if(!data||!data.phases)return{total:0,done:0};
+  let total=0,done=0;
+  data.phases.forEach(ph=>ph.tasks.forEach(t=>{total++;if(t.status==='done')done++;}));
+  return{total,done};
+}
+
+function timeAgo(ts){
+  if(!ts)return'—';
+  const diff=Date.now()-new Date(ts).getTime();
+  const m=Math.floor(diff/60000);
+  if(m<1)return'Just now';
+  if(m<60)return`${m}m ago`;
+  const h=Math.floor(m/60);
+  if(h<24)return`${h}h ago`;
+  const d=Math.floor(h/24);
+  return`${d}d ago`;
+}
+
+async function loadPortals(){
+  document.getElementById('cards').innerHTML='<div class="loading">Loading…</div>';
+  try{
+    const{data,error}=await sb.from('portals').select('key,data,updated_at').order('updated_at',{ascending:false});
+    if(error)throw error;
+    renderCards(data||[]);
+  }catch(e){
+    document.getElementById('cards').innerHTML=`<div class="empty">Could not load portals.<br><small>${e.message}</small></div>`;
+    document.getElementById('portalCount').textContent='Error';
+  }
+}
+
+function renderCards(rows){
+  const count=rows.length;
+  document.getElementById('portalCount').textContent=count===0?'No portals yet':`${count} portal${count===1?'':'s'}`;
+  if(count===0){
+    document.getElementById('cards').innerHTML='<div class="empty">No portals yet.<br>Click "+ New portal" to create your first one.</div>';
+    return;
+  }
+  document.getElementById('cards').innerHTML=rows.map(row=>{
+    const d=row.data||{};
+    const proj=d.project||{};
+    const name=proj.name||row.key;
+    const client=proj.client||'—';
+    const h=d.health!=null?Math.round(d.health):null;
+    const hc=healthColor(h);
+    const{total,done}=taskStats(d);
+    const pct=total?Math.round((done/total)*100):0;
+    const ago=timeAgo(row.updated_at);
+    const url=BASE_URL+'?p='+encodeURIComponent(row.key);
+    return `<div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">${esc(name)}</div>
+          <div class="card-client">${esc(client)}</div>
+        </div>
+        ${h!==null?`<span class="health-badge" style="background:${hc.bg};color:${hc.c}">${h}%</span>`:''}
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--ink-faint);margin-bottom:5px">
+          <span>Tasks</span><span>${done}/${total} done</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${pct>=75?'#1d9e75':pct>=40?'#f59e0b':'#dc2626'}"></div></div>
+      </div>
+      <div class="card-footer">
+        <span class="key-tag">${esc(row.key)}</span>
+        <a class="open-btn" href="${url}" target="_blank">Open portal →</a>
+      </div>
+      <div style="font-size:11px;color:var(--ink-faint)">Updated ${ago}</div>
+    </div>`;
+  }).join('');
+}
+
+function esc(s){return !s?'':String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+function openNewModal(){document.getElementById('newModal').classList.add('open');document.getElementById('newClient').focus();}
+function closeNewModal(){document.getElementById('newModal').classList.remove('open');}
+
+function updatePreview(){
+  const client=document.getElementById('newClient').value.trim();
+  const project=document.getElementById('newProject').value.trim();
+  const keyEl=document.getElementById('newKey');
+  if(client||project){
+    const auto=(client+'-'+project).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+    if(!keyEl.dataset.manual)keyEl.value=auto;
+  }
+  const key=keyEl.value.trim();
+  const preview=document.getElementById('urlPreview');
+  if(key){preview.style.display='block';preview.textContent=BASE_URL+'?p='+key;}
+  else{preview.style.display='none';}
+}
+
+document.getElementById('newKey').addEventListener('input',()=>{
+  document.getElementById('newKey').dataset.manual='1';
+  updatePreview();
+});
+
+function openNewPortal(){
+  const key=document.getElementById('newKey').value.trim();
+  if(!key){alert('Please enter a portal key.');return;}
+  const url=BASE_URL+'?p='+encodeURIComponent(key);
+  window.open(url,'_blank');
+  closeNewModal();
+  setTimeout(loadPortals,3000);
+}
+
+loadPortals();
+</script>
+</body>
+</html>
