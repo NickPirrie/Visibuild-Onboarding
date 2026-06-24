@@ -88,7 +88,7 @@ body{
 
 /* tasks */
 .tlist{border-top:1px solid var(--line-soft)}
-.trow{padding:0.7rem 1.25rem;border-bottom:1px solid var(--line-soft);display:grid;grid-template-columns:16px 14px 1fr auto auto auto;gap:12px;align-items:center}
+.trow{padding:0.7rem 1.25rem;border-bottom:1px solid var(--line-soft);display:grid;grid-template-columns:16px 14px 1fr auto auto;gap:12px;align-items:center}
 .trow:last-child{border-bottom:none}
 .tstatus-dot{width:10px;height:10px;border-radius:50%}
 .tname{font-size:13.5px;line-height:1.35}
@@ -99,8 +99,8 @@ body{
 select,input,textarea{font-family:inherit;font-size:13px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:var(--rad-sm);padding:6px 8px}
 select:focus,input:focus,textarea:focus{outline:none;border-color:var(--vb);box-shadow:0 0 0 3px var(--vb-soft)}
 .sel-status{font-size:11px;font-weight:600;padding:4px 7px;border-radius:20px;border-width:1px;cursor:pointer}
-.date-in{font-size:11px;padding:4px 6px;color:var(--ink-soft);background:transparent;border-color:transparent}
-.date-in::-webkit-calendar-picker-indicator{opacity:0.35;cursor:pointer;filter:invert(0.3)}
+.date-in{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;border:0;padding:0}
+.date-badge{cursor:pointer}
 .date-badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
 .date-badge.overdue{background:#fcebeb;color:#a32d2d}
 .date-badge.upcoming{background:#faeeda;color:#854f0b}
@@ -512,7 +512,8 @@ function hBgPhase(h){return h>=75?'#e1f5ee':h>=40?'#faeeda':'#fcebeb'}
 const esc=s=>!s?'':String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const uid=()=>'t'+Date.now()+Math.random().toString(36).slice(2,5);
 function fdate(d){if(!d)return '';try{return new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}catch{return d}}
-function dateBadge(due,status){if(!due)return '';const today=new Date();today.setHours(0,0,0,0);const d=new Date(due);d.setHours(0,0,0,0);const cls=status==='done'?'done-date':d<today?'overdue':'upcoming';return `<span class="date-badge ${cls}">${fdate(due)}</span>`;}
+function dateBadge(due,status,id){if(!due)return `<span class="date-badge" style="opacity:.45;background:var(--grey-soft);color:var(--grey)" onclick="pickDate('${id}')">+ date</span>`;const today=new Date();today.setHours(0,0,0,0);const d=new Date(due);d.setHours(0,0,0,0);const cls=status==='done'?'done-date':d<today?'overdue':'upcoming';return `<span class="date-badge ${cls}" onclick="pickDate('${id}')">${fdate(due)}</span>`;}
+window.pickDate=id=>{const el=document.getElementById('di_'+id);if(!el)return;el.style.opacity='1';el.style.width='auto';el.style.height='auto';el.style.pointerEvents='all';try{el.showPicker();}catch{el.click();}setTimeout(()=>{el.style.opacity='0';el.style.width='1px';el.style.height='1px';el.style.pointerEvents='none';},300);};
 function fdateShort(d){if(!d)return '';try{return new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}catch{return d}}
 function now(){return new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}
 function logIt(m){state.log.unshift({t:now(),m});if(state.log.length>60)state.log.length=60}
@@ -594,14 +595,14 @@ function taskRow(ph,t){
         :`<div class="tname">${esc(t.name)}</div>`}
       <div class="tmeta">
         <span class="owner-tag owner-${t.owner}">${svg(I.user)}${t.owner}</span>
-        ${t.due?dateBadge(t.due,t.status):''}
+        ${dateBadge(t.due,t.status,t.id)}
         ${t.comments.length?`<span>${svg(I.msg)}${t.comments.length}</span>`:''}
       </div>
     </div>
     <select class="sel-status" style="background:${ST[t.status].bg};color:${ST[t.status].c};border-color:${ST[t.status].c}" onchange="setStatus('${ph.id}','${t.id}',this.value)">
       ${Object.entries(ST).map(([k,v])=>`<option value="${k}" ${t.status===k?'selected':''}>${v.l}</option>`).join('')}
     </select>
-    <input type="date" class="date-in" value="${t.due||''}" onchange="setDue('${ph.id}','${t.id}',this.value)" aria-label="Due date">
+    <input type="date" id="di_${t.id}" class="date-in" value="${t.due||''}" onchange="setDue('${ph.id}','${t.id}',this.value)" aria-label="Due date">
     <div class="tact">
       <button class="ico" onclick="startEdit('${t.id}')" aria-label="Rename task">${svg(I.edit)}</button>
       <button class="ico ${t.comments.length?'has':''}" onclick="toggleC('${t.id}')" aria-label="Comments">${svg(I.msg)}</button>
