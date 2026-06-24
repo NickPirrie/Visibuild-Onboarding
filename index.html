@@ -219,6 +219,35 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;background:var(--
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 :focus-visible{outline:2px solid var(--vb);outline-offset:2px}
+/* dashboard */
+.db-wrap{max-width:960px;margin:0 auto;padding:32px 24px}
+.db-wrap h1{font-size:20px;font-weight:700;margin-bottom:4px}
+.db-sub{font-size:13px;color:var(--ink-faint);margin-bottom:28px}
+.db-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.db-toolbar span{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint)}
+.db-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.db-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--rad);padding:18px;display:flex;flex-direction:column;gap:12px;transition:box-shadow .15s;cursor:pointer;text-decoration:none;color:inherit}
+.db-card:hover{box-shadow:0 2px 12px rgba(0,0,0,.08)}
+.db-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.db-card-title{font-size:14px;font-weight:700;line-height:1.3}
+.db-card-client{font-size:12px;color:var(--ink-faint);margin-top:2px}
+.db-hbadge{font-size:12px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+.db-progress{height:4px;background:var(--line-soft);border-radius:4px;overflow:hidden}
+.db-fill{height:100%;border-radius:4px}
+.db-footer{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--line-soft);font-size:11px;color:var(--ink-faint)}
+.db-key{font-family:ui-monospace,Menlo,monospace;font-size:10px;background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:2px 6px;color:var(--ink-faint)}
+.db-empty{text-align:center;padding:60px 20px;color:var(--ink-faint);font-size:13px}
+.db-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:100;align-items:center;justify-content:center}
+.db-modal-bg.open{display:flex}
+.db-modal{background:var(--surface);border-radius:var(--rad);padding:24px;width:100%;max-width:380px;box-shadow:0 8px 40px rgba(0,0,0,.18)}
+.db-modal h3{font-size:15px;font-weight:700;margin-bottom:16px}
+.db-field{margin-bottom:14px}
+.db-field label{display:block;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:5px}
+.db-field input{width:100%;font-family:inherit;font-size:13px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:var(--rad-sm);padding:8px 10px}
+.db-field input:focus{outline:none;border-color:var(--vb);box-shadow:0 0 0 3px var(--vb-soft)}
+.db-field .hint{font-size:11px;color:var(--ink-faint);margin-top:4px}
+.db-preview{font-family:ui-monospace,Menlo,monospace;font-size:11px;background:var(--paper);border:1px solid var(--line);border-radius:var(--rad-sm);padding:8px 10px;color:var(--ink-soft);margin-top:10px;word-break:break-all;display:none}
+.db-modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -986,9 +1015,91 @@ if(SYNC){
   ['projSwitch','btnNew','btnDemo99','btnDemoVista','btnReset'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none'});
 }
 
-render();
-updateSyncPill();
-initSync();
+// ── DASHBOARD ────────────────────────────────────────────────────────────────
+const IS_DASHBOARD = window.location.search.includes('dashboard');
+const BASE_PORTAL  = window.location.origin + window.location.pathname;
+
+if(IS_DASHBOARD){
+  document.querySelector('.wrap').style.display='none';
+  const dbRoot = document.createElement('div');
+  document.body.appendChild(dbRoot);
+  dbRoot.innerHTML = `
+  <div class="wrap" style="display:block">
+    <div class="topbar">
+      <div class="brand"><span class="brand-mark"></span> Visibuild <span class="brand-tag">Portal Dashboard</span></div>
+      <button class="btn btn-vb" onclick="dbOpenModal()">+ New portal</button>
+    </div>
+  </div>
+  <div class="db-wrap">
+    <h1>Client Portals</h1>
+    <p class="db-sub">All live synced portals. Click a card to open.</p>
+    <div class="db-toolbar">
+      <span id="dbCount">Loading…</span>
+      <button class="btn" onclick="dbLoad()">↻ Refresh</button>
+    </div>
+    <div class="db-cards" id="dbCards"><div class="db-empty">Loading…</div></div>
+  </div>
+  <div class="db-modal-bg" id="dbModal" onclick="if(event.target===this)dbCloseModal()">
+    <div class="db-modal">
+      <h3>New client portal</h3>
+      <div class="db-field"><label>Client name</label><input type="text" id="dbClient" placeholder="e.g. Multiplex" oninput="dbUpdatePreview()"></div>
+      <div class="db-field"><label>Project name</label><input type="text" id="dbProject" placeholder="e.g. Vista" oninput="dbUpdatePreview()"></div>
+      <div class="db-field"><label>Portal key</label><input type="text" id="dbKey" placeholder="e.g. multiplex-vista" oninput="dbKeyManual=true;dbUpdatePreview()"><div class="hint">Lowercase, hyphens only.</div></div>
+      <div class="db-preview" id="dbPreview"></div>
+      <div class="db-modal-actions">
+        <button class="btn" onclick="dbCloseModal()">Cancel</button>
+        <button class="btn btn-vb" onclick="dbOpenPortal()">Open portal →</button>
+      </div>
+    </div>
+  </div>`;
+
+  let dbKeyManual=false;
+  function dbHColor(h){if(h==null)return{bg:'#f1efe8',c:'#5f5e5a'};if(h>=75)return{bg:'#e1f5ee',c:'#0f6e56'};if(h>=40)return{bg:'#faeeda',c:'#854f0b'};return{bg:'#fcebeb',c:'#a32d2d'}}
+  function dbAgo(ts){if(!ts)return'—';const d=Date.now()-new Date(ts).getTime(),m=Math.floor(d/60000);if(m<1)return'Just now';if(m<60)return m+'m ago';const h=Math.floor(m/60);if(h<24)return h+'h ago';return Math.floor(h/24)+'d ago'}
+  function dbEsc(s){return !s?'':String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+  async function dbLoad(){
+    document.getElementById('dbCards').innerHTML='<div class="db-empty">Loading…</div>';
+    try{
+      const sb2=supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
+      const{data,error}=await sb2.from('portals').select('key,data,updated_at').order('updated_at',{ascending:false});
+      if(error)throw error;
+      const rows=data||[];
+      document.getElementById('dbCount').textContent=rows.length?rows.length+' portal'+(rows.length===1?'':'s'):'No portals yet';
+      if(!rows.length){document.getElementById('dbCards').innerHTML='<div class="db-empty">No portals yet. Click "+ New portal" to create one.</div>';return;}
+      document.getElementById('dbCards').innerHTML=rows.map(r=>{
+        const d=r.data||{},p=d.project||{};
+        const name=p.name||r.key,client=p.client||'—';
+        const h=d.health!=null?Math.round(d.health):null;
+        const hc=dbHColor(h);
+        let tot=0,done=0;(d.phases||[]).forEach(ph=>(ph.tasks||[]).forEach(t=>{tot++;if(t.status==='done')done++}));
+        const pct=tot?Math.round(done/tot*100):0;
+        const fc=pct>=75?'#1d9e75':pct>=40?'#f59e0b':'#dc2626';
+        const url=BASE_PORTAL+'?p='+encodeURIComponent(r.key);
+        return `<a class="db-card" href="${url}" target="_blank">
+          <div class="db-card-head"><div><div class="db-card-title">${dbEsc(name)}</div><div class="db-card-client">${dbEsc(client)}</div></div>${h!=null?`<span class="db-hbadge" style="background:${hc.bg};color:${hc.c}">${h}%</span>`:''}</div>
+          <div><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--ink-faint);margin-bottom:5px"><span>Tasks</span><span>${done}/${tot} done</span></div><div class="db-progress"><div class="db-fill" style="width:${pct}%;background:${fc}"></div></div></div>
+          <div class="db-footer"><span class="db-key">${dbEsc(r.key)}</span><span>Updated ${dbAgo(r.updated_at)}</span></div>
+        </a>`;
+      }).join('');
+    }catch(e){document.getElementById('dbCards').innerHTML=`<div class="db-empty">Could not load portals.<br><small>${e.message}</small></div>`;}
+  }
+  window.dbOpenModal=()=>{document.getElementById('dbModal').classList.add('open');document.getElementById('dbClient').focus();}
+  window.dbCloseModal=()=>document.getElementById('dbModal').classList.remove('open');
+  window.dbUpdatePreview=()=>{
+    const c=document.getElementById('dbClient').value.trim(),p=document.getElementById('dbProject').value.trim();
+    const kEl=document.getElementById('dbKey');
+    if(!dbKeyManual&&(c||p))kEl.value=(c+'-'+p).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+    const k=kEl.value.trim(),prev=document.getElementById('dbPreview');
+    if(k){prev.style.display='block';prev.textContent=BASE_PORTAL+'?p='+k;}else{prev.style.display='none';}
+  }
+  window.dbOpenPortal=()=>{const k=document.getElementById('dbKey').value.trim();if(!k){alert('Enter a portal key.');return;}window.open(BASE_PORTAL+'?p='+encodeURIComponent(k),'_blank');dbCloseModal();setTimeout(dbLoad,3000);}
+  dbLoad();
+
+} else {
+  render();
+  updateSyncPill();
+  initSync();
+}
 </script>
 </body>
 </html>
