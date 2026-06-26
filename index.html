@@ -440,9 +440,11 @@ async function initSync(){
       // null = key genuinely does not exist yet — safe to seed
       state._id=state._id||newId();
       await pushRemote();
+      render();
     }else{
-      // _error = connection failed — do NOT overwrite Supabase, just show what we have
+      // _error = connection failed — do NOT overwrite Supabase, render default state
       syncStatus='error';updateSyncPill();
+      render();
     }
     syncStatus='synced';updateSyncPill();
     channel=sb.channel('portal_'+PROJECT_KEY)
@@ -454,7 +456,7 @@ async function initSync(){
         store.projects[store.current]=incoming;state=incoming;persistLocal();render();
         applyingRemote=false;syncStatus='synced';updateSyncPill();
       }).subscribe();
-  }catch{syncStatus='error';updateSyncPill()}
+  }catch{syncStatus='error';updateSyncPill();render();}
 }
 function updateSyncPill(){
   const el=document.getElementById('syncPill');if(!el)return;
@@ -1123,14 +1125,10 @@ if(IS_DASHBOARD){
   // No ?p= key and not dashboard — redirect to dashboard automatically
   window.location.replace(window.location.pathname + '?dashboard');
 } else {
+  // Show loading until Supabase data arrives — never render with empty state
   document.getElementById('app').innerHTML = '<div style="padding:3rem 1.5rem;text-align:center;color:var(--ink-faint);font-size:13px">Loading portal…</div>';
   updateSyncPill();
-  try { render(); } catch(e) {
-    document.getElementById('app').innerHTML = '<div style="padding:2rem;color:#a32d2d;font-size:13px;background:#fcebeb;border-radius:8px;margin:1rem"><b>Error in render():</b><br>' + e.message + '<br><pre style="font-size:11px;margin-top:8px">' + (e.stack||'') + '</pre></div>';
-  }
-  initSync().catch(e => {
-    document.getElementById('app').innerHTML += '<div style="padding:2rem;color:#a32d2d;font-size:13px;background:#fcebeb;border-radius:8px;margin:1rem"><b>Error in initSync():</b><br>' + e.message + '</div>';
-  });
+  initSync();
 }
 </script>
 </body>
