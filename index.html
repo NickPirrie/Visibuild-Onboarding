@@ -1119,7 +1119,12 @@ if(IS_DASHBOARD){
   }
   dbLoad();
 
+} else if(!PROJECT_KEY) {
+  // No ?p= key and not dashboard — redirect to dashboard automatically
+  window.location.replace(window.location.pathname + '?dashboard');
 } else {
+  // Show loading state immediately so page is never blank
+  document.getElementById('app').innerHTML = '<div style="padding:3rem 1.5rem;text-align:center;color:var(--ink-faint);font-size:13px">Connecting to Visibuild…</div>';
   render();
   updateSyncPill();
   initSync();
