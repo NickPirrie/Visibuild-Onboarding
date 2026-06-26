@@ -1081,11 +1081,19 @@ if(IS_DASHBOARD){
         const pct=tot?Math.round(done/tot*100):0;
         const fc=pct>=75?'#1d9e75':pct>=40?'#f59e0b':'#dc2626';
         const url=BASE_PORTAL+'?p='+encodeURIComponent(r.key);
-        return `<a class="db-card" href="${url}" target="_blank">
-          <div class="db-card-head"><div><div class="db-card-title">${dbEsc(name)}</div><div class="db-card-client">${dbEsc(client)}</div></div>${h!=null?`<span class="db-hbadge" style="background:${hc.bg};color:${hc.c}">${h}%</span>`:''}</div>
-          <div><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--ink-faint);margin-bottom:5px"><span>Tasks</span><span>${done}/${tot} done</span></div><div class="db-progress"><div class="db-fill" style="width:${pct}%;background:${fc}"></div></div></div>
-          <div class="db-footer"><span class="db-key">${dbEsc(r.key)}</span><span>Updated ${dbAgo(r.updated_at)}</span></div>
-        </a>`;
+        return `<div class="db-card">
+          <a href="${url}" target="_blank" style="text-decoration:none;color:inherit;display:contents">
+            <div class="db-card-head"><div><div class="db-card-title">${dbEsc(name)}</div><div class="db-card-client">${dbEsc(client)}</div></div>${h!=null?`<span class="db-hbadge" style="background:${hc.bg};color:${hc.c}">${h}%</span>`:''}</div>
+            <div><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--ink-faint);margin-bottom:5px"><span>Tasks</span><span>${done}/${tot} done</span></div><div class="db-progress"><div class="db-fill" style="width:${pct}%;background:${fc}"></div></div></div>
+          </a>
+          <div class="db-footer">
+            <span class="db-key">${dbEsc(r.key)}</span>
+            <div style="display:flex;align-items:center;gap:10px">
+              <span style="font-size:11px;color:var(--ink-faint)">Updated ${dbAgo(r.updated_at)}</span>
+              <button onclick="dbDelete('${dbEsc(r.key)}','${dbEsc(name)}')" style="background:none;border:none;cursor:pointer;color:var(--ink-faint);font-size:11px;padding:2px 6px;border-radius:4px;display:flex;align-items:center;gap:3px" onmouseover="this.style.color='#a32d2d'" onmouseout="this.style.color='var(--ink-faint)'">✕ Delete</button>
+            </div>
+          </div>
+        </div>`;
       }).join('');
     }catch(e){document.getElementById('dbCards').innerHTML=`<div class="db-empty">Could not load portals.<br><small>${e.message}</small></div>`;}
   }
@@ -1104,6 +1112,15 @@ if(IS_DASHBOARD){
     const k=kEl.value.trim(),prev=document.getElementById('dbPreview');
     if(k){prev.style.display='block';prev.textContent=BASE_PORTAL+'?p='+k;}else{prev.style.display='none';}
   }
+  window.dbDelete=async(key,name)=>{
+    if(!confirm(`Delete "${name}" (${key})?\n\nThis permanently removes all data for this portal. This cannot be undone.`))return;
+    try{
+      const sb2=supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
+      const{error}=await sb2.from('portals').delete().eq('key',key);
+      if(error)throw error;
+      dbLoad();
+    }catch(e){alert('Delete failed: '+e.message);}
+  };
   window.dbOpenPortal=async()=>{
     const k=document.getElementById('dbKey').value.trim();
     if(!k){alert('Enter a portal key.');return;}
