@@ -424,7 +424,7 @@ async function pushRemote(){
 }
 async function pullRemote(){
   if(!sb)return null;
-  try{const{data,error}=await sb.from('portals').select('data').eq('key',PROJECT_KEY).maybeSingle();if(error)return null;return data?data.data:null}catch{return null}
+  try{const{data,error}=await sb.from('portals').select('data').eq('key',PROJECT_KEY).maybeSingle();if(error)return{_error:true};return data?data.data:null}catch{return{_error:true}}
 }
 async function initSync(){
   if(!SYNC)return;
@@ -432,14 +432,17 @@ async function initSync(){
     sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
     syncStatus='connecting';updateSyncPill();
     const remote=await pullRemote();
-    if(remote){
+    if(remote&&!remote._error){
       remote._id=remote._id||newId();
       store={projects:{[remote._id]:remote},order:[remote._id],current:remote._id};
       state=remote;persistLocal();render();
-    }else{
-      // first open of this key — seed from whatever this file currently shows, push it up
+    }else if(remote===null){
+      // null = key genuinely does not exist yet — safe to seed
       state._id=state._id||newId();
       await pushRemote();
+    }else{
+      // _error = connection failed — do NOT overwrite Supabase, just show what we have
+      syncStatus='error';updateSyncPill();
     }
     syncStatus='synced';updateSyncPill();
     channel=sb.channel('portal_'+PROJECT_KEY)
