@@ -1123,11 +1123,14 @@ if(IS_DASHBOARD){
   // No ?p= key and not dashboard — redirect to dashboard automatically
   window.location.replace(window.location.pathname + '?dashboard');
 } else {
-  // Show loading state immediately so page is never blank
-  document.getElementById('app').innerHTML = '<div style="padding:3rem 1.5rem;text-align:center;color:var(--ink-faint);font-size:13px">Connecting to Visibuild…</div>';
-  render();
+  document.getElementById('app').innerHTML = '<div style="padding:3rem 1.5rem;text-align:center;color:var(--ink-faint);font-size:13px">Loading portal…</div>';
   updateSyncPill();
-  initSync();
+  try { render(); } catch(e) {
+    document.getElementById('app').innerHTML = '<div style="padding:2rem;color:#a32d2d;font-size:13px;background:#fcebeb;border-radius:8px;margin:1rem"><b>Error in render():</b><br>' + e.message + '<br><pre style="font-size:11px;margin-top:8px">' + (e.stack||'') + '</pre></div>';
+  }
+  initSync().catch(e => {
+    document.getElementById('app').innerHTML += '<div style="padding:2rem;color:#a32d2d;font-size:13px;background:#fcebeb;border-radius:8px;margin:1rem"><b>Error in initSync():</b><br>' + e.message + '</div>';
+  });
 }
 </script>
 </body>
