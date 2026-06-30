@@ -782,7 +782,10 @@ function setup(){
       ${f('email','Contact email','name@visibuild.com','email')}
     </div>
     <div class="field" style="margin-top:4px"><label>Internal notes</label><textarea rows="4" style="width:100%;resize:vertical" placeholder="Private notes — not visible to the client" oninput="setProj('notes',this.value)">${esc(p.notes||'')}</textarea></div>
-    <button class="btn btn-vb" onclick="exportTxt()">${svg(I.dl)}Export summary</button>
+    <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap">
+      <button class="btn btn-vb" onclick="exportPDF()">${svg(I.dl)}Export PDF</button>
+      <button class="btn" onclick="exportTxt()">${svg(I.dl)}Export summary (text)</button>
+    </div>
   </div>
   <div class="setup-block">
     <div class="ptitle">Phases & dates</div>
@@ -887,6 +890,34 @@ document.getElementById('btnDemo99').addEventListener('click',window.load99);
 document.getElementById('btnDemoVista').addEventListener('click',window.loadVista);
 document.getElementById('btnNew').addEventListener('click',window.newProject);
 window.exportTxt=()=>{const p=state.project,h=health();let x=`VISIBUILD ONBOARDING SUMMARY\n${'='.repeat(40)}\nProject: ${p.name}\nClient: ${p.client}\nHealth score: ${h}% — ${hLabel(h)}\nExported: ${new Date().toLocaleString('en-GB')}\n\n`;state.phases.forEach(ph=>{x+=`${ph.name} — ${ph.sub} (${phaseProg(ph)}% complete)\n`;ph.tasks.forEach(t=>{x+=`  [${ST[t.status].l}] ${t.name} · ${t.owner}${t.due?' · due '+fdate(t.due):''}\n`});x+='\n'});const a=document.createElement('a');a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(x);a.download=`visibuild-onboarding-${(p.name||'project').replace(/\s+/g,'-').toLowerCase()}.txt`;a.click()};
+window.exportPDF=()=>{
+  const p=state.project,h=health();
+  const statusColors={'not-started':['#f1efe8','#5f5e5a'],'inprogress':['#e6f1fb','#185fa5'],'done':['#e1f5ee','#0f6e56'],'blocked':['#fcebeb','#a32d2d']};
+  const statusLabel={'not-started':'Not started','inprogress':'In progress','done':'Done','blocked':'Blocked'};
+  const hc=h>=75?'#0f6e56':h>=40?'#854f0b':'#a32d2d';
+  const hbg=h>=75?'#e1f5ee':h>=40?'#faeeda':'#fcebeb';
+  const phases=state.phases.map(ph=>{
+    const prog=phaseProg(ph);
+    const tasks=ph.tasks.map(t=>{
+      const[sbg,sc]=statusColors[t.status]||statusColors['not-started'];
+      return `<tr><td style="padding:7px 10px;border-bottom:1px solid #eee;font-size:12px">${t.name}</td><td style="padding:7px 10px;border-bottom:1px solid #eee;font-size:12px;color:#42514c">${t.owner||'—'}</td><td style="padding:7px 10px;border-bottom:1px solid #eee;font-size:12px;color:#42514c">${t.due?fdate(t.due):'—'}</td><td style="padding:7px 10px;border-bottom:1px solid #eee;text-align:center"><span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:${sbg};color:${sc}">${statusLabel[t.status]}</span></td></tr>`;
+    }).join('');
+    return `<div style="margin-bottom:24px;page-break-inside:avoid"><div style="display:flex;align-items:center;justify-content:space-between;background:#f7f6f2;border:1px solid #e2e0d8;border-radius:8px 8px 0 0;padding:10px 14px"><div style="display:flex;align-items:center;gap:10px"><span style="width:10px;height:10px;border-radius:50%;background:${ph.color||'#999'};display:inline-block"></span><b style="font-size:13px">${ph.name}</b><span style="font-size:12px;color:#7a8f89">${ph.sub||''}</span></div><span style="font-size:12px;font-weight:600;color:#42514c">${prog}% complete</span></div><table style="width:100%;border-collapse:collapse;border:1px solid #e2e0d8;border-top:none;border-radius:0 0 8px 8px;overflow:hidden"><thead><tr style="background:#fafaf8"><th style="padding:6px 10px;text-align:left;font-size:11px;font-weight:600;color:#7a8f89;border-bottom:1px solid #e2e0d8">Task</th><th style="padding:6px 10px;text-align:left;font-size:11px;font-weight:600;color:#7a8f89;border-bottom:1px solid #e2e0d8">Owner</th><th style="padding:6px 10px;text-align:left;font-size:11px;font-weight:600;color:#7a8f89;border-bottom:1px solid #e2e0d8">Due</th><th style="padding:6px 10px;text-align:center;font-size:11px;font-weight:600;color:#7a8f89;border-bottom:1px solid #e2e0d8">Status</th></tr></thead><tbody>${tasks}</tbody></table></div>`;
+  }).join('');
+  const done=allTasks().filter(t=>t.status==='done').length,total=allTasks().length;
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Visibuild — ${p.name||'Onboarding'}</title><style>@media print{@page{margin:18mm 15mm}body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#1a2420;margin:0;padding:32px 40px;max-width:900px;margin:0 auto}</style></head><body>
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;padding-bottom:20px;border-bottom:2px solid #1d9e75">
+    <div><div style="font-size:11px;font-weight:600;letter-spacing:.08em;color:#7a8f89;text-transform:uppercase;margin-bottom:6px">Visibuild Onboarding</div><h1 style="font-size:22px;font-weight:700;margin:0 0 4px">${p.name||'Untitled project'}</h1>${p.client?`<div style="font-size:14px;color:#42514c">${p.client}</div>`:''}</div>
+    <div style="text-align:right"><span style="display:inline-block;padding:6px 16px;border-radius:24px;font-weight:700;font-size:15px;background:${hbg};color:${hc}">${h}% ${hLabel(h)}</span><div style="font-size:11px;color:#7a8f89;margin-top:6px">${done}/${total} tasks complete</div><div style="font-size:11px;color:#7a8f89">Exported ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}</div></div>
+  </div>
+  ${phases}
+  </body></html>`;
+  const w=window.open('','_blank');
+  w.document.write(html);
+  w.document.close();
+  w.focus();
+  setTimeout(()=>w.print(),500);
+};
 window.exportData=()=>{
   persist();
   const payload={app:'visibuild-onboarding-portal',version:1,exported:new Date().toISOString(),store};
