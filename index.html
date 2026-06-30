@@ -781,6 +781,7 @@ function setup(){
       ${f('contact','Visibuild contact','Name')}
       ${f('email','Contact email','name@visibuild.com','email')}
     </div>
+    <div class="field" style="margin-top:4px"><label>Internal notes</label><textarea rows="4" style="width:100%;resize:vertical" placeholder="Private notes — not visible to the client" oninput="setProj('notes',this.value)">${esc(p.notes||'')}</textarea></div>
     <button class="btn btn-vb" onclick="exportTxt()">${svg(I.dl)}Export summary</button>
   </div>
   <div class="setup-block">
