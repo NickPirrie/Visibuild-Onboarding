@@ -1,0 +1,90 @@
+/* ============================================================
+   Visibuild — Foundations (ported from Claude Design handoff)
+   ============================================================ */
+
+@font-face {
+  font-family: "Funnel Sans";
+  src: url("/fonts/FunnelSans-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Funnel Sans";
+  src: url("/fonts/FunnelSans-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Funnel Sans";
+  src: url("/fonts/FunnelSans-Medium.ttf") format("truetype");
+  font-weight: 600 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Karelia";
+  src: url("/fonts/Karelia-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --vb-green: #29FF7A;
+  --vb-green-deep: #1FCC60;
+  --vb-charcoal: #1F2933;
+  --vb-charcoal-90: #353E47;
+  --vb-charcoal-80: #4B545C;
+  --vb-charcoal-20: #D2D4D6;
+  --vb-charcoal-10: #E9EAEB;
+  --vb-white: #FFFFFF;
+
+  --vb-mid-green: #006E57;
+  --vb-blue: #4272FF;
+  --vb-orange: #FF7A00;
+  --vb-purple: #BF70FF;
+
+  --vb-ink: var(--vb-charcoal);
+  --vb-ink-2: var(--vb-charcoal-90);
+  --vb-ink-3: var(--vb-charcoal-80);
+  --vb-ink-4: #7E8690;
+
+  --vb-paper: var(--vb-white);
+  --vb-paper-2: #F5F6F7;
+  --vb-line: var(--vb-charcoal-10);
+  --vb-line-strong: var(--vb-charcoal-20);
+  --vb-surface: var(--vb-white);
+
+  --vb-pass: var(--vb-mid-green);
+  --vb-pass-soft: #CFE5DD;
+  --vb-defect: #C8331E;
+  --vb-defect-soft: #F7D9D2;
+  --vb-hold: var(--vb-orange);
+  --vb-hold-soft: #FFE2C2;
+  --vb-info: var(--vb-blue);
+  --vb-info-soft: #D7E1FF;
+
+  --vb-night: var(--vb-charcoal);
+  --vb-night-line: #2A323C;
+  --vb-charcoal-20-on-dark: var(--vb-charcoal-20);
+
+  --vb-font-sans: "Funnel Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  --vb-font-serif: "Karelia", "Iowan Old Style", Georgia, "Times New Roman", serif;
+
+  --vb-radius: 8px;
+
+  --vb-shadow-sm: 2px 2px 8px rgba(31, 41, 51, 0.06);
+  --vb-shadow-md: 4px 4px 12px rgba(31, 41, 51, 0.08), 8px 8px 24px -4px rgba(31, 41, 51, 0.10);
+  --vb-shadow-lg: 6px 6px 16px rgba(31, 41, 51, 0.08), 20px 20px 48px -8px rgba(31, 41, 51, 0.18);
+}
+
+.vb-eyebrow {
+  font-family: var(--vb-font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--vb-ink);
+}
