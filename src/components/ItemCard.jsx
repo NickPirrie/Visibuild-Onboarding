@@ -1,5 +1,5 @@
 import { STATUS, PHASE_OPTIONS } from '../lib/constants.js';
-import { risk, initials, avatarColor } from '../lib/utils.js';
+import { risk, initials, ownerColor } from '../lib/utils.js';
 import StatusPicker from './StatusPicker.jsx';
 import EvidenceDrop from './EvidenceDrop.jsx';
 
@@ -46,7 +46,7 @@ export default function ItemCard({ item, today, sid, tid, cat, menuOpen, store }
             <div className="vb-field-col">
               <span className="vb-field-label">Owner</span>
               <div className="vb-owner-row">
-                <div className="vb-owner-avatar" style={{ background: avatarColor(item.role || 'Trade partner') }}>{initials(item.owner) || '–'}</div>
+                <div className="vb-owner-avatar" style={{ background: ownerColor(item.owner) }}>{initials(item.owner) || '–'}</div>
                 <input
                   className="vb-owner-input"
                   placeholder="Assign owner"

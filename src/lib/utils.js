@@ -35,6 +35,18 @@ export function avatarColor(role) {
   return role === 'Visibuild CS' ? 'var(--vb-mid-green)' : role === 'Client' ? 'var(--vb-blue)' : 'var(--vb-purple)';
 }
 
+const OWNER_PALETTE = [
+  '#2E7D6B', '#2947C4', '#7B3FB0', '#C07000', '#B52D2D',
+  '#1B6FA8', '#4A7C3F', '#8B4513', '#5C5EA8', '#A0522D',
+];
+
+export function ownerColor(name) {
+  if (!name) return '#9AA1A9';
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) & 0xFFFFFF;
+  return OWNER_PALETTE[Math.abs(h) % OWNER_PALETTE.length];
+}
+
 export function risk(task, today) {
   if (task.status === 'done') return { key: 'done', label: 'Complete', color: 'var(--vb-pass)' };
   const d = diffDays(today, task.due);

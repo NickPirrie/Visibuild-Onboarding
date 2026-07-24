@@ -1,5 +1,5 @@
 import { STATUS, PHASE_OPTIONS } from '../lib/constants.js';
-import { risk, initials, avatarColor } from '../lib/utils.js';
+import { risk, initials, ownerColor } from '../lib/utils.js';
 import StatusPicker from './StatusPicker.jsx';
 import EvidenceDrop from './EvidenceDrop.jsx';
 import NotesList from './NotesList.jsx';
@@ -62,7 +62,7 @@ export default function TaskCard({ task, today, menuOpen, canDrag, store }) {
             <div className="vb-field-col">
               <span className="vb-field-label">Owner · {task.role}</span>
               <div className="vb-owner-row">
-                <div className="vb-owner-avatar" style={{ background: avatarColor(task.role) }}>{initials(task.owner) || '–'}</div>
+                <div className="vb-owner-avatar" style={{ background: ownerColor(task.owner) }}>{initials(task.owner) || '–'}</div>
                 <input className="vb-owner-input" value={task.owner} onChange={(e) => store.editTask(task.id, 'owner', e.target.value)} list="vb-owners-list" />
               </div>
             </div>
