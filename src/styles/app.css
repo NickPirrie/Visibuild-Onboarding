@@ -208,7 +208,7 @@ button { -webkit-appearance: none; }
 
 .vb-task-card { background: var(--vb-surface); border-radius: 8px; box-shadow: var(--vb-shadow-sm); padding: 15px 16px; }
 .vb-task-card-row { display: flex; align-items: flex-start; gap: 12px; }
-.vb-task-grip { flex: none; width: 16px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: grab; color: var(--vb-ink-4); }
+.vb-task-grip { flex: none; width: 16px; display: flex; align-items: flex-start; justify-content: center; padding-top: 9px; cursor: grab; color: var(--vb-ink-4); }
 .vb-task-title-input { width: 100%; border: none; background: transparent; font: 500 15.5px var(--vb-font-sans); color: var(--vb-ink); padding: 2px 5px; border-radius: 5px; }
 .vb-task-title-input:focus { outline: none; background: var(--vb-paper-2); box-shadow: inset 0 0 0 1.5px var(--vb-blue); }
 .vb-task-controls { display: grid; grid-template-columns: repeat(4,1fr) 1.5fr; gap: 16px; margin-top: 13px; padding-left: 5px; align-items: end; }
