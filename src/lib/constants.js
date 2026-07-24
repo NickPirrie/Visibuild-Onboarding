@@ -1,7 +1,7 @@
 export const STATUS = {
   not_started: { label: 'Not started', bar: '#C6CAD0', bg: 'var(--vb-charcoal-10)', fg: 'var(--vb-ink-2)', dot: '#9AA1A9' },
   in_progress: { label: 'In progress', bar: 'var(--vb-blue)', bg: '#E3EAFF', fg: '#2947C4', dot: 'var(--vb-blue)' },
-  blocked: { label: 'Blocked', bar: 'var(--vb-defect)', bg: 'var(--vb-defect-soft)', fg: '#9A2617', dot: 'var(--vb-defect)' },
+  blocked: { label: 'Waiting on issue of information', bar: 'var(--vb-defect)', bg: 'var(--vb-defect-soft)', fg: '#9A2617', dot: 'var(--vb-defect)' },
   done: { label: 'Done', bar: 'var(--vb-pass)', bg: 'var(--vb-pass-soft)', fg: '#004C3D', dot: 'var(--vb-pass)' },
 };
 
