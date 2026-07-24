@@ -52,6 +52,7 @@ export default function ItemCard({ item, today, sid, tid, cat, menuOpen, store }
                   placeholder="Assign owner"
                   value={item.owner}
                   onChange={(e) => store.editItem(sid, tid, cat, item.id, 'owner', e.target.value)}
+                  list="vb-owners-list"
                 />
               </div>
             </div>

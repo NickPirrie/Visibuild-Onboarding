@@ -63,7 +63,7 @@ export default function TaskCard({ task, today, menuOpen, canDrag, store }) {
               <span className="vb-field-label">Owner · {task.role}</span>
               <div className="vb-owner-row">
                 <div className="vb-owner-avatar" style={{ background: avatarColor(task.role) }}>{initials(task.owner) || '–'}</div>
-                <input className="vb-owner-input" value={task.owner} onChange={(e) => store.editTask(task.id, 'owner', e.target.value)} />
+                <input className="vb-owner-input" value={task.owner} onChange={(e) => store.editTask(task.id, 'owner', e.target.value)} list="vb-owners-list" />
               </div>
             </div>
           </div>
@@ -82,6 +82,9 @@ export default function TaskCard({ task, today, menuOpen, canDrag, store }) {
         </div>
         <button type="button" className="vb-task-delete" onClick={() => store.delTask(task.id)}>×</button>
       </div>
+      <datalist id="vb-owners-list">
+        {(store.teamMembers || []).map((m) => <option key={m} value={m} />)}
+      </datalist>
     </div>
   );
 }

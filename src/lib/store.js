@@ -116,6 +116,15 @@ export function useStore(userName) {
 
   const active = state.projects.find((p) => p.id === state.activeId) || state.projects[0];
 
+  const teamMembers = [...new Set([
+    ...(active?.csOwner ? [active.csOwner] : []),
+    ...(active?.workstreams?.flatMap((w) => (w.tasks || []).map((t) => t.owner)) || []),
+    ...(active?.subcontractors?.flatMap((s) => (s.trades || []).flatMap((t) => [
+      ...(t.itps || []).map((i) => i.owner),
+      ...(t.training || []).map((i) => i.owner),
+    ])) || []),
+  ].filter(Boolean))];
+
   // ---------------- project CRUD ----------------
   const pickProject = useCallback((id) => {
     setState((s) => ({ ...s, activeId: id, pickerOpen: false, section: 'summary', statusMenuFor: null }));
@@ -399,7 +408,7 @@ export function useStore(userName) {
   const exportPdf = useCallback(() => window.print(), []);
 
   return {
-    state, active, dragIdRef, fileInputRef,
+    state, active, teamMembers, dragIdRef, fileInputRef,
     go, toast,
     pickProject, addProject, delProject, editProject,
     editWs, delWs, addWs, reorderWs, bulkSetOwner,
