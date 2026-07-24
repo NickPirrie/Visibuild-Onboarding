@@ -1,0 +1,6 @@
+node_modules/
+dist/
+.netlify/
+design-handoff/
+.DS_Store
+*.local
