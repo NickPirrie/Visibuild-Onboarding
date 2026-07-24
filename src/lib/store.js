@@ -225,6 +225,26 @@ export function useStore(userName) {
     dragIdRef.current = null;
   }, [mutate]);
 
+  const reorderWs = useCallback((fromId, toId) => {
+    if (!fromId || fromId === toId) return;
+    mutate((p) => {
+      const arr = p.workstreams;
+      const fi = arr.findIndex((w) => w.id === fromId);
+      const ti = arr.findIndex((w) => w.id === toId);
+      if (fi > -1 && ti > -1) { const [m] = arr.splice(fi, 1); arr.splice(ti, 0, m); }
+    });
+  }, [mutate]);
+
+  const reorderSub = useCallback((fromId, toId) => {
+    if (!fromId || fromId === toId) return;
+    mutate((p) => {
+      const arr = p.subcontractors || [];
+      const fi = arr.findIndex((s) => s.id === fromId);
+      const ti = arr.findIndex((s) => s.id === toId);
+      if (fi > -1 && ti > -1) { const [m] = arr.splice(fi, 1); arr.splice(ti, 0, m); }
+    });
+  }, [mutate]);
+
   // ---------------- subcontractors ----------------
   const addSub = useCallback(() => {
     mutate((p) => { p.subcontractors = p.subcontractors || []; p.subcontractors.push({ id: uid('s'), name: 'New subcontractor', trades: [] }); });
@@ -371,8 +391,8 @@ export function useStore(userName) {
     state, active, dragIdRef, fileInputRef,
     go, toast,
     pickProject, addProject, delProject, editProject,
-    editWs, delWs, addWs,
-    setStatus, editTask, addNote, editNote, delNote, addTask, delTask, reorderTask,
+    editWs, delWs, addWs, reorderWs,
+    setStatus, editTask, addNote, editNote, delNote, addTask, delTask, reorderTask, reorderSub,
     addSub, delSub, editSub, addTrade, delTrade, editTrade, addItem, delItem, editItem, setItemStatus,
     addCorr, editCorr, delCorr,
     addComment, editComment, delComment,

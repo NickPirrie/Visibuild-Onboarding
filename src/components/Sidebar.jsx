@@ -1,3 +1,4 @@
+import { useRef, useState } from 'react';
 import { allTasks, ragColor, ragColorItems, todayIso } from '../lib/utils.js';
 
 function NavRow({ active, dot, label, badge, onClick }) {
@@ -10,7 +11,31 @@ function NavRow({ active, dot, label, badge, onClick }) {
   );
 }
 
+function DragRow({ id, active, dot, label, badge, onClick, dragRef, onReorder }) {
+  const [over, setOver] = useState(false);
+  return (
+    <div
+      className={'vb-drag-row' + (over ? ' vb-drag-over' : '')}
+      draggable
+      onDragStart={(e) => { dragRef.current = id; e.dataTransfer.effectAllowed = 'move'; }}
+      onDragOver={(e) => { e.preventDefault(); setOver(true); }}
+      onDragLeave={() => setOver(false)}
+      onDrop={() => { onReorder(dragRef.current, id); dragRef.current = null; setOver(false); }}
+      onDragEnd={() => { dragRef.current = null; setOver(false); }}
+    >
+      <span className="vb-drag-grip">⠿</span>
+      <button type="button" className={'vb-nav-row' + (active ? ' active' : '')} onClick={onClick}>
+        {dot && <span className="dot" style={{ background: dot }} />}
+        <span className="label">{label}</span>
+        {badge != null && <span className={'vb-nav-badge' + (active ? ' active' : '')}>{badge}</span>}
+      </button>
+    </div>
+  );
+}
+
 export default function Sidebar({ state, active, store, onOpenPicker }) {
+  const wsDragRef = useRef(null);
+  const subDragRef = useRef(null);
   const today = todayIso();
   const sec = state.section;
   const all = allTasks(active);
@@ -45,13 +70,16 @@ export default function Sidebar({ state, active, store, onOpenPicker }) {
             {active.workstreams.map((w) => {
               const outstanding = w.tasks.filter((t) => t.status !== 'done').length;
               return (
-                <NavRow
+                <DragRow
                   key={w.id}
+                  id={w.id}
                   active={sec === 'ws:' + w.id}
                   dot={ragColor(w.tasks, today)}
                   label={w.name}
                   badge={outstanding || null}
                   onClick={() => store.go('ws:' + w.id)}
+                  dragRef={wsDragRef}
+                  onReorder={store.reorderWs}
                 />
               );
             })}
@@ -75,13 +103,16 @@ export default function Sidebar({ state, active, store, onOpenPicker }) {
             s.trades.forEach((t) => { (t.itps || []).forEach((i) => items.push(i)); (t.training || []).forEach((i) => items.push(i)); });
             const outstanding = items.filter((i) => i.status !== 'done').length;
             return (
-              <NavRow
+              <DragRow
                 key={s.id}
+                id={s.id}
                 active={false}
                 dot={ragColorItems(items)}
                 label={s.name}
                 badge={outstanding || null}
                 onClick={() => store.go('subs')}
+                dragRef={subDragRef}
+                onReorder={store.reorderSub}
               />
             );
           }) : <div className="vb-nav-empty">No subcontractors yet</div>
