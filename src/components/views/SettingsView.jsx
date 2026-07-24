@@ -54,6 +54,14 @@ export default function SettingsView({ active, store }) {
               {field('Region', active.region, (e) => store.editProject('region', e.target.value))}
             </div>
             {field('Onboarding lead', active.csOwner, (e) => store.editProject('csOwner', e.target.value))}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginTop: -4 }}>
+              <span style={{ fontSize: 12, color: 'var(--vb-ink-4)', lineHeight: 1.4 }}>Default owner for all new tasks</span>
+              <button
+                type="button"
+                className="vb-btn-sm"
+                onClick={() => store.bulkSetOwner(active.csOwner)}
+              >Apply to all existing tasks</button>
+            </div>
           </div>
         </div>
       </div>

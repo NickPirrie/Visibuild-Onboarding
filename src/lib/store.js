@@ -225,6 +225,17 @@ export function useStore(userName) {
     dragIdRef.current = null;
   }, [mutate]);
 
+  const bulkSetOwner = useCallback((owner) => {
+    mutate((p) => {
+      p.workstreams.forEach((w) => w.tasks.forEach((t) => { t.owner = owner; }));
+      (p.subcontractors || []).forEach((s) => s.trades.forEach((t) => {
+        (t.itps || []).forEach((i) => { i.owner = owner; });
+        (t.training || []).forEach((i) => { i.owner = owner; });
+      }));
+    });
+    toast('Owner updated on all tasks');
+  }, [mutate, toast]);
+
   const reorderWs = useCallback((fromId, toId) => {
     if (!fromId || fromId === toId) return;
     mutate((p) => {
@@ -391,7 +402,7 @@ export function useStore(userName) {
     state, active, dragIdRef, fileInputRef,
     go, toast,
     pickProject, addProject, delProject, editProject,
-    editWs, delWs, addWs, reorderWs,
+    editWs, delWs, addWs, reorderWs, bulkSetOwner,
     setStatus, editTask, addNote, editNote, delNote, addTask, delTask, reorderTask, reorderSub,
     addSub, delSub, editSub, addTrade, delTrade, editTrade, addItem, delItem, editItem, setItemStatus,
     addCorr, editCorr, delCorr,

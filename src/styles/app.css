@@ -294,6 +294,8 @@ button { -webkit-appearance: none; }
 .vb-field-block { display: flex; flex-direction: column; gap: 6px; }
 .vb-field-block .flabel { font-size: 11px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--vb-ink-3); }
 .vb-settings-input { border: 1px solid var(--vb-line-strong); background: var(--vb-paper-2); border-radius: 7px; padding: 10px 12px; font-size: 14px; color: var(--vb-ink); }
+.vb-btn-sm { padding: 6px 12px; border-radius: 7px; border: 1px solid var(--vb-line-strong); background: var(--vb-surface); font-size: 12.5px; font-weight: 500; color: var(--vb-ink-2); cursor: pointer; white-space: nowrap; flex: none; }
+.vb-btn-sm:hover { background: var(--vb-paper-2); border-color: var(--vb-blue); color: var(--vb-blue); }
 .vb-settings-input:focus { outline: none; border-color: var(--vb-blue); background: var(--vb-surface); }
 .vb-phase-window-row { display: flex; justify-content: space-between; align-items: baseline; padding: 9px 0; border-bottom: 1px solid var(--vb-line); }
 .vb-phase-window-row:last-child { border-bottom: none; }
