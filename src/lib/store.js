@@ -185,11 +185,13 @@ export function useStore(userName) {
   }, [mutate]);
 
   const addNote = useCallback((id) => {
+    const author = userName || active?.csOwner || 'Team';
+    const createdAt = new Date().toISOString();
     mutate((p) => {
       const t = findTask(p, id);
-      if (t) { t.notes = t.notes || []; t.notes.push({ id: uid('n'), text: '' }); }
+      if (t) { t.notes = t.notes || []; t.notes.push({ id: uid('n'), text: '', author, createdAt }); }
     });
-  }, [mutate]);
+  }, [mutate, userName, active]);
 
   const editNote = useCallback((id, nid, v) => {
     mutate((p) => {
