@@ -1,0 +1,455 @@
+/* ============================================================
+   Visibuild — Cover Page workshop styles
+   Built on top of ../colors_and_type.css.
+   Brand-only typefaces: Funnel Sans (Regular + Medium), Karelia.
+   No monospace. No edition/issued/prepared-by chrome.
+
+   Page geometry follows the documents subsystem: A4 portrait
+   794×1123 @ 96dpi.
+   ============================================================ */
+
+@import url("../colors_and_type.css");
+
+:root {
+  --vbd-page-w: 794px;
+  --vbd-page-h: 1123px;
+}
+
+/* ---------- Shared cover frame ---------- */
+
+.cover {
+  position: relative;
+  width: var(--vbd-page-w);
+  height: var(--vbd-page-h);
+  font-family: var(--vb-font-sans);
+  color: var(--vb-ink);
+  background: var(--vb-white);
+  overflow: hidden;
+}
+.cover--dark { background: var(--vb-charcoal); color: var(--vb-white); }
+
+.cover__inset {
+  position: absolute;
+  inset: 56px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- Meta block: tracked uppercase label + sentence-case value
+              (the reference's PLACEHOLDER / Placeholder information lockup)
+   ---------- */
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.meta__label {
+  font-family: var(--vb-font-sans);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--vb-ink);
+  margin: 0;
+  line-height: 1;
+}
+.cover--dark .meta__label { color: var(--vb-white); }
+.meta__value {
+  font-family: var(--vb-font-sans);
+  font-size: 10.5px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--vb-ink-2);
+  margin: 0;
+  max-width: 22ch;
+}
+.cover--dark .meta__value { color: var(--vb-charcoal-20); }
+
+/* ---------- Stat: heading-font numeral + Regular descriptor ---------- */
+
+.stat { display: flex; flex-direction: column; gap: 4px; }
+.stat__num {
+  font-family: var(--vb-font-sans);
+  font-size: 36px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.025em;
+  color: var(--vb-ink);
+  font-variant-numeric: tabular-nums;
+  margin: 0;
+}
+.cover--dark .stat__num { color: var(--vb-green); }
+.stat__label {
+  font-family: var(--vb-font-sans);
+  font-weight: 400;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--vb-ink-2);
+  max-width: 22ch;
+  margin: 0;
+}
+.cover--dark .stat__label { color: var(--vb-charcoal-20); }
+
+/* ---------- Title / hook ---------- */
+
+.cover-title {
+  font-family: var(--vb-font-serif);   /* Karelia */
+  font-weight: 400;
+  font-size: 36px;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  color: var(--vb-ink);
+  margin: 0;
+  text-wrap: balance;
+}
+.cover-title--hook { font-size: 36px; line-height: 1.15; }
+.cover--dark .cover-title { color: var(--vb-white); }
+
+.cover-hook {
+  font-family: var(--vb-font-sans);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.4;
+  letter-spacing: -0.005em;
+  color: var(--vb-ink-2);
+  margin: 0;
+  text-wrap: pretty;
+}
+.cover--dark .cover-hook { color: var(--vb-charcoal-20); }
+
+.cover-topline {
+  font-family: var(--vb-font-sans);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: -0.005em;
+  color: var(--vb-ink);
+  margin: 0;
+}
+.cover--dark .cover-topline { color: var(--vb-white); }
+
+/* ============================================================
+   01 · Editorial DARK — modular grid
+   Linework from the original reference: vertical hairline carving
+   off the right sidebar, plus two horizontal hairlines (under the
+   header band, above the footer). Brand mark anchors top-right;
+   wordmark + icon lockup anchors bottom-left.
+   ============================================================ */
+.cover--01 .grid-lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.cover--01 .grid-lines::before {
+  /* vertical hairline carving off the right sidebar column */
+  content: "";
+  position: absolute;
+  top: 56px; bottom: 56px; right: 196px; width: 1px;
+  background: rgba(255,255,255,0.16);
+}
+.cover--01 .grid-lines > span {
+  position: absolute;
+  left: 56px; right: 56px; height: 1px;
+  background: rgba(255,255,255,0.16);
+}
+.cover--01 .grid-lines > span:nth-child(1) { top: 168px; }    /* under header */
+.cover--01 .grid-lines > span:nth-child(2) { bottom: 168px; } /* above footer */
+
+.cover--01 .header-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 96px;
+  gap: 36px;
+  align-items: start;
+  padding-bottom: 28px;
+}
+.cover--01 .header-row .cover-mark { justify-self: end; height: 72px; width: auto; }
+
+.cover--01 .title-block {
+  margin-top: 56px;
+  margin-bottom: auto;
+  max-width: 560px;
+}
+.cover--01 .cover-title { font-size: 56px; line-height: 1.04; max-width: 12ch; }
+
+.cover--01 .wordmark-bar {
+  /* sits directly above the bottom hairline */
+  padding-bottom: 18px;
+}
+.cover--01 .wordmark-bar img {
+  display: block;
+  height: 44px;
+  width: auto;
+}
+
+.cover--01 .footer-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 36px;
+  align-items: end;
+  padding-top: 28px;
+}
+
+/* ============================================================
+   02 · LIGHT — wordmark + heading on grey panel + stat strip
+   Matches ref #2 cadence: meta header, centered wordmark at natural
+   proportion (NOT stretched), grey panel below containing heading
+   and a 3-stat foot row.
+   ============================================================ */
+.cover--02 .header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+.cover--02 .header-text {
+  font-family: var(--vb-font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--vb-ink);
+  margin: 0;
+}
+.cover--02 .wordmark-zone {
+  flex: 0 0 auto;
+  margin: 32px 0 28px;
+  display: flex;
+  justify-content: flex-start;
+}
+.cover--02 .wordmark-zone img {
+  display: block;
+  height: 88px;
+  width: auto;
+  max-width: 60%;
+}
+.cover--02 .panel {
+  position: relative;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  padding: 36px 32px 32px;
+  gap: 24px;
+  border-radius: var(--vb-radius-sm);
+  overflow: hidden;
+  background-image:
+    linear-gradient(to bottom, rgba(31,41,51,0.55) 0%, rgba(31,41,51,0.75) 100%),
+    url("./assets/cover-hero.jpg");
+  background-size: cover, cover;
+  background-position: center, center;
+  background-color: var(--vb-charcoal-10);
+  color: var(--vb-white);
+}
+.cover--02 .panel .cover-title,
+.cover--02 .panel .cover-hook,
+.cover--02 .panel .stat__num,
+.cover--02 .panel .stat__label { color: var(--vb-white); }
+.cover--02 .panel .cover-hook { color: rgba(255,255,255,0.85); max-width: 46ch; }
+.cover--02 .panel .stat__label { color: rgba(255,255,255,0.78); }
+.cover--02 .panel .stat__num {
+  /* heading typeface for stats — electric green */
+  font-family: var(--vb-font-serif);
+  font-weight: 400;
+  font-size: 36px;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  color: var(--vb-green) !important;
+}
+.cover--02 .panel__copy { display: flex; flex-direction: column; gap: 14px; }
+.cover--02 .panel .cover-title {
+  max-width: 28ch;
+  margin: 0;
+}
+.cover--02 .stat-strip {
+  margin-top: auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+.cover--02 .stat-strip .stat__num { font-size: 32px; }
+.cover--02 .stat-strip .stat__label { font-size: 10.5px; max-width: 18ch; }
+
+/* ============================================================
+   03 · LIGHT — image-led, heading over white, large image hero
+   Hook top-left, heading mid in heading font, image filling the
+   majority of the page, Funnel Sans Medium ALL-CAPS tag bottom-right
+   of the image. Bottom placeholders pinned to page bottom in a
+   white strip beneath the image (no overlap).
+   ============================================================ */
+.cover--03 .cover-topline { margin: 0; }
+.cover--03 .cover-title {
+  margin-top: 48px;
+  max-width: 540px;
+}
+.cover--03 .image-panel {
+  position: relative;
+  margin-top: 28px;
+  flex: 1 1 auto;
+  min-height: 0;
+  background-image: url("./assets/cover-hero.jpg");
+  background-size: cover;
+  background-position: center;
+  background-color: var(--vb-charcoal-10);
+  border-radius: var(--vb-radius-sm);
+  overflow: hidden;
+}
+.cover--03 .image-panel::after {
+  /* darken bottom edge so the wordmark/tag text stays readable */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(31,41,51,0.0) 55%, rgba(31,41,51,0.65) 100%);
+  pointer-events: none;
+}
+.cover--03 .image-wordmark {
+  position: absolute;
+  left: 28px;
+  bottom: 24px;
+  height: 40px;
+  width: auto;
+  z-index: 2;
+}
+.cover--03 .image-tag {
+  position: absolute;
+  right: 24px;
+  bottom: 22px;
+  font-family: var(--vb-font-sans);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--vb-white);
+  margin: 0;
+  z-index: 2;
+}
+.cover--03 .foot-row {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 24px;
+  align-items: end;
+}
+
+/* ============================================================
+   05 · LIGHT — matches uploaded ref exactly
+   Two-column grid (wide left + 200px right sidebar) divided by a
+   vertical hairline. Horizontal hairline under the header band
+   (left only). Heading in left header. Icon top-right of sidebar.
+   Huge charcoal sideways visibuild runs up the left column.
+   PLACEHOLDER block bottom-right.
+   ============================================================ */
+.cover--05 {
+  /* override the inherited dark surface from earlier iterations */
+}
+.cover--05 .grid-lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.cover--05 .grid-lines::before {
+  /* vertical hairline at the sidebar gutter */
+  content: "";
+  position: absolute;
+  top: 56px; bottom: 56px; right: 200px; width: 1px;
+  background: var(--vb-line);
+}
+.cover--05 .grid-lines > span {
+  /* horizontal hairline under the header band (LEFT column only,
+     stops at the vertical) */
+  position: absolute;
+  left: 56px; right: 256px; top: 220px; height: 1px;
+  background: var(--vb-line);
+}
+.cover--05 .cover__inset {
+  inset: 56px;
+  display: grid;
+  grid-template-columns: 1fr 144px;
+  column-gap: 56px;
+}
+.cover--05 .left-col {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.cover--05 .cover-title--hook {
+  font-family: var(--vb-font-serif);
+  font-size: 36px;
+  line-height: 1.2;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  max-width: 22ch;
+  margin: 0 0 80px;
+}
+.cover--05 .left-col .sideways {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+.cover--05 .left-col .sideways img {
+  position: absolute;
+  bottom: -10px;
+  left: -32px;
+  transform-origin: bottom left;
+  transform: rotate(-90deg) translateY(140%);
+  height: 140px;       /* stroke weight of the rotated wordmark */
+  width: auto;
+}
+.cover--05 .right-col {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.cover--05 .right-col .cover-mark {
+  display: block;
+  height: 88px;
+  width: auto;
+  margin: 0 0 0 auto;
+}
+.cover--05 .sidebar-meta {
+  margin-top: auto;
+}
+.cover--05 .sidebar-meta .meta__label { font-size: 11px; }
+.cover--05 .sidebar-meta .meta__value { max-width: 18ch; }
+
+/* ============================================================
+   06 · LIGHT — photograph fills the central panel
+   Wordmark top-left, single-line heading top-right, hero photo
+   filling the body shape, 3 placeholder columns at the foot.
+   ============================================================ */
+.cover--06 .header-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 40px;
+  align-items: center;
+  padding-bottom: 22px;
+  border-bottom: 0.5px solid var(--vb-line-strong);
+}
+.cover--06 .header-row .cover-title {
+  max-width: none;
+  white-space: nowrap;
+  justify-self: end;
+}
+.cover--06 .header-row .cover-wordmark {
+  display: block;
+  height: 44px;
+  width: auto;
+}
+.cover--06 .image-stage {
+  position: relative;
+  margin-top: 24px;
+  flex: 1 1 auto;
+  min-height: 0;
+  background-image: url("./assets/cover-hero.jpg");
+  background-size: cover;
+  background-position: center;
+  background-color: var(--vb-charcoal-10);
+  border-radius: var(--vb-radius-sm);
+  overflow: hidden;
+}
+.cover--06 .footer-row {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}

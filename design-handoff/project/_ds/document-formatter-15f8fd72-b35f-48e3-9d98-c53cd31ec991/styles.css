@@ -1,0 +1,11 @@
+/* ============================================================
+   Visibuild — design system entry point.
+   Link this single file to pull in the whole system:
+     • Foundations  — colors, type, spacing, radii, shadows, motion
+     • Documents    — A4 page chrome + structural elements
+     • Covers       — cover-page layout system
+   ============================================================ */
+
+@import url("./colors_and_type.css");
+@import url("./documents/documents.css");
+@import url("./covers/covers.css");

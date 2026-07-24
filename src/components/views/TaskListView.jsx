@@ -1,6 +1,16 @@
 import { WS_DESCRIPTIONS } from '../../lib/constants.js';
-import { allTasks, diffDays, todayIso } from '../../lib/utils.js';
+import { allTasks, diffDays, todayIso, ownerColor, initials } from '../../lib/utils.js';
 import TaskCard from '../TaskCard.jsx';
+
+function groupByOwner(tasks) {
+  const map = new Map();
+  tasks.forEach((t) => {
+    const key = t.owner || '';
+    if (!map.has(key)) map.set(key, []);
+    map.get(key).push(t);
+  });
+  return [...map.entries()].map(([owner, tasks]) => ({ owner, tasks }));
+}
 
 const PHASE_DESC = {
   '30': 'Everything that must be set up and configured in the first 30 days.',
@@ -109,9 +119,20 @@ export default function TaskListView({ active, state, store }) {
         </div>
       )}
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {filtered.map((t) => (
-          <TaskCard key={t.id} task={t} today={today} menuOpen={state.statusMenuFor === t.id} canDrag={canDrag} store={store} />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+        {groupByOwner(filtered).map(({ owner, tasks: group }) => (
+          <div key={owner} style={{ marginBottom: 20 }}>
+            <div className="vb-owner-group-header">
+              <div className="vb-owner-group-avatar" style={{ background: ownerColor(owner) }}>{initials(owner) || '?'}</div>
+              <span className="vb-owner-group-label">{owner || 'Unassigned'}</span>
+              <span className="vb-owner-group-count">{group.length} task{group.length !== 1 ? 's' : ''}</span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {group.map((t) => (
+                <TaskCard key={t.id} task={t} today={today} menuOpen={state.statusMenuFor === t.id} canDrag={canDrag} store={store} />
+              ))}
+            </div>
+          </div>
         ))}
       </div>
     </>

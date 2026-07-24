@@ -1,0 +1,308 @@
+/* ============================================================
+   Visibuild — Foundations
+   Colors, type, spacing, radii, shadows.
+   Palette per official brand guidelines (June 2025):
+     • Primary: Electric Green #29FF7A on Blue Charcoal #1F2933
+     • Charcoal tints: 90 / 80 / 20 / 10
+     • Secondary: Mid Green, Blue, Orange, Purple
+   Import this file from anything that needs the brand.
+   ============================================================ */
+
+/* ---------- Fonts ----------------------------------------- */
+@font-face {
+  font-family: "Funnel Sans";
+  src: url("./fonts/FunnelSans-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Funnel Sans";
+  src: url("./fonts/FunnelSans-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+/* Funnel Sans only ships Regular + Medium in the upload — alias 600/700 to Medium
+   so heavier weights still resolve to Medium instead of falling back to a system font. */
+@font-face {
+  font-family: "Funnel Sans";
+  src: url("./fonts/FunnelSans-Medium.ttf") format("truetype");
+  font-weight: 600 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Karelia";
+  src: url("./fonts/Karelia-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ---------- Tokens ---------------------------------------- */
+:root {
+  /* ----- Primary palette (per brand guidelines §3.1) ----- */
+  --vb-green:         #29FF7A;   /* Electric Green — PMS 7479C */
+  --vb-green-deep:    #1FCC60;   /* darker step for hover/press */
+  --vb-charcoal:      #1F2933;   /* Blue Charcoal — PMS 7547C */
+  --vb-charcoal-90:   #353E47;   /* 90% tint */
+  --vb-charcoal-80:   #4B545C;   /* 80% tint */
+  --vb-charcoal-20:   #D2D4D6;   /* 20% tint */
+  --vb-charcoal-10:   #E9EAEB;   /* 10% tint */
+  --vb-white:         #FFFFFF;
+
+  /* ----- Secondary palette (per brand guidelines §3.2) ----- */
+  --vb-mid-green:     #006E57;
+  --vb-blue:          #4272FF;
+  --vb-orange:        #FF7A00;
+  --vb-purple:        #BF70FF;
+
+  /* ----- Functional aliases (drive components) ----- */
+  --vb-ink:           var(--vb-charcoal);
+  --vb-ink-2:         var(--vb-charcoal-90);
+  --vb-ink-3:         var(--vb-charcoal-80);
+  --vb-ink-4:         #7E8690;       /* placeholder / disabled */
+
+  --vb-paper:         var(--vb-white);
+  --vb-paper-2:       #F5F6F7;       /* subtle surface, slightly cooler than charcoal-10 */
+  --vb-line:          var(--vb-charcoal-10);
+  --vb-line-strong:   var(--vb-charcoal-20);
+  --vb-surface:       var(--vb-white);
+
+  /* Accent shorthand */
+  --vb-accent:        var(--vb-green);
+  --vb-accent-deep:   var(--vb-green-deep);
+  --vb-accent-soft:   #C8FFDC;
+
+  /* ----- Semantic (QA states) — derived from the brand palette ----- */
+  --vb-pass:          var(--vb-mid-green);   /* signed off / passed */
+  --vb-pass-soft:     #CFE5DD;
+  --vb-defect:        #C8331E;               /* defect / NCR — kept warm-red for legibility */
+  --vb-defect-soft:   #F7D9D2;
+  --vb-hold:          var(--vb-orange);      /* hold point / pending */
+  --vb-hold-soft:     #FFE2C2;
+  --vb-info:          var(--vb-blue);
+  --vb-info-soft:     #D7E1FF;
+
+  /* ----- Dark surface (hero, footer, focus states) ----- */
+  --vb-night:         var(--vb-charcoal);
+  --vb-night-2:       var(--vb-charcoal-90);
+  --vb-night-line:    #2A323C;
+  --vb-night-fg:      var(--vb-white);
+  --vb-night-fg-2:    var(--vb-charcoal-20);
+
+  /* ----- Type ----- */
+  --vb-font-sans: "Funnel Sans", ui-sans-serif, system-ui, -apple-system,
+                  "Segoe UI", Helvetica, Arial, sans-serif;
+  --vb-font-serif: "Karelia", "Iowan Old Style", Georgia, "Times New Roman", serif;
+  --vb-font-mono: ui-monospace, "SFMono-Regular", Menlo,
+                  Consolas, "Liberation Mono", monospace;
+
+  /* Display sizes (sans by default; serif used for editorial moments) */
+  --vb-fs-display-1: clamp(48px, 6.4vw, 88px); /* @kind font */
+  --vb-fs-display-2: clamp(40px, 5vw, 64px);   /* @kind font */
+  --vb-fs-h1: 44px;
+  --vb-fs-h2: 32px;
+  --vb-fs-h3: 24px;
+  --vb-fs-h4: 18px;
+  --vb-fs-body: 16px;
+  --vb-fs-small: 14px;
+  --vb-fs-micro: 12px;
+  --vb-fs-eyebrow: 12px;
+
+  --vb-lh-tight: 1.05;  /* @kind font */
+  --vb-lh-snug: 1.2;    /* @kind font */
+  --vb-lh-body: 1.5;    /* @kind font */
+  --vb-lh-loose: 1.65;  /* @kind font */
+
+  --vb-tracking-eyebrow: 0.12em;  /* @kind font */
+  --vb-tracking-tight: -0.01em;   /* @kind font */
+  --vb-tracking-display: -0.02em; /* @kind font */
+
+  /* ----- Spacing (4-px base) ----- */
+  --vb-space-1: 4px;
+  --vb-space-2: 8px;
+  --vb-space-3: 12px;
+  --vb-space-4: 16px;
+  --vb-space-5: 20px;
+  --vb-space-6: 24px;
+  --vb-space-8: 32px;
+  --vb-space-10: 40px;
+  --vb-space-12: 48px;
+  --vb-space-16: 64px;
+  --vb-space-20: 80px;
+  --vb-space-24: 96px;
+
+  /* ----- Radii (slightly rounded only — min 4, max 12; no pills) -----
+     8px is THE default. Any corner that can take a radius — image, card,
+     panel, button, input — uses --vb-radius (8px) unless there's a
+     deliberate reason to step down (data/chips → sm) or up (large
+     background panel → xl). Reach for the named steps only by exception. */
+  --vb-radius-sm: 4px;
+  --vb-radius-md: 6px;
+  --vb-radius-lg: 8px;
+  --vb-radius-xl: 12px;
+  --vb-radius: var(--vb-radius-lg);   /* 8px — default for anything with a corner */
+
+  /* ----- Borders ----- */
+  --vb-border: 1px solid var(--vb-line);
+  --vb-border-strong: 1px solid var(--vb-line-strong);
+  --vb-border-ink: 1.5px solid var(--vb-ink);
+
+  /* ----- Shadows (cast at 145° — soft, generous trail) ----- */
+  --vb-shadow-sm: 2px 2px 8px rgba(31, 41, 51, 0.06);
+  --vb-shadow-md: 4px 4px 12px rgba(31, 41, 51, 0.08),
+                  8px 8px 24px -4px rgba(31, 41, 51, 0.10);
+  --vb-shadow-lg: 6px 6px 16px rgba(31, 41, 51, 0.08),
+                  20px 20px 48px -8px rgba(31, 41, 51, 0.18);
+  --vb-shadow-focus: 0 0 0 3px rgba(31, 41, 51, 0.12);
+
+  /* ----- Motion ----- */
+  --vb-ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);     /* @kind other */
+  --vb-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);  /* @kind other */
+  --vb-dur-fast: 120ms;  /* @kind other */
+  --vb-dur: 200ms;       /* @kind other */
+  --vb-dur-slow: 360ms;  /* @kind other */
+}
+
+/* ---------- Semantic element styles ----------------------- */
+
+.vb-eyebrow {
+  font-family: var(--vb-font-sans);
+  font-size: var(--vb-fs-eyebrow);
+  font-weight: 500;
+  letter-spacing: var(--vb-tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--vb-ink);   /* subheadings/eyebrows: neutral charcoal only — never an accent, never pure black */
+}
+
+/* PAGE EYEBROW — the one green-square lock-up.
+   The brand's only sanctioned use of the green square: a small rounded
+   Electric Green square locked up with an uppercase section label, used
+   ONCE PER PAGE at the top to introduce the page name. The square is NOT a
+   decorative element — it appears nowhere else in the system, only here in
+   this lock-up. Every other subheading on the page drops the square and uses
+   the plain .vb-eyebrow style.
+   Framework (measured from the brand reference, scales as a unit so it holds
+   at any type size):
+     • Square  = the exact height of the label text (its cap-height), with
+                 lightly rounded corners (~14% of the square).
+     • Gap     = a deliberate, generous space ≈ 4.3× the square height before
+                 the label begins.
+     • Label   = neutral charcoal (the eyebrow rule holds: never accent-
+                 coloured, never pure black); white on dark. The only green is
+                 the square. */
+.vb-subhead {
+  display: inline-flex;
+  align-items: center;
+  gap: 3.7em;                              /* ≈ 4.3× the square — the deliberate, generous gap (scales with the type) */
+  font-family: var(--vb-font-sans);
+  font-size: var(--vb-fs-eyebrow);         /* 12px */
+  font-weight: 500;
+  letter-spacing: var(--vb-tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--vb-ink);
+}
+.vb-subhead::before {
+  content: "";
+  flex: none;
+  width: 0.85em;                           /* = the label's text height (cap-height) */
+  height: 0.85em;
+  border-radius: 0.14em;                   /* lightly rounded corners that scale with the square (~14%) */
+  background: var(--vb-green);
+}
+.vb-subhead.on-dark { color: var(--vb-night-fg); }
+
+.vb-display-1 {
+  font-family: var(--vb-font-serif);   /* Karelia — the brand display/heading face. Headings never default to Funnel Sans. */
+  font-weight: 400;
+  font-size: var(--vb-fs-display-1);
+  line-height: var(--vb-lh-tight);
+  letter-spacing: -0.015em;
+  color: var(--vb-ink);
+}
+
+.vb-display-2 {
+  font-family: var(--vb-font-serif);
+  font-weight: 400;
+  font-size: var(--vb-fs-display-2);
+  line-height: var(--vb-lh-tight);
+  letter-spacing: -0.015em;
+  color: var(--vb-ink);
+}
+
+.vb-display-serif {
+  font-family: var(--vb-font-serif);
+  font-weight: 400;
+  font-size: var(--vb-fs-display-2);
+  line-height: var(--vb-lh-snug);
+  letter-spacing: -0.005em;
+  color: var(--vb-ink);
+}
+
+.vb-h1 {
+  font-family: var(--vb-font-serif);
+  font-weight: 400;
+  font-size: var(--vb-fs-h1);
+  line-height: var(--vb-lh-snug);
+  letter-spacing: -0.01em;
+  color: var(--vb-ink);
+}
+.vb-h2 {
+  font-family: var(--vb-font-serif);
+  font-weight: 400;
+  font-size: var(--vb-fs-h2);
+  line-height: var(--vb-lh-snug);
+  letter-spacing: -0.005em;
+  color: var(--vb-ink);
+}
+.vb-h3 {
+  font-family: var(--vb-font-serif);
+  font-weight: 400;
+  font-size: var(--vb-fs-h3);
+  line-height: 1.25;
+  color: var(--vb-ink);
+}
+.vb-h4 {
+  font-family: var(--vb-font-serif);
+  font-weight: 400;
+  font-size: var(--vb-fs-h4);
+  line-height: 1.3;
+  color: var(--vb-ink);
+}
+.vb-body {
+  font-family: var(--vb-font-sans);
+  font-weight: 400;
+  font-size: var(--vb-fs-body);
+  line-height: var(--vb-lh-body);
+  color: var(--vb-ink-2);
+}
+.vb-small {
+  font-family: var(--vb-font-sans);
+  font-weight: 400;
+  font-size: var(--vb-fs-small);
+  line-height: var(--vb-lh-body);
+  color: var(--vb-ink-3);
+}
+.vb-micro {
+  font-family: var(--vb-font-sans);
+  font-weight: 500;
+  font-size: var(--vb-fs-micro);
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  color: var(--vb-ink-3);
+}
+.vb-mono {
+  font-family: var(--vb-font-mono);
+  font-size: 13px;
+  letter-spacing: 0;
+  color: var(--vb-ink-2);
+}
+.vb-pull-quote {
+  font-family: var(--vb-font-serif);
+  font-weight: 400;
+  font-size: 28px;
+  line-height: 1.3;
+  color: var(--vb-ink);
+}

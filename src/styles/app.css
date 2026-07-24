@@ -195,6 +195,10 @@ button { -webkit-appearance: none; }
 .vb-btn-danger-outline:hover { border-color: var(--vb-defect); color: var(--vb-defect); background: var(--vb-defect-soft); }
 .vb-btn-primary { padding: 10px 16px; border-radius: 8px; background: var(--vb-ink); color: #fff; border: none; font-size: 13.5px; font-weight: 500; cursor: pointer; }
 
+.vb-owner-group-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; padding: 6px 0 6px; border-bottom: 1px solid var(--vb-line); }
+.vb-owner-group-avatar { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: #fff; flex: none; }
+.vb-owner-group-label { font-size: 12.5px; font-weight: 600; color: var(--vb-ink-2); }
+.vb-owner-group-count { font-size: 11.5px; color: var(--vb-ink-4); margin-left: 2px; }
 .vb-filter-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
 .vb-filter-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .06em; color: var(--vb-ink-4); margin-right: 2px; }
 .vb-chip { padding: 6px 12px; border-radius: 7px; border: 1px solid var(--vb-line-strong); background: var(--vb-surface); color: var(--vb-ink-3); font-size: 12.5px; font-weight: 500; cursor: pointer; }

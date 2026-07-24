@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/document-formatter-15f8fd72-b35f-48e3-9d98-c53cd31ec991/colors_and_type.css">
+<script src="_ds/document-formatter-15f8fd72-b35f-48e3-9d98-c53cd31ec991/_ds_bundle.js"></script>
+<meta name="omelette-owns-print" content="true">
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;height:100%}
+  body{background:var(--vb-paper-2);font-family:var(--vb-font-sans);color:var(--vb-ink);-webkit-font-smoothing:antialiased}
+  a{color:var(--vb-blue);text-decoration:none}
+  a:hover{text-decoration:underline}
+  input,textarea,select,button{font-family:inherit}
+  input[type=date]{color:var(--vb-ink-2)}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-thumb{background:rgba(31,41,51,.2);border-radius:6px;border:2px solid transparent;background-clip:content-box}
+  ::-webkit-scrollbar-track{background:transparent}
+  @keyframes vbfade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  @keyframes vbslide{from{transform:translateX(24px);opacity:0}to{transform:none;opacity:1}}
+  .vb-print{display:none}
+  @media print{
+    .vb-app{display:none !important}
+    .vb-print{display:block !important}
+    @page{size:A4;margin:14mm}
+    body{background:#fff}
+  }
+</style>
+</helmet>
+<div class="vb-app" style="height:100vh;display:flex;flex-direction:column;overflow:hidden;background:var(--vb-paper-2)">
+
+  <header style="flex:none;height:56px;background:var(--vb-charcoal);display:flex;align-items:center;gap:14px;padding:0 16px;color:#fff;z-index:30">
+    <img src="assets/icon-green.png" alt="Visibuild" style="height:26px;width:26px;flex:none"/>
+    <button onClick="{{ onOpenPicker }}" style="display:flex;align-items:center;gap:8px;padding:6px 11px;border-radius:7px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.16);font-size:13.5px;color:#fff;cursor:pointer">
+      <span style="font-weight:500">Project</span>
+      <span style="opacity:.6;font-size:10px">▾</span>
+    </button>
+    <div style="flex:1;max-width:420px;margin:0 auto;display:flex;align-items:center;gap:9px;padding:8px 13px;border-radius:8px;background:rgba(255,255,255,.08);color:var(--vb-charcoal-20);font-size:13.5px">
+      <span style="opacity:.7">⌕</span><span style="opacity:.7">Search onboarding…</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--vb-charcoal-20);padding:5px 10px;border-radius:20px;background:rgba(255,255,255,.06)">
+      <span style="width:7px;height:7px;border-radius:50%;background:{{ saveDotColor }};display:inline-block"></span>{{ savedLabel }}
+    </div>
+    <button onClick="{{ onExport }}" style="display:flex;align-items:center;gap:7px;padding:8px 14px;border-radius:8px;background:#fff;border:none;color:var(--vb-ink);font-size:13.5px;font-weight:500;cursor:pointer">Export PDF</button>
+    <div style="width:32px;height:32px;border-radius:50%;background:var(--vb-purple);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#fff;flex:none">{{ userInitials }}</div>
+  </header>
+
+  <div style="flex:1;display:flex;min-height:0">
+
+    <aside style="width:290px;flex:none;background:var(--vb-charcoal);border-right:1px solid var(--vb-night-line);display:flex;flex-direction:column;overflow:hidden">
+      <button onClick="{{ onOpenPicker }}" style="flex:none;margin:14px 14px 8px;display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:9px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);cursor:pointer;text-align:left">
+        <div style="width:34px;height:34px;border-radius:7px;background:rgba(41,255,122,.14);display:flex;align-items:center;justify-content:center;flex:none;font-size:12px;font-weight:600;color:var(--vb-green)">{{ projectCode }}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:14px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ projectName }}</div>
+          <div style="font-size:11.5px;color:var(--vb-charcoal-20);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ projectClient }}</div>
+        </div>
+        <span style="color:var(--vb-charcoal-20);font-size:11px">▾</span>
+      </button>
+
+      <nav style="flex:1;overflow-y:auto;padding:6px 10px 20px">
+        <sc-for list="{{ topNav }}" as="n" hint-placeholder-count="3">
+          <button onClick="{{ n.onClick }}" style="{{ n.rowStyle }}">
+            <span style="flex:1;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ n.label }}</span>
+            <sc-if value="{{ n.badge }}"><span style="{{ n.badgeStyle }}">{{ n.badge }}</span></sc-if>
+          </button>
+        </sc-for>
+
+        <button onClick="{{ toggleWs }}" style="width:100%;display:flex;align-items:center;justify-content:space-between;margin:16px 0 5px;padding:4px 11px;background:transparent;border:none;cursor:pointer;font-size:10.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:#6b7683">Workstreams<span style="font-size:9px">{{ wsChevron }}</span></button>
+        <sc-if value="{{ groupWsOpen }}">
+          <sc-for list="{{ wsNav }}" as="n" hint-placeholder-count="8">
+            <button onClick="{{ n.onClick }}" style="{{ n.rowStyle }}">
+              <span style="width:8px;height:8px;border-radius:50%;flex:none;background:{{ n.dot }}"></span>
+              <span style="flex:1;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ n.label }}</span>
+              <sc-if value="{{ n.badge }}"><span style="{{ n.badgeStyle }}">{{ n.badge }}</span></sc-if>
+            </button>
+          </sc-for>
+          <button onClick="{{ onAddWs }}" style="display:flex;align-items:center;gap:8px;width:100%;padding:8px 11px;margin-top:2px;border:none;border-radius:8px;background:transparent;cursor:pointer;font-size:13px;color:#6b7683" style-hover="color:var(--vb-green)">＋ Add workstream</button>
+        </sc-if>
+
+        <div style="display:flex;align-items:center;margin:16px 0 5px">
+          <button onClick="{{ goSubs }}" style="flex:1;text-align:left;background:transparent;border:none;cursor:pointer;font-size:10.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:{{ subsHeaderColor }};padding:4px 11px">Subcontractors</button>
+          <button onClick="{{ toggleSubs }}" style="flex:none;background:transparent;border:none;cursor:pointer;color:#6b7683;font-size:9px;padding:4px 11px">{{ subsChevron }}</button>
+        </div>
+        <sc-if value="{{ groupSubsOpen }}">
+          <sc-for list="{{ subsNav }}" as="n" hint-placeholder-count="4">
+            <button onClick="{{ n.onClick }}" style="{{ n.rowStyle }}">
+              <span style="width:8px;height:8px;border-radius:50%;flex:none;background:{{ n.dot }}"></span>
+              <span style="flex:1;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ n.label }}</span>
+              <sc-if value="{{ n.badge }}"><span style="{{ n.badgeStyle }}">{{ n.badge }}</span></sc-if>
+            </button>
+          </sc-for>
+          <sc-if value="{{ noSubs }}"><div style="padding:6px 12px;font-size:12px;color:#5c6772">No subcontractors yet</div></sc-if>
+        </sc-if>
+
+        <button onClick="{{ toggleRoll }}" style="width:100%;display:flex;align-items:center;justify-content:space-between;margin:16px 0 5px;padding:4px 11px;background:transparent;border:none;cursor:pointer;font-size:10.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:#6b7683">Rollout<span style="font-size:9px">{{ rollChevron }}</span></button>
+        <sc-if value="{{ groupRollOpen }}">
+          <sc-for list="{{ rollNav }}" as="n" hint-placeholder-count="3">
+            <button onClick="{{ n.onClick }}" style="{{ n.rowStyle }}">
+              <span style="flex:1;text-align:left">{{ n.label }}</span>
+              <span style="{{ n.badgeStyle }}">{{ n.badge }}</span>
+            </button>
+          </sc-for>
+        </sc-if>
+
+        <div style="height:1px;background:var(--vb-night-line);margin:16px 10px"></div>
+        <button onClick="{{ commentsNav.onClick }}" style="{{ commentsNav.rowStyle }}">
+          <span style="flex:1;text-align:left">{{ commentsNav.label }}</span>
+          <sc-if value="{{ commentsNav.badge }}"><span style="{{ commentsNav.badgeStyle }}">{{ commentsNav.badge }}</span></sc-if>
+        </button>
+        <button onClick="{{ settingsNav.onClick }}" style="{{ settingsNav.rowStyle }}">
+          <span style="flex:1;text-align:left">{{ settingsNav.label }}</span>
+        </button>
+      </nav>
+
+      <div style="flex:none;padding:12px 18px;border-top:1px solid var(--vb-night-line);font-size:11px;color:#6b7683;line-height:1.5">
+        <div style="display:flex;align-items:center;gap:7px;color:var(--vb-charcoal-20)"><span style="width:7px;height:7px;border-radius:50%;background:var(--vb-green)"></span>Auto-saving to this device</div>
+        <div style="margin-top:2px">Onboarding lead · {{ csOwner }}</div>
+      </div>
+    </aside>
+
+    <main style="flex:1;overflow-y:auto;min-width:0">
+      <div style="max-width:1240px;margin:0 auto;padding:30px 40px 80px">
+
+        <!-- ============ SUMMARY ============ -->
+        <sc-if value="{{ isSummary }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:24px">
+            <div>
+              <div class="vb-eyebrow" style="margin-bottom:9px">Onboarding summary</div>
+              <h1 style="font-family:var(--vb-font-serif);font-weight:400;font-size:38px;letter-spacing:-.01em;color:var(--vb-ink);margin:0">{{ projectName }}</h1>
+              <div style="font-size:14px;color:var(--vb-ink-3);margin-top:6px">{{ projectClient }} · {{ projectMeta }}</div>
+            </div>
+            <div style="text-align:right">
+              <div style="display:inline-flex;align-items:center;gap:9px;padding:8px 14px;border-radius:8px;background:var(--vb-surface);border:1px solid var(--vb-line);box-shadow:var(--vb-shadow-sm)">
+                <span style="font-size:13px;color:var(--vb-ink-3)">{{ dayCounter }}</span>
+                <span style="width:1px;height:16px;background:var(--vb-line-strong)"></span>
+                <span style="font-size:13px;font-weight:600;color:{{ phaseColor }}">{{ phaseLabel }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr 1fr;gap:14px;margin-bottom:16px">
+            <div style="background:var(--vb-surface);border:1px solid var(--vb-line);border-radius:8px;box-shadow:var(--vb-shadow-sm);padding:18px 20px;display:flex;align-items:center;gap:16px">
+              <div style="width:66px;height:66px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;background:{{ progressRing }}">
+                <div style="width:48px;height:48px;border-radius:50%;background:var(--vb-surface);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--vb-ink)">{{ progressPct }}%</div>
+              </div>
+              <div>
+                <div style="font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--vb-ink-3)">Onboarding progress</div>
+                <div style="font-size:13.5px;color:var(--vb-ink-3);margin-top:4px">{{ progressSub }}</div>
+              </div>
+            </div>
+            <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+              <div style="background:var(--vb-surface);border:1px solid var(--vb-line);border-radius:8px;box-shadow:var(--vb-shadow-sm);padding:16px 18px">
+                <div style="font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--vb-ink-3)">{{ k.label }}</div>
+                <div style="font-size:32px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.1;margin:8px 0 2px;color:{{ k.color }}">{{ k.value }}</div>
+                <div style="font-size:12.5px;color:var(--vb-ink-4)">{{ k.sub }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1.55fr 1fr;gap:16px;margin-bottom:16px">
+            <div style="background:var(--vb-surface);border:1px solid var(--vb-line);border-radius:8px;box-shadow:var(--vb-shadow-sm);padding:22px 24px">
+              <h3 style="font-family:var(--vb-font-serif);font-weight:400;font-size:20px;color:var(--vb-ink);margin:0">Onboarding status by workstream</h3>
+              <p style="font-size:13px;color:var(--vb-ink-4);margin:5px 0 20px">Task completion across every setup workstream. Expand a row to see its tasks, or click the name to open it.</p>
+              <sc-for list="{{ workstreamBars }}" as="w" hint-placeholder-count="8">
+                <div>
+                  <div title="{{ w.title }}" style="display:flex;align-items:center;gap:14px;padding:7px 8px;margin:0 -8px;border-radius:7px" style-hover="background:var(--vb-paper-2)">
+                    <button onClick="{{ w.onToggle }}" title="Show tasks" style="flex:none;border:none;background:transparent;cursor:pointer;color:var(--vb-ink-4);font-size:12px;width:16px;padding:0">{{ w.caret }}</button>
+                    <div onClick="{{ w.onOpen }}" style="width:150px;flex:none;font-size:13.5px;color:var(--vb-ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer">{{ w.name }}</div>
+                    <div onClick="{{ w.onToggle }}" style="flex:1;height:18px;border-radius:4px;overflow:hidden;display:flex;background:var(--vb-charcoal-10);cursor:pointer">
+                      <sc-for list="{{ w.segments }}" as="s"><div title="{{ s.title }}" style="{{ s.style }}"></div></sc-for>
+                    </div>
+                    <div style="width:52px;flex:none;text-align:right;font-size:13px;font-variant-numeric:tabular-nums;color:{{ w.countColor }}">{{ w.countLabel }}</div>
+                  </div>
+                  <sc-if value="{{ w.open }}">
+                    <div style="margin:2px 0 6px 22px;border-left:2px solid var(--vb-line);padding-left:12px">
+                      <sc-for list="{{ w.tasks }}" as="t">
+                        <div onClick="{{ t.onClick }}" style="display:flex;align-items:center;gap:10px;padding:5px 6px;border-radius:6px;cursor:pointer" style-hover="background:var(--vb-paper-2)">
+                          <span style="width:7px;height:7px;border-radius:50%;flex:none;background:{{ t.dot }}"></span>
+                          <span style="flex:1;min-width:0;font-size:12.5px;color:var(--vb-ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ t.title }}</span>
+                          <span style="flex:none;font-size:11.5px;font-weight:500;color:{{ t.riskColor }}">{{ t.riskLabel }}</span>
+                          <span style="flex:none;font-size:11.5px;color:var(--vb-ink-4);width:52px;text-align:right">{{ t.due }}</span>
+                        </div>
+                      </sc-for>
+                    </div>
+                  </sc-if>
+                </div>
+              </sc-for>
+              <div style="display:flex;flex-wrap:wrap;gap:16px;margin-top:18px;padding-top:16px;border-top:1px solid var(--vb-line)">
+                <sc-for list="{{ statusLegend }}" as="l">
+                  <div style="display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--vb-ink-3)"><span style="width:10px;height:10px;border-radius:3px;background:{{ l.color }}"></span>{{ l.label }} <b style="font-variant-numeric:tabular-nums;font-weight:600;color:var(--vb-ink-2)">{{ l.count }}</b></div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div style="background:var(--vb-surface);border:1px solid var(--vb-line);border-radius:8px;box-shadow:var(--vb-shadow-sm);padding:22px 24px">
+              <h3 style="font-family:var(--vb-font-serif);font-weight:400;font-size:20px;color:var(--vb-ink);margin:0 0 16px">Programme health</h3>
+              <sc-for list="{{ phaseHealth }}" as="p" hint-placeholder-count="3">
+                <div style="padding:12px 0;border-bottom:1px solid var(--vb-line)">
+                  <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px">
+                    <div><span style="font-size:14px;font-weight:600;color:var(--vb-ink)">{{ p.label }}</span> <span style="font-size:12.5px;color:var(--vb-ink-4)">· {{ p.window }}</span></div>
+                    <span style="font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:5px;background:{{ p.pillBg }};color:{{ p.pillFg }}">{{ p.statusLabel }}</span>
+                  </div>
+                  <div style="height:8px;border-radius:4px;background:var(--vb-charcoal-10);overflow:hidden"><div style="{{ p.barStyle }}"></div></div>
+                  <div style="font-size:12px;color:var(--vb-ink-4);margin-top:6px">{{ p.detail }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div style="background:var(--vb-surface);border:1px solid var(--vb-line);border-radius:8px;box-shadow:var(--vb-shadow-sm);padding:22px 24px">
+              <h3 style="font-family:var(--vb-font-serif);font-weight:400;font-size:20px;color:var(--vb-ink);margin:0 0 4px">Who's behind</h3>
+              <p style="font-size:13px;color:var(--vb-ink-4);margin:0 0 14px">People with overdue or imminent work blocking the programme.</p>
+              <sc-if value="{{ hasBehind }}" hint-placeholder-val="{{ true }}">
+                <sc-for list="{{ behind }}" as="b" hint-placeholder-count="3">
+                  <div style="display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--vb-line)">
+                    <div style="width:34px;height:34px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#fff;background:{{ b.avatarBg }}">{{ b.initials }}</div>
+                    <div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:500;color:var(--vb-ink)">{{ b.name }}</div><div style="font-size:12px;color:var(--vb-ink-4)">{{ b.role }}</div></div>
+                    <div style="text-align:right;font-size:12.5px"><span style="font-weight:600;color:{{ b.color }}">{{ b.summary }}</span></div>
+                  </div>
+                </sc-for>
+              </sc-if>
+              <sc-if value="{{ noBehind }}"><div style="padding:20px;text-align:center;font-size:13.5px;color:var(--vb-pass)">Everyone's on track — no overdue or imminent work.</div></sc-if>
+            </div>
+
+            <div style="background:var(--vb-surface);border:1px solid var(--vb-line);border-radius:8px;box-shadow:var(--vb-shadow-sm);padding:22px 24px">
+              <h3 style="font-family:var(--vb-font-serif);font-weight:400;font-size:20px;color:var(--vb-ink);margin:0 0 14px">Next up &amp; at risk</h3>
+              <sc-for list="{{ upcoming }}" as="u" hint-placeholder-count="5">
+                <div onClick="{{ u.onClick }}" style="display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--vb-line);cursor:pointer">
+                  <span style="width:9px;height:9px;border-radius:50%;flex:none;background:{{ u.riskColor }}"></span>
+                  <div style="flex:1;min-width:0"><div style="font-size:13.5px;color:var(--vb-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ u.title }}</div><div style="font-size:12px;color:var(--vb-ink-4)">{{ u.meta }}</div></div>
+                  <span style="font-size:11.5px;font-weight:600;color:{{ u.riskColor }};white-space:nowrap">{{ u.riskLabel }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- ============ PROGRAMME (GANTT) ============ -->
+        <sc-if value="{{ isProgramme }}">
+          <div style="margin-bottom:20px">
+            <div class="vb-eyebrow" style="margin-bottom:9px">90-day programme</div>
+            <h1 style="font-family:var(--vb-font-serif);font-weight:400;font-size:32px;letter-spacing:-.01em;margin:0">Rollout programme</h1>
+            <div style="font-size:14px;color:var(--vb-ink-3);margin-top:6px">{{ windowLabel }} · risk auto-flagged from due dates</div>
+          </div>
+          <div style="background:var(--vb-surface);border:1px solid var(--vb-line);border-radius:8px;box-shadow:var(--vb-shadow-sm);padding:0;overflow:hidden">
+            <div style="display:flex;border-bottom:1px solid var(--vb-line-strong)">
+              <div style="width:{{ ganttNameW }};flex:none;padding:12px 20px;font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--vb-ink-3);border-right:1px solid var(--vb-line);position:relative">Task<div onMouseDown="{{ onGanttDrag }}" title="Drag to resize" style="position:absolute;top:0;right:-4px;width:9px;height:100%;cursor:col-resize;z-index:5"></div></div>
+              <div style="flex:1;display:flex;position:relative">
+                <sc-for list="{{ phaseCells }}" as="c"><div style="{{ c.style }}">{{ c.label }}<span style="display:block;font-weight:400;font-size:10.5px;color:var(--vb-ink-4);text-transform:none;letter-spacing:0">{{ c.sub }}</span></div></sc-for>
+              </div>
+            </div>
+            <div style="max-height:60vh;overflow-y:auto">
+              <sc-for list="{{ ganttGroups }}" as="g" hint-placeholder-count="6">
+                <div>
+                  <div style="display:flex;align-items:center;padding:9px 20px;background:var(--vb-paper-2);border-bottom:1px solid var(--vb-line)">
+                    <span style="font-size:12.5px;font-weight:600;color:var(--vb-ink-2)">{{ g.name }}</span>
+                    <span style="font-size:11.5px;color:var(--vb-ink-4);margin-left:9px">{{ g.meta }}</span>
+                  </div>
+                  <sc-for list="{{ g.rows }}" as="t">
+                    <div onClick="{{ t.onClick }}" style="display:flex;align-items:center;border-bottom:1px solid var(--vb-line);cursor:pointer;min-height:40px">
+                      <div style="width:{{ ganttNameW }};flex:none;padding:8px 20px;border-right:1px solid var(--vb-line);display:flex;align-items:center;gap:9px">
+                        <span style="width:8px;height:8px;border-radius:50%;flex:none;background:{{ t.dot }}"></span>
+                        <span style="font-size:13px;color:var(--vb-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ t.title }}</span>
+                      </div>
+                      <div style="flex:1;position:relative;height:40px">
+                        <sc-for list="{{ gridlines }}" as="gl"><div style="{{ gl.style }}"></div></sc-for>
+                        <sc-if value="{{ showTodayLine }}"><div style="{{ todayStyle }}"></div></sc-if>
+                        <div style="{{ t.barStyle }}"><span style="{{ t.barLabelStyle }}">{{ t.dueLabel }}</span></div>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:18px;margin-top:16px">
+            <sc-for list="{{ statusLegend }}" as="l"><div style="display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--vb-ink-3)"><span style="width:12px;height:12px;border-radius:3px;background:{{ l.color }}"></span>{{ l.label }}</div></sc-for>
+            <div style="display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--vb-ink-3)"><span style="width:2px;height:14px;background:var(--vb-defect)"></span>Today</div>
+          </div>
+        </sc-if>
+
+        <!-- ============ WORKSTREAM / PHASE TASK LIST ============ -->
+        <sc-if value="{{ isTaskList }}">
+          <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:18px">
+            <div style="max-width:660px;flex:1;min-width:0">
+              <div class="vb-eyebrow" style="margin-bottom:9px">{{ listKicker }}</div>
+              <sc-if value="{{ isWorkstream }}">
+                <div style="display:flex;align-items:center;gap:8px">
+                  <input value="{{ listTitle }}" onChange="{{ onWsTitle }}" title="Rename workstream" style="flex:1;min-width:0;font-family:var(--vb-font-serif);font-weight:400;font-size:32px;letter-spacing:-.01em;border:none;background:transparent;color:var(--vb-ink);padding:2px 6px;margin-left:-6px;border-radius:7px" style-focus="background:var(--vb-paper-2);box-shadow:inset 0 0 0 1.5px var(--vb-blue)"/>
+                  <button onClick="{{ onWsDelete }}" title="Delete this workstream" style="flex:none;display:flex;align-items:center;gap:6px;border:1px solid var(--vb-line-strong);background:var(--vb-surface);color:var(--vb-ink-3);font-size:12.5px;padding:7px 11px;border-radius:7px;cursor:pointer" style-hover="border-color:var(--vb-defect);color:var(--vb-defect);background:var(--vb-defect-soft)">Delete</button>
+                </div>
+              </sc-if>
+              <sc-if value="{{ isPhaseList }}"><h1 style="font-family:var(--vb-font-serif);font-weight:400;font-size:32px;letter-spacing:-.01em;margin:0">{{ listTitle }}</h1></sc-if>
+              <p style="font-size:14px;color:var(--vb-ink-3);margin:8px 0 0;line-height:1.5">{{ listDesc }}</p>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="text-align:right"><div style="font-size:26px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--vb-ink)">{{ listPct }}%</div><div style="font-size:12px;color:var(--vb-ink-4)">{{ listCountLabel }}</div></div>
+              <sc-if value="{{ canAddTask }}"><button onClick="{{ onAddTask }}" style="padding:10px 16px;border-radius:8px;background:var(--vb-ink);color:#fff;border:none;font-size:13.5px;font-weight:500;cursor:pointer">+ New task</button></sc-if>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+            <span style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--vb-ink-4);margin-right:2px">Filter</span>
+            <sc-for list="{{ statusFilters }}" as="f"><button onClick="{{ f.onClick }}" style="{{ f.style }}">{{ f.label }}</button></sc-for>
+            <sc-if value="{{ showPhaseFilter }}">
+              <span style="width:1px;height:20px;background:var(--vb-line-strong);margin:0 4px"></span>
+              <sc-for list="{{ phaseFilters }}" as="f"><button onClick="{{ f.onClick }}" style="{{ f.style }}">{{ f.label }}</button></sc-for>
+            </sc-if>
+            <span style="flex:1"></span>
+            <button onClick="{{ sortToggle.onClick }}" title="Toggle sort by due date" style="{{ sortToggle.style }}">{{ sortToggle.label }}</button>
+          </div>
+
+          <sc-if value="{{ filterEmpty }}"><div style="background:var(--vb-surface);border:1px dashed var(--vb-line-strong);border-radius:8px;padding:36px;text-align:center;color:var(--vb-ink-4)"><div style="font-size:14.5px;color:var(--vb-ink-3)">No tasks match this filter.</div></div></sc-if>
+          <sc-if value="{{ listEmpty }}"><div style="background:var(--vb-surface);border:1px dashed var(--vb-line-strong);border-radius:8px;padding:44px;text-align:center;color:var(--vb-ink-4)"><div style="font-size:15px;margin-bottom:6px;color:var(--vb-ink-3)">No tasks here yet.</div><div style="font-size:13.5px">Add the first task to start tracking this workstream.</div></div></sc-if>
+
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <sc-for list="{{ tasks }}" as="t" hint-placeholder-count="5">
+              <div onDragOver="{{ t.onDragOver }}" onDrop="{{ t.onDropRow }}" style="{{ t.cardStyle }}">
+                <div style="display:flex;align-items:flex-start;gap:12px">
+                  <div draggable="true" onDragStart="{{ t.onDragStart }}" style="{{ t.gripStyle }}" title="Drag to reorder"><div style="width:3px;height:3px;border-radius:50%;background:var(--vb-ink-4);box-shadow:6px 0 var(--vb-ink-4),0 6px var(--vb-ink-4),6px 6px var(--vb-ink-4),0 12px var(--vb-ink-4),6px 12px var(--vb-ink-4)"></div></div>
+                  <div style="flex:1;min-width:0">
+                    <input value="{{ t.title }}" onChange="{{ t.onTitle }}" style="width:100%;border:none;background:transparent;font:500 15.5px var(--vb-font-sans);color:var(--vb-ink);padding:2px 5px;border-radius:5px" style-focus="background:var(--vb-paper-2);box-shadow:inset 0 0 0 1.5px var(--vb-blue)"/>
+                    <div style="display:grid;grid-template-columns:repeat(4,1fr) 1.5fr;gap:16px;margin-top:13px;padding-left:5px;align-items:end">
+                      <div style="display:flex;flex-direction:column;gap:4px">
+                        <span style="font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--vb-ink-4)">Status</span>
+                        <div style="position:relative;width:100%">
+                          <button onClick="{{ t.onOpenStatus }}" style="display:flex;align-items:center;justify-content:space-between;gap:7px;width:100%;padding:6px 11px;border-radius:6px;border:none;cursor:pointer;font-size:12.5px;font-weight:500;background:{{ t.statusBg }};color:{{ t.statusFg }}"><span style="width:7px;height:7px;border-radius:50%;background:{{ t.statusDot }}"></span>{{ t.statusLabel }}<span style="font-size:9px;opacity:.6">▾</span></button>
+                          <sc-if value="{{ t.menuOpen }}">
+                            <div onClick="{{ t.onOpenStatus }}" style="position:fixed;inset:0;z-index:15"></div>
+                            <div style="position:absolute;top:calc(100% + 5px);left:0;z-index:20;background:var(--vb-surface);border:1px solid var(--vb-line-strong);border-radius:8px;box-shadow:var(--vb-shadow-md);padding:5px;min-width:150px">
+                              <sc-for list="{{ t.statusMenu }}" as="o"><button onClick="{{ o.onPick }}" style="display:flex;align-items:center;gap:9px;width:100%;padding:8px 10px;border:none;background:transparent;border-radius:6px;cursor:pointer;font-size:13px;color:var(--vb-ink);text-align:left" style-hover="background:var(--vb-paper-2)"><span style="width:8px;height:8px;border-radius:50%;background:{{ o.dot }}"></span>{{ o.label }}</button></sc-for>
+                            </div>
+                          </sc-if>
+                        </div>
+                      </div>
+                      <div style="display:flex;flex-direction:column;gap:4px">
+                        <span style="font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--vb-ink-4)">Phase</span>
+                        <select value="{{ t.phase }}" onChange="{{ t.onPhase }}" style="width:100%;font-size:12.5px;color:var(--vb-ink-2);background:var(--vb-paper-2);border:1px solid var(--vb-line);border-radius:6px;padding:6px 9px;cursor:pointer">
+                          <sc-for list="{{ phaseOptions }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
+                        </select>
+                      </div>
+                      <div style="display:flex;flex-direction:column;gap:4px">
+                        <span style="font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--vb-ink-4)">Due date</span>
+                        <input type="date" value="{{ t.due }}" onChange="{{ t.onDue }}" style="width:100%;font-size:12.5px;color:var(--vb-ink-2);background:var(--vb-paper-2);border:1px solid var(--vb-line);border-radius:6px;padding:6px 9px;cursor:pointer"/>
+                      </div>
+                      <div style="display:flex;flex-direction:column;gap:4px">
+                        <span style="font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--vb-ink-4)">Risk</span>
+                        <span style="font-size:12.5px;font-weight:600;color:{{ t.riskColor }};padding:6px 0">{{ t.riskLabel }}</span>
+                      </div>
+                      <div style="display:flex;flex-direction:column;gap:4px;min-width:0">
+                        <span style="font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--vb-ink-4)">Owner · {{ t.ownerRole }}</span>
+                        <div style="display:flex;align-items:center;gap:8px">
+                          <div style="width:28px;height:28px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:600;color:#fff;background:{{ t.ownerBg }}">{{ t.ownerInitials }}</div>
+                          <input value="{{ t.owner }}" onChange="{{ t.onOwner }}" style="flex:1;min-width:0;border:1px solid var(--vb-line);background:var(--vb-paper-2);font-size:13px;color:var(--vb-ink-2);padding:6px 9px;border-radius:6px" style-focus="background:var(--vb-surface);box-shadow:inset 0 0 0 1.5px var(--vb-blue)"/>
+                        </div>
+                      </div>
+                    </div>
+                    <div style="display:flex;align-items:flex-start;gap:8px;margin-top:11px;padding-left:5px">
+                      <span style="flex:none;font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--vb-ink-4);padding-top:8px;width:44px">Notes</span>
+                      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px">
+                        <sc-for list="{{ t.notesList }}" as="n">
+                          <div style="display:flex;align-items:flex-start;gap:6px">
+                            <textarea value="{{ n.text }}" onChange="{{ n.onText }}" placeholder="Add a note…" rows="1" style="flex:1;min-width:0;resize:vertical;border:1px solid var(--vb-line);background:var(--vb-paper-2);border-radius:7px;padding:7px 10px;font:400 13px/1.5 var(--vb-font-sans);color:var(--vb-ink-2)" style-focus="background:var(--vb-surface);box-shadow:inset 0 0 0 1.5px var(--vb-blue);outline:none"></textarea>
+                            <button onClick="{{ n.onDelete }}" title="Remove note" style="flex:none;border:none;background:transparent;color:var(--vb-ink-4);cursor:pointer;font-size:15px;padding:6px 5px;border-radius:6px;line-height:1" style-hover="background:var(--vb-defect-soft);color:var(--vb-defect)">×</button>
+                          </div>
+                        </sc-for>
+                        <button onClick="{{ t.onAddNote }}" style="align-self:flex-start;display:flex;align-items:center;gap:6px;border:none;background:transparent;color:var(--vb-blue);font-size:12.5px;font-weight:500;cursor:pointer;padding:2px 4px">＋ Add note</button>
+                      </div>
+                    </div>
+                    <div onDragOver="{{ t.onDragOverFiles }}" onDrop="{{ t.onDropFiles }}" style="{{ t.dropStyle }}">
+                      <sc-for list="{{ t.evidence }}" as="e">
+                        <div style="position:relative;display:flex;align-items:center;gap:7px;padding:5px 9px 5px 5px;background:var(--vb-surface);border:1px solid var(--vb-line);border-radius:7px">
+                          <sc-if value="{{ e.isImage }}"><div style="{{ e.imgStyle }}"></div></sc-if>
+                          <sc-if value="{{ e.isFile }}"><span style="width:30px;height:30px;border-radius:4px;background:var(--vb-charcoal-10);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:var(--vb-ink-3)">{{ e.ext }}</span></sc-if>
+                          <div style="min-width:0"><div style="font-size:12px;color:var(--vb-ink-2);max-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ e.name }}</div><div style="font-size:10.5px;color:var(--vb-ink-4)">{{ e.sizeLabel }}</div></div>
+                          <button onClick="{{ e.onRemove }}" style="border:none;background:transparent;color:var(--vb-ink-4);cursor:pointer;font-size:14px;padding:0 2px;line-height:1">×</button>
+                        </div>
+                      </sc-for>
+                      <button onClick="{{ t.onAttach }}" style="display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:7px;border:1px dashed var(--vb-line-strong);background:transparent;color:var(--vb-ink-3);font-size:12.5px;cursor:pointer" style-hover="border-color:var(--vb-blue);color:var(--vb-blue)">＋ Drop or attach evidence</button>
+                    </div>
+                  </div>
+                  <button onClick="{{ t.onDelete }}" style="flex:none;border:none;background:transparent;color:var(--vb-ink-4);cursor:pointer;font-size:16px;padding:4px 6px;border-radius:6px" style-hover="background:var(--vb-defect-soft);color:var(--vb-defect)">×</button>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <!-- ============ SUBCONTRACTORS ============ -->
+        <sc-if value="{{ isSubs }}">
+          <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:20px">
+            <div style="max-width:660px"><div class="vb-eyebrow" style="margin-bottom:9px">Subcontractor onboarding</div><h1 style="font-family:var(--vb-font-serif);font-weight:400;font-size:32px;letter-spacing:-.01em;margin:0">Subcontractors</h1><p style="font-size:14px;color:var(--vb-ink-3);margin:8px 0 0;line-height:1.5">Expand a subcontractor to see its trades. Expand a trade for its ITPs (submission &amp; digitisation) and training.</p></div>
+            <button onClick="{{ onAddSub }}" style="padding:10px 16px;border-radius:8px;background:var(--vb-ink);color:#fff;border:none;font-size:13.5px;font-weight:500;cursor:pointer">+ Add subcontractor</button>
+          </div>
+          <sc-if value="{{ noSubs }}"><div style="background:var(--vb-surface);border:1px dashed var(--vb-line-strong);border-radius:8px;padding:44px;text-align:center;color:var(--vb-ink-4)"><div style="font-size:15px;margin-bottom:6px;color:var(--vb-ink-3)">No subcontractors yet.</div><div style="font-size:13.5px">Add one to start tracking their trades, ITPs and training.</div></div></sc-if>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <sc-for list="{{ subs }}" as="s" hint-placeholder-count="4">
+              <div style="background:var(--vb-surface);border:1px solid var(--vb-line);border-radius:8px;box-shadow:var(--vb-shadow-sm);overflow:hidden">
+                <div style="display:flex;align-items:center;gap:11px;padding:14px 16px">
+                  <button onClick="{{ s.onToggle }}" style="flex:none;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border:none;background:var(--vb-paper-2);border-radius:6px;cursor:pointer;color:var(--vb-ink-3);font-size:10px">{{ s.chevron }}</button>
+                  <span style="width:9px;height:9px;border-radius:50%;flex:none;background:{{ s.dot }}"></span>
+                  <input value="{{ s.name }}" onChange="{{ s.onName }}" style="border:none;background:transparent;font:600 16px var(--vb-font-sans);color:var(--vb-ink);padding:3px 6px;border-radius:5px;flex:1;min-width:0" style-focus="background:var(--vb-paper-2);box-shadow:inset 0 0 0 1.5px var(--vb-blue)"/>
+                  <span style="font-size:12.5px;color:var(--vb-ink-4);white-space:nowrap">{{ s.summary }}</span>
+                  <button onClick="{{ s.onAddTrade }}" style="border:1px solid var(--vb-line-strong);background:transparent;color:var(--vb-ink-3);font-size:12px;padding:6px 11px;border-radius:7px;cursor:pointer" style-hover="border-color:var(--vb-blue);color:var(--vb-blue)">+ Trade</button>
+                  <button onClick="{{ s.onDelete }}" style="border:none;background:transparent;color:var(--vb-ink-4);cursor:pointer;font-size:16px;padding:2px 6px;border-radius:6px" style-hover="background:var(--vb-defect-soft);color:var(--vb-defect)">×</button>
+                </div>
+                <sc-if value="{{ s.open }}">
+                  <div style="border-top:1px solid var(--vb-line);background:var(--vb-paper-2);padding:6px 16px 14px">
+                    <sc-for list="{{ s.trades }}" as="t">
+                      <div style="background:var(--vb-surface);border:1px solid var(--vb-line);border-radius:8px;margin-top:10px;overflow:hidden">
+                        <div style="display:flex;align-items:center;gap:10px;padding:11px 14px">
+                          <button onClick="{{ t.onToggle }}" style="flex:none;width:20px;height:20px;display:flex;align-items:center;justify-content:center;border:none;background:var(--vb-paper-2);border-radius:5px;cursor:pointer;color:var(--vb-ink-3);font-size:9px">{{ t.chevron }}</button>
+                          <span style="font-size:10.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--vb-ink-4)">Trade</span>
+                          <input value="{{ t.name }}" onChange="{{ t.onName }}" style="border:none;background:transparent;font:500 14.5px var(--vb-font-sans);color:var(--vb-ink);padding:3px 6px;border-radius:5px;flex:1;min-width:0" style-focus="background:var(--vb-paper-2);box-shadow:inset 0 0 0 1.5px var(--vb-blue)"/>
+                          <span style="font-size:12px;color:var(--vb-ink-4);font-variant-numeric:tabular-nums">{{ t.progress }}</span>
+                          <button onClick="{{ t.onDelete }}" style="border:none;background:transparent;color:var(--vb-ink-4);cursor:pointer;font-size:15px;padding:2px 5px;border-radius:6px" style-hover="background:var(--vb-defect-soft);color:var(--vb-defect)">×</button>
+                        </div>
+                        <sc-if value="{{ t.open }}">
+                          <div style="padding:4px 16px 16px 46px">
+                            <div style="display:flex;align-items:baseline;gap:8px;margin:10px 0 8px"><span style="font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--vb-ink-2)">ITPs</span><span style="font-size:11.5px;color:var(--vb-ink-4)">ITP submission &amp; digitisation</span></div>
+                            <sc-for list="{{ t.itps }}" as="i">
+                              <div onDragOver="{{ i.onDragOverFiles }}" onDrop="{{ i.onDropFiles }}" style="{{ i.cardStyle }};margin-bottom:8px">
+                                <div style="display:flex;align-items:flex-start;gap:10px">
+                                  <div style="flex:1;min-width:0">
+                                    <input value="{{ i.title }}" onChange="{{ i.onTitle }}" style="width:100%;border:none;background:transparent;font:500 14px var(--vb-font-sans);color:var(--vb-ink);padding:2px 5px;border-radius:5px" style-focus="background:var(--vb-paper-2);box-shadow:inset 0 0 0 1.5px var(--vb-blue)"/>
+                                    <div style="display:grid;grid-template-columns:repeat(4,1fr) 1.5fr;gap:14px;margin-top:10px;padding-left:5px;align-items:end">
+                                      <div style="display:flex;flex-direction:column;gap:4px">
+                                        <span style="font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--vb-ink-4)">Status</span>
+                                        <div style="position:relative;width:100%">
+                                          <button onClick="{{ i.onOpenStatus }}" style="display:flex;align-items:center;justify-content:space-between;gap:7px;width:100%;padding:6px 11px;border-radius:6px;border:none;cursor:pointer;font-size:12.5px;font-weight:500;background:{{ i.statusBg }};color:{{ i.statusFg }}"><span style="width:7px;height:7px;border-radius:50%;background:{{ i.statusDot }}"></span>{{ i.statusLabel }}<span style="font-size:9px;opacity:.6">▾</span></button>
+                                          <sc-if value="{{ i.menuOpen }}">
+                                            <div onClick="{{ i.onOpenStatus }}" style="position:fixed;inset:0;z-index:15"></div>
+                                            <div style="position:absolute;top:calc(100% + 5px);left:0;z-index:20;background:var(--vb-surface);border:1px solid var(--vb-line-strong);border-radius:8px;box-shadow:var(--vb-shadow-md);padding:5px;min-width:150px">
+                                              <sc-for list="{{ i.statusMenu }}" as="o"><button onClick="{{ o.onPick }}" style="display:flex;align-items:center;gap:9px;width:100%;padding:8px 10px;border:none;background:transparent;border-radius:6px;cursor:pointer;font-size:13px;color:var(--vb-ink);text-align:left" style-hover="background:var(--vb-paper-2)"><span style="width:8px;height:8px;border-radius:50%;background:{{ o.dot }}"></span>{{ o.label }}</button></sc-for>
+                                            </div>
+                                          </sc-if>
+                                        </div>
+                                      </div>
+                                      <div style="display:flex;flex-direction:column;gap:4px">
+                                        <span style="font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--vb-ink-4)">Phase</span>
+                                        <select value="{{ i.phase }}" onChange="{{ i.onPhase }}" style="width:100%;font-size:12.5px;color:var(--vb-ink-2);background:var(--vb-paper-2);border:1px solid var(--vb-line);border-radius:6px;padding:6px 9px;cursor:pointer"><sc-for list="{{ phaseOptions }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select>
+                                      </div>
+                                      <div style="display:flex;flex-direction:column;gap:4px">
+                                        <span style="font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--vb-ink-4)">Due date</span>
+                                        <input type="date" value="{{ i.due }}" onChange="{{ i.onDue }}" style="width:100%;font-size:12.5px;color:var(--vb-ink-2);background:var(--vb-paper-2);border:1px solid var(--vb-line);border-radius:6px;padding:6px 9px;cursor:pointer"/>
+                                      </div>
+                                      <div style="display:flex;flex-direction:column;gap:4px">
+                                        <span style="font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--vb-ink-4)">Risk</span>
+                                        <span style="font-size:12.5px;font-weight:600;color:{{ i.riskColor }};padding:6px 0">{{ i.riskLabel }}</span>
+                                      </div>
+                                      <div style="display:flex;flex-direction:column;gap:4px;min-width:0">
+                                        <span style="font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--vb-ink-4)">Owner</span>
+                                        <div style="display:flex;align-items:center;gap:8px">
+                                          <div style="width:28px;height:28px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:600;color:#fff;background:{{ i.ownerBg }}">{{ i.ownerInitials }}</div>
+                                          <input value="{{ i.owner }}" onChange="{{ i.onOwner }}" placeholder="Assign owner" style="flex:1;min-width:0;border:1px solid var(--vb-line);background:var(--vb-paper-2);font-size:13px;color:var(--vb-ink-2);padding:6px 9px;border-radius:6px" style-focus="background:var(--vb-surface);box-shadow:inset 0 0 0 1.5px var(--vb-blue)"/>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div onDragOver="{{ i.onDragOverFiles }}" onDrop="{{ i.onDropFiles }}" style="{{ i.dropStyle }}">
+                                      <sc-for list="{{ i.evidence }}" as="e">
+                                        <div style="display:flex;align-items:center;gap:7px;padding:5px 9px 5px 5px;background:var(--vb-surface);border:1px solid var(--vb-line);border-radius:7px">
+                                          <sc-if value="{{ e.isImage }}"><div style="{{ e.imgStyle }}"></div></sc-if>
+                                          <sc-if value="{{ e.isFile }}"><span style="width:30px;height:30px;border-radius:4px;background:var(--vb-charcoal-10);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:var(--vb-ink-3)">{{ e.ext }}</span></sc-if>
+                                          <div style="min-width:0"><div style="font-size:12px;color:var(--vb-ink-2);max-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ e.name }}</div><div style="font-size:10.5px;color:var(--vb-ink-4)">{{ e.sizeLabel }}</div></div>
+                                          <button onClick="{{ e.onRemove }}" style="border:none;background:transparent;color:var(--vb-ink-4);cursor:pointer;font-size:14px;padding:0 2px;line-height:1">×</button>
+                                        </div>
+                                      </sc-for>
+                                      <button onClick="{{ i.onAttach }}" style="display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:7px;border:1px dashed var(--vb-line-strong);background:transparent;color:var(--vb-ink-3);font-size:12.5px;cursor:pointer" style-hover="border-color:var(--vb-blue);color:var(--vb-blue)">＋ Drop or attach evidence</button>
+                                    </div>
+                                  </div>
+                                  <button onClick="{{ i.onDelete }}" style="flex:none;border:none;background:transparent;color:var(--vb-ink-4);cursor:pointer;font-size:16px;padding:4px 6px;border-radius:6px" style-hover="background:var(--vb-defect-soft);color:var(--vb-defect)">×</button>
+                                </div>
+                              </div>
+                            </sc-for>
+                            <button onClick="{{ t.onAddItp }}" style="margin:2px 0 4px;border:none;background:transparent;color:var(--vb-blue);font-size:12.5px;font-weight:500;cursor:pointer;padding:4px 5px">+ Add ITP</button>
+                            <div style="font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--vb-ink-2);margin:14px 0 8px">Training</div>
+                            <sc-for list="{{ t.training }}" as="i">
+                              <div onDragOver="{{ i.onDragOverFiles }}" onDrop="{{ i.onDropFiles }}" style="{{ i.cardStyle }};margin-bottom:8px">
+                                <div style="display:flex;align-items:flex-start;gap:10px">
+                                  <div style="flex:1;min-width:0">
+                                    <input value="{{ i.title }}" onChange="{{ i.onTitle }}" style="width:100%;border:none;background:transparent;font:500 14px var(--vb-font-sans);color:var(--vb-ink);padding:2px 5px;border-radius:5px" style-focus="background:var(--vb-paper-2);box-shadow:inset 0 0 0 1.5px var(--vb-blue)"/>
+                                    <div style="display:grid;grid-template-columns:repeat(4,1fr) 1.5fr;gap:14px;margin-top:10px;padding-left:5px;align-items:end">
+                                      <div style="display:flex;flex-direction:column;gap:4px">
+                                        <span style="font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--vb-ink-4)">Status</span>
+                                        <div style="position:relative;width:100%">
+                                          <button onClick="{{ i.onOpenStatus }}" style="display:flex;align-items:center;justify-content:space-between;gap:7px;width:100%;padding:6px 11px;border-radius:6px;border:none;cursor:pointer;font-size:12.5px;font-weight:500;background:{{ i.statusBg }};color:{{ i.statusFg }}"><span style="width:7px;height:7px;border-radius:50%;background:{{ i.statusDot }}"></span>{{ i.statusLabel }}<span style="font-size:9px;opacity:.6">▾</span></button>
+                                          <sc-if value="{{ i.menuOpen }}">
+                                            <div onClick="{{ i.onOpenStatus }}" style="position:fixed;inset:0;z-index:15"></div>
+                                            <div style="position:absolute;top:calc(100% + 5px);left:0;z-index:20;background:var(--vb-surface);border:1px solid var(--vb-line-strong);border-radius:8px;box-shadow:var(--vb-shadow-md);padding:5px;min-width:150px">
+                                              <sc-for list="{{ i.statusMenu }}" as="o"><button onClick="{{ o.onPick }}" style="display:flex;align-items:center;gap:9px;width:100%;padding:8px 10px;border:none;background:transparent;border-radius:6px;cursor:pointer;font-size:13px;color:var(--vb-ink);text-align:left" style-hover="background:var(--vb-paper-2)"><span style="width:8px;height:8px;border-radius:50%;background:{{ o.dot }}"></span>{{ o.label }}</button></sc-for>
+                                            </div>
+                                          </sc-if>
+                                        </div>
+                                      </div>
+                                      <div style="display:flex;flex-direction:column;gap:4px">
+                                        <span style="font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--vb-ink-4)">Phase</span>
+                                        <select value="{{ i.phase }}" onChange="{{ i.onPhase }}" style="width:100%;font-size:12.5px;color:var(--vb-ink-2);background:var(--vb-paper-2);border:1px solid var(--vb-line);border-radius:6px;padding:6px 9px;cursor:pointer"><sc-for list="{{ phaseOptions }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select>
+                                      </div>
+                                      <div style="display:flex;flex-direction:column;gap:4px">
+                                        <span style="font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--vb-ink-4)">Due date</span>
+                                        <input type="date" value="{{ i.due }}" onChange="{{ i.onDue }}" style="width:100%;font-size:12.5px;color:var(--vb-ink-2);background:var(--vb-paper-2);border:1px solid var(--vb-line);border-radius:6px;padding:6px 9px;cursor:pointer"/>
+                                      </div>
+                                      <div style="display:flex;flex-direction:column;gap:4px">
+                                        <span style="font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--vb-ink-4)">Risk</span>
+                                        <span style="font-size:12.5px;font-weight:600;color:{{ i.riskColor }};padding:6px 0">{{ i.riskLabel }}</span>
+                                      </div>
+                                      <div style="display:flex;flex-direction:column;gap:4px;min-width:0">
+                                        <span style="font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--vb-ink-4)">Owner</span>
+                                        <div style="display:flex;align-items:center;gap:8px">
+                                          <div style="width:28px;height:28px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:600;color:#fff;background:{{ i.ownerBg }}">{{ i.ownerInitials }}</div>
+                                          <input value="{{ i.owner }}" onChange="{{ i.onOwner }}" placeholder="Assign owner" style="flex:1;min-width:0;border:1px solid var(--vb-line);background:var(--vb-paper-2);font-size:13px;color:var(--vb-ink-2);padding:6px 9px;border-radius:6px" style-focus="background:var(--vb-surface);box-shadow:inset 0 0 0 1.5px var(--vb-blue)"/>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div onDragOver="{{ i.onDragOverFiles }}" onDrop="{{ i.onDropFiles }}" style="{{ i.dropStyle }}">
+                                      <sc-for list="{{ i.evidence }}" as="e">
+                                        <div style="display:flex;align-items:center;gap:7px;padding:5px 9px 5px 5px;background:var(--vb-surface);border:1px solid var(--vb-line);border-radius:7px">
+                                          <sc-if value="{{ e.isImage }}"><div style="{{ e.imgStyle }}"></div></sc-if>
+                                          <sc-if value="{{ e.isFile }}"><span style="width:30px;height:30px;border-radius:4px;background:var(--vb-charcoal-10);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:var(--vb-ink-3)">{{ e.ext }}</span></sc-if>
+                                          <div style="min-width:0"><div style="font-size:12px;color:var(--vb-ink-2);max-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ e.name }}</div><div style="font-size:10.5px;color:var(--vb-ink-4)">{{ e.sizeLabel }}</div></div>
+                                          <button onClick="{{ e.onRemove }}" style="border:none;background:transparent;color:var(--vb-ink-4);cursor:pointer;font-size:14px;padding:0 2px;line-height:1">×</button>
+                                        </div>
+                                      </sc-for>
+                                      <button onClick="{{ i.onAttach }}" style="display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:7px;border:1px dashed var(--vb-line-strong);background:transparent;color:var(--vb-ink-3);font-size:12.5px;cursor:pointer" style-hover="border-color:var(--vb-blue);color:var(--vb-blue)">＋ Drop or attach evidence</button>
+                                    </div>
+                                  </div>
+                                  <button onClick="{{ i.onDelete }}" style="flex:none;border:none;background:transparent;color:var(--vb-ink-4);cursor:pointer;font-size:16px;padding:4px 6px;border-radius:6px" style-hover="background:var(--vb-defect-soft);color:var(--vb-defect)">×</button>
+                                </div>
+                              </div>
+                            </sc-for>
+                            <button onClick="{{ t.onAddTraining }}" style="margin:2px 0 0;border:none;background:transparent;color:var(--vb-blue);font-size:12.5px;font-weight:500;cursor:pointer;padding:4px 5px">+ Add training</button>
+                          </div>
+                        </sc-if>
+                      </div>
+                    </sc-for>
+                    <sc-if value="{{ s.noTrades }}"><div style="padding:12px 4px;font-size:13px;color:var(--vb-ink-4)">No trades yet — use <b style="font-weight:600">+ Trade</b> above to add one.</div></sc-if>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <!-- ============ CORRESPONDENCES ============ -->
+        <sc-if value="{{ isCorr }}">
+          <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:20px">
+            <div><div class="vb-eyebrow" style="margin-bottom:9px">Client comms</div><h1 style="font-family:var(--vb-font-serif);font-weight:400;font-size:32px;letter-spacing:-.01em;margin:0">Correspondences</h1><p style="font-size:14px;color:var(--vb-ink-3);margin:8px 0 0">A running record of every touchpoint with the client team.</p></div>
+            <button onClick="{{ onAddCorr }}" style="padding:10px 16px;border-radius:8px;background:var(--vb-ink);color:#fff;border:none;font-size:13.5px;font-weight:500;cursor:pointer">+ Log correspondence</button>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <sc-for list="{{ correspondences }}" as="c" hint-placeholder-count="4">
+              <div style="background:var(--vb-surface);border:1px solid var(--vb-line);border-radius:8px;box-shadow:var(--vb-shadow-sm);padding:16px 18px">
+                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:9px">
+                  <select value="{{ c.channel }}" onChange="{{ c.onChannel }}" style="font-size:11.5px;font-weight:600;padding:4px 8px;border-radius:6px;border:1px solid var(--vb-line);background:{{ c.channelBg }};color:{{ c.channelFg }};cursor:pointer">
+                    <sc-for list="{{ channelOptions }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
+                  </select>
+                  <input value="{{ c.who }}" onChange="{{ c.onWho }}" placeholder="Who" style="border:none;background:transparent;font-size:13.5px;font-weight:600;color:var(--vb-ink);padding:3px 6px;border-radius:5px;flex:1;min-width:120px" style-focus="background:var(--vb-paper-2);box-shadow:inset 0 0 0 1.5px var(--vb-blue)"/>
+                  <input type="date" value="{{ c.date }}" onChange="{{ c.onDate }}" style="border:none;background:var(--vb-paper-2);font-size:12.5px;color:var(--vb-ink-3);padding:5px 8px;border-radius:6px;cursor:pointer"/>
+                  <button onClick="{{ c.onDelete }}" style="border:none;background:transparent;color:var(--vb-ink-4);cursor:pointer;font-size:16px;padding:2px 6px;border-radius:6px" style-hover="background:var(--vb-defect-soft);color:var(--vb-defect)">×</button>
+                </div>
+                <textarea value="{{ c.summary }}" onChange="{{ c.onSummary }}" placeholder="What was discussed or sent…" rows="2" style="width:100%;border:1px solid var(--vb-line);background:var(--vb-paper-2);border-radius:7px;padding:9px 11px;font-size:13.5px;color:var(--vb-ink-2);resize:vertical;line-height:1.5" style-focus="background:var(--vb-surface);border-color:var(--vb-blue)"></textarea>
+                <div onDragOver="{{ c.onDragOverFiles }}" onDrop="{{ c.onDropFiles }}" style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:10px">
+                  <sc-for list="{{ c.attachments }}" as="e">
+                    <div style="display:flex;align-items:center;gap:7px;padding:5px 9px 5px 5px;background:var(--vb-paper-2);border:1px solid var(--vb-line);border-radius:7px">
+                      <sc-if value="{{ e.isImage }}"><div style="{{ e.imgStyle }}"></div></sc-if>
+                      <sc-if value="{{ e.isFile }}"><span style="width:26px;height:26px;border-radius:4px;background:var(--vb-charcoal-10);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:var(--vb-ink-3)">{{ e.ext }}</span></sc-if>
+                      <span style="font-size:12px;color:var(--vb-ink-2);max-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ e.name }}</span>
+                      <button onClick="{{ e.onRemove }}" style="border:none;background:transparent;color:var(--vb-ink-4);cursor:pointer;font-size:13px">×</button>
+                    </div>
+                  </sc-for>
+                  <button onClick="{{ c.onAttach }}" style="display:flex;align-items:center;gap:6px;padding:6px 11px;border-radius:7px;border:1px dashed var(--vb-line-strong);background:transparent;color:var(--vb-ink-3);font-size:12px;cursor:pointer" style-hover="border-color:var(--vb-blue);color:var(--vb-blue)">＋ Attach</button>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <!-- ============ COMMENTS ============ -->
+        <sc-if value="{{ isComments }}">
+          <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:20px">
+            <div><div class="vb-eyebrow" style="margin-bottom:9px">Internal notes</div><h1 style="font-family:var(--vb-font-serif);font-weight:400;font-size:32px;letter-spacing:-.01em;margin:0">Comments</h1><p style="font-size:14px;color:var(--vb-ink-3);margin:8px 0 0">Notes and flags for the onboarding team on this project.</p></div>
+            <button onClick="{{ onAddComment }}" style="padding:10px 16px;border-radius:8px;background:var(--vb-ink);color:#fff;border:none;font-size:13.5px;font-weight:500;cursor:pointer">+ Add note</button>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px;max-width:820px">
+            <sc-for list="{{ comments }}" as="c" hint-placeholder-count="3">
+              <div style="background:var(--vb-surface);border:1px solid var(--vb-line);border-radius:8px;box-shadow:var(--vb-shadow-sm);padding:15px 18px;display:flex;gap:12px">
+                <div style="width:32px;height:32px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;background:var(--vb-purple)">{{ c.initials }}</div>
+                <div style="flex:1;min-width:0">
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-size:13.5px;font-weight:600;color:var(--vb-ink)">{{ c.author }}</span><span style="font-size:12px;color:var(--vb-ink-4)">{{ c.when }}</span></div>
+                  <textarea value="{{ c.text }}" onChange="{{ c.onText }}" rows="2" placeholder="Write a note…" style="width:100%;border:1px solid transparent;background:transparent;border-radius:7px;padding:5px 7px;font-size:13.5px;color:var(--vb-ink-2);resize:vertical;line-height:1.55" style-focus="background:var(--vb-paper-2);border-color:var(--vb-blue)"></textarea>
+                </div>
+                <button onClick="{{ c.onDelete }}" style="flex:none;border:none;background:transparent;color:var(--vb-ink-4);cursor:pointer;font-size:15px;padding:2px 6px;border-radius:6px" style-hover="background:var(--vb-defect-soft);color:var(--vb-defect)">×</button>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <!-- ============ SETTINGS ============ -->
+        <sc-if value="{{ isSettings }}">
+          <div style="margin-bottom:22px">
+            <div class="vb-eyebrow" style="margin-bottom:9px">Project settings</div>
+            <h1 style="font-family:var(--vb-font-serif);font-weight:400;font-size:32px;letter-spacing:-.01em;margin:0">Settings</h1>
+            <p style="font-size:14px;color:var(--vb-ink-3);margin:8px 0 0;line-height:1.5">Adjust the onsite start date, go-live target and project details. The 30 / 60 / 90-day phase windows and all risk flags recalculate automatically.</p>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:900px">
+            <div style="background:var(--vb-surface);border:1px solid var(--vb-line);border-radius:8px;box-shadow:var(--vb-shadow-sm);padding:22px 24px">
+              <h3 style="font-family:var(--vb-font-serif);font-weight:400;font-size:20px;color:var(--vb-ink);margin:0 0 18px">Programme dates</h3>
+              <div style="display:flex;flex-direction:column;gap:16px">
+                <label style="display:flex;flex-direction:column;gap:6px">
+                  <span style="font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--vb-ink-3)">Onsite start date</span>
+                  <input type="date" value="{{ setStart }}" onChange="{{ onProjStart }}" style="border:1px solid var(--vb-line-strong);background:var(--vb-paper-2);border-radius:7px;padding:10px 12px;font-size:14px;color:var(--vb-ink);cursor:pointer" style-focus="border-color:var(--vb-blue);background:var(--vb-surface)"/>
+                </label>
+                <label style="display:flex;flex-direction:column;gap:6px">
+                  <span style="font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--vb-ink-3)">Go-live target</span>
+                  <input type="date" value="{{ setGolive }}" onChange="{{ onProjGolive }}" style="border:1px solid var(--vb-line-strong);background:var(--vb-paper-2);border-radius:7px;padding:10px 12px;font-size:14px;color:var(--vb-ink);cursor:pointer" style-focus="border-color:var(--vb-blue);background:var(--vb-surface)"/>
+                </label>
+                <div style="font-size:12.5px;color:var(--vb-ink-4);padding-top:2px">Programme span: <b style="color:var(--vb-ink-2);font-weight:600">{{ settingsSpan }} days</b></div>
+              </div>
+              <div style="height:1px;background:var(--vb-line);margin:20px 0"></div>
+              <div style="font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--vb-ink-3);margin-bottom:12px">Phase windows</div>
+              <sc-for list="{{ phaseWindows }}" as="w">
+                <div style="display:flex;justify-content:space-between;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--vb-line)">
+                  <div><div style="font-size:13.5px;font-weight:600;color:var(--vb-ink)">{{ w.label }}</div><div style="font-size:12px;color:var(--vb-ink-4)">{{ w.detail }}</div></div>
+                  <span style="font-size:12.5px;color:var(--vb-ink-2);font-variant-numeric:tabular-nums;white-space:nowrap">{{ w.window }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="background:var(--vb-surface);border:1px solid var(--vb-line);border-radius:8px;box-shadow:var(--vb-shadow-sm);padding:22px 24px">
+              <h3 style="font-family:var(--vb-font-serif);font-weight:400;font-size:20px;color:var(--vb-ink);margin:0 0 18px">Project details</h3>
+              <div style="display:flex;flex-direction:column;gap:16px">
+                <label style="display:flex;flex-direction:column;gap:6px">
+                  <span style="font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--vb-ink-3)">Project name</span>
+                  <input value="{{ setName }}" onChange="{{ onProjName }}" style="border:1px solid var(--vb-line-strong);background:var(--vb-paper-2);border-radius:7px;padding:10px 12px;font-size:14px;color:var(--vb-ink)" style-focus="border-color:var(--vb-blue);background:var(--vb-surface)"/>
+                </label>
+                <label style="display:flex;flex-direction:column;gap:6px">
+                  <span style="font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--vb-ink-3)">Client</span>
+                  <input value="{{ setClient }}" onChange="{{ onProjClient }}" style="border:1px solid var(--vb-line-strong);background:var(--vb-paper-2);border-radius:7px;padding:10px 12px;font-size:14px;color:var(--vb-ink)" style-focus="border-color:var(--vb-blue);background:var(--vb-surface)"/>
+                </label>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                  <label style="display:flex;flex-direction:column;gap:6px">
+                    <span style="font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--vb-ink-3)">Sector</span>
+                    <input value="{{ setSector }}" onChange="{{ onProjSector }}" style="border:1px solid var(--vb-line-strong);background:var(--vb-paper-2);border-radius:7px;padding:10px 12px;font-size:14px;color:var(--vb-ink)" style-focus="border-color:var(--vb-blue);background:var(--vb-surface)"/>
+                  </label>
+                  <label style="display:flex;flex-direction:column;gap:6px">
+                    <span style="font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--vb-ink-3)">Region</span>
+                    <input value="{{ setRegion }}" onChange="{{ onProjRegion }}" style="border:1px solid var(--vb-line-strong);background:var(--vb-paper-2);border-radius:7px;padding:10px 12px;font-size:14px;color:var(--vb-ink)" style-focus="border-color:var(--vb-blue);background:var(--vb-surface)"/>
+                  </label>
+                </div>
+                <label style="display:flex;flex-direction:column;gap:6px">
+                  <span style="font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--vb-ink-3)">Onboarding lead</span>
+                  <input value="{{ setOwner }}" onChange="{{ onProjOwner }}" style="border:1px solid var(--vb-line-strong);background:var(--vb-paper-2);border-radius:7px;padding:10px 12px;font-size:14px;color:var(--vb-ink)" style-focus="border-color:var(--vb-blue);background:var(--vb-surface)"/>
+                </label>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ============ PROJECT PICKER ============ -->
+  <sc-if value="{{ pickerOpen }}">
+    <div onClick="{{ onClosePicker }}" style="position:fixed;inset:0;background:rgba(20,22,26,.5);z-index:40;display:flex;align-items:flex-start;justify-content:center;padding-top:70px">
+      <div onClick="{{ stop }}" style="width:440px;max-width:92vw;background:var(--vb-surface);border-radius:10px;box-shadow:var(--vb-shadow-lg);overflow:hidden;animation:vbfade .18s ease-out">
+        <div style="padding:16px 18px;border-bottom:1px solid var(--vb-line);display:flex;justify-content:space-between;align-items:center"><div style="font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--vb-ink-3)">Switch project</div><button onClick="{{ onAddProject }}" style="border:none;background:var(--vb-ink);color:#fff;font-size:12.5px;font-weight:500;padding:7px 13px;border-radius:7px;cursor:pointer">＋ New project</button></div>
+        <div style="max-height:60vh;overflow-y:auto;padding:8px">
+          <sc-for list="{{ projectList }}" as="p" hint-placeholder-count="5">
+            <div style="{{ p.wrapStyle }}">
+              <button onClick="{{ p.onPick }}" style="{{ p.rowStyle }}">
+                <div style="width:38px;height:38px;border-radius:8px;flex:none;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;background:var(--vb-charcoal);color:var(--vb-green)">{{ p.code }}</div>
+                <div style="flex:1;min-width:0;text-align:left"><div style="font-size:14px;font-weight:600;color:var(--vb-ink)">{{ p.name }}</div><div style="font-size:12px;color:var(--vb-ink-4)">{{ p.client }} · {{ p.meta }}</div></div>
+                <div style="text-align:right"><div style="font-size:15px;font-weight:600;font-variant-numeric:tabular-nums;color:{{ p.pctColor }}">{{ p.pct }}%</div><div style="font-size:10.5px;color:var(--vb-ink-4)">{{ p.riskLabel }}</div></div>
+                <sc-if value="{{ p.active }}"><span style="color:var(--vb-blue);font-weight:700;margin-left:4px">✓</span></sc-if>
+              </button>
+              <button onClick="{{ p.onDelete }}" title="Delete project" style="flex:none;border:none;background:transparent;color:var(--vb-ink-4);cursor:pointer;font-size:16px;padding:8px 10px;border-radius:7px;line-height:1" style-hover="background:var(--vb-defect-soft);color:var(--vb-defect)">×</button>
+            </div>
+          </sc-for>
+        </div>
+        <div style="padding:11px 18px;border-top:1px solid var(--vb-line);font-size:12px;color:var(--vb-ink-4)">Rename dates and details for the current project in <b style="font-weight:600;color:var(--vb-ink-3)">Settings</b>.</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ toast }}"><div style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--vb-charcoal);color:#fff;padding:11px 20px;border-radius:9px;font-size:13.5px;box-shadow:var(--vb-shadow-lg);z-index:60;animation:vbfade .2s ease-out">{{ toast }}</div></sc-if>
+
+  <input type="file" multiple ref="{{ fileInputRef }}" onChange="{{ onFilesPicked }}" style="display:none"/>
+</div>
+
+<!-- ============ PRINT DOCUMENT ============ -->
+<div class="vb-print" style="font-family:var(--vb-font-sans);color:var(--vb-ink)">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid var(--vb-ink);padding-bottom:14px;margin-bottom:20px">
+    <div><div style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--vb-ink-3)">Visibuild onboarding programme</div><div style="font-family:var(--vb-font-serif);font-size:26px;margin-top:6px">{{ projectName }}</div><div style="font-size:13px;color:var(--vb-ink-3);margin-top:3px">{{ projectClient }} · {{ projectMeta }}</div></div>
+    <div style="text-align:right;font-size:12px;color:var(--vb-ink-3);line-height:1.6"><div>Prepared by {{ csOwner }}</div><div>{{ printDate }}</div><div>{{ progressPct }}% complete</div></div>
+  </div>
+  <div style="display:flex;gap:22px;margin-bottom:22px">
+    <sc-for list="{{ printKpis }}" as="k"><div style="flex:1"><div style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--vb-ink-3)">{{ k.label }}</div><div style="font-size:24px;font-weight:600;margin-top:3px">{{ k.value }}</div></div></sc-for>
+  </div>
+  <sc-for list="{{ printPhases }}" as="p">
+    <div style="page-break-inside:avoid;margin-bottom:18px">
+      <div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--vb-line-strong);padding-bottom:5px;margin-bottom:8px"><div style="font-family:var(--vb-font-serif);font-size:17px">{{ p.label }} — {{ p.window }}</div><div style="font-size:13px;color:var(--vb-ink-3)">{{ p.detail }}</div></div>
+      <sc-for list="{{ p.tasks }}" as="t"><div style="display:flex;gap:10px;font-size:12.5px;padding:3px 0;border-bottom:1px dotted var(--vb-line)"><span style="width:14px;color:{{ t.mark }}">{{ t.box }}</span><span style="flex:1">{{ t.title }}</span><span style="width:130px;color:var(--vb-ink-3)">{{ t.owner }}</span><span style="width:70px;text-align:right;color:{{ t.riskColor }}">{{ t.dueLabel }}</span></div></sc-for>
+    </div>
+  </sc-for>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900},&quot;riskWindowDays&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:7,&quot;min&quot;:1,&quot;max&quot;:21,&quot;unit&quot;:&quot; days&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Behaviour&quot;},&quot;showTodayLine&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Programme&quot;}}">
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    this.KEY='vb-onboarding-portal-v3';
+    this.DB='vb-onb-files';
+    this.fileInputRef=React.createRef();
+    this.fileUrls={};
+    this.pending=null;
+    this._saveT=null; this._toastT=null; this._savedT=null;
+    this.state=this.load();
+  }
+
+  /* ---------------- persistence ---------------- */
+  load(){
+    let saved=null; try{ saved=JSON.parse(localStorage.getItem(this.KEY)); }catch(e){}
+    const seed=this.seed();
+    const base={ today:'2026-07-20', activeId:'p-99cr', section:'summary', pickerOpen:false, statusMenuFor:null, toast:null, saving:false, expanded:{}, groups:{workstreams:true,subs:true,rollout:true}, projects:seed };
+    if(saved && Array.isArray(saved.projects) && saved.projects.length){
+      const byId={}; seed.forEach(s=>byId[s.id]=s);
+      const projects=saved.projects.map(p=>{ if(!p.subcontractors){ p.subcontractors = byId[p.id]? JSON.parse(JSON.stringify(byId[p.id].subcontractors)) : []; } return p; });
+      return {...base, projects, activeId:saved.activeId||base.activeId, section:saved.section||'summary'};
+    }
+    return base;
+  }
+  save(){
+    this.setState({saving:true});
+    clearTimeout(this._saveT);
+    this._saveT=setTimeout(()=>{
+      try{ localStorage.setItem(this.KEY, JSON.stringify({projects:this.state.projects, activeId:this.state.activeId, section:this.state.section})); }catch(e){ console.warn('save failed',e); }
+      clearTimeout(this._savedT);
+      this._savedT=setTimeout(()=>this.setState({saving:false}), 550);
+    }, 400);
+  }
+  mutate(fn){
+    this.setState(s=>{
+      const projects=s.projects.map(p=> p.id===s.activeId ? JSON.parse(JSON.stringify(p)) : p);
+      const active=projects.find(p=>p.id===s.activeId);
+      fn(active);
+      return {projects};
+    }, ()=>this.save());
+  }
+  toast(m){ this.setState({toast:m}); clearTimeout(this._toastT); this._toastT=setTimeout(()=>this.setState({toast:null}), 2200); }
+
+  /* ---------------- IndexedDB files ---------------- */
+  openDB(){ return new Promise((res,rej)=>{ const r=indexedDB.open(this.DB,1); r.onupgradeneeded=()=>{ if(!r.result.objectStoreNames.contains('files')) r.result.createObjectStore('files',{keyPath:'id'}); }; r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); }
+  async putFile(rec){ const db=await this.openDB(); return new Promise((res,rej)=>{ const tx=db.transaction('files','readwrite'); tx.objectStore('files').put(rec); tx.oncomplete=()=>res(); tx.onerror=()=>rej(tx.error); }); }
+  async getFile(id){ const db=await this.openDB(); return new Promise(res=>{ const tx=db.transaction('files','readonly'); const q=tx.objectStore('files').get(id); q.onsuccess=()=>res(q.result); q.onerror=()=>res(null); }); }
+  async componentDidMount(){ await this.hydrate(); }
+  allFileIds(){ const p=this.active(); const ids=[]; if(!p) return ids; p.workstreams.forEach(w=>w.tasks.forEach(t=>(t.evidence||[]).forEach(e=>ids.push(e.id)))); (p.correspondences||[]).forEach(c=>(c.attachments||[]).forEach(e=>ids.push(e.id))); (p.subcontractors||[]).forEach(s=>s.trades.forEach(t=>['itps','training'].forEach(cat=>(t[cat]||[]).forEach(it=>(it.evidence||[]).forEach(e=>ids.push(e.id)))))); return ids; }
+  async hydrate(){ let changed=false; for(const id of this.allFileIds()){ if(this.fileUrls[id]) continue; const rec=await this.getFile(id); if(rec&&rec.blob){ this.fileUrls[id]=URL.createObjectURL(rec.blob); changed=true; } } if(changed) this.forceUpdate(); }
+  async ingest(list, target){
+    const metas=[];
+    for(const file of Array.from(list||[])){
+      const id='f-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,7);
+      try{ await this.putFile({id,name:file.name,type:file.type,size:file.size,blob:file}); }catch(e){ console.warn(e); }
+      this.fileUrls[id]=URL.createObjectURL(file);
+      metas.push({id,name:file.name,type:file.type,size:file.size});
+    }
+    if(!metas.length) return;
+    this.mutate(p=>{
+      if(target.kind==='task'){ const t=this.findTask(p,target.id); if(t){ t.evidence=(t.evidence||[]).concat(metas); } }
+      else if(target.kind==='item'){ const it=this.findItem(p,target.sid,target.tid,target.cat,target.id); if(it){ it.evidence=(it.evidence||[]).concat(metas); } }
+      else if(target.kind==='corr'){ const c=(p.correspondences||[]).find(x=>x.id===target.id); if(c){ c.attachments=(c.attachments||[]).concat(metas); } }
+    });
+    this.toast(metas.length+' file'+(metas.length>1?'s':'')+' attached');
+  }
+  openPicker(target){ this.pending=target; if(this.fileInputRef.current) this.fileInputRef.current.click(); }
+
+  /* ---------------- helpers ---------------- */
+  active(){ return this.state.projects.find(p=>p.id===this.state.activeId) || this.state.projects[0]; }
+  findTask(p,id){ for(const w of p.workstreams){ const t=w.tasks.find(x=>x.id===id); if(t) return t; } return null; }
+  allTasks(p){ const a=[]; p.workstreams.forEach(w=>w.tasks.forEach(t=>a.push({...t,wsId:w.id,wsName:w.name}))); return a; }
+  dt(iso){ return new Date(iso+'T00:00:00'); }
+  diff(a,b){ return Math.round((this.dt(b)-this.dt(a))/86400000); }
+  fmt(iso){ const d=this.dt(iso); return d.getDate()+' '+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]; }
+  inits(n){ const m=(n||'').replace(/\(.*\)/,'').trim().split(/\s+/); return ((m[0]||'')[0]||'')+((m[1]||'')[0]||''); }
+  avatarColor(role){ return role==='Visibuild CS'?'var(--vb-mid-green)':role==='Client'?'var(--vb-blue)':'var(--vb-purple)'; }
+  riskWin(){ return this.props.riskWindowDays!=null?this.props.riskWindowDays:7; }
+  risk(t){ const S=this.STATUS; if(t.status==='done') return {key:'done',label:'Complete',color:'var(--vb-pass)'}; const d=this.diff(this.state.today,t.due); if(d<0) return {key:'overdue',label:(-d)+'d overdue',color:'var(--vb-defect)'}; if(d<=this.riskWin()) return {key:'soon',label:d===0?'Due today':'Due in '+d+'d',color:'var(--vb-hold)'}; return {key:'ontrack',label:'On track',color:'var(--vb-ink-4)'}; }
+  get STATUS(){ return {
+    not_started:{label:'Not started',bar:'#C6CAD0',bg:'var(--vb-charcoal-10)',fg:'var(--vb-ink-2)',dot:'#9AA1A9'},
+    in_progress:{label:'In progress',bar:'var(--vb-blue)',bg:'#E3EAFF',fg:'#2947C4',dot:'var(--vb-blue)'},
+    blocked:{label:'Blocked',bar:'var(--vb-defect)',bg:'var(--vb-defect-soft)',fg:'#9A2617',dot:'var(--vb-defect)'},
+    done:{label:'Done',bar:'var(--vb-pass)',bg:'var(--vb-pass-soft)',fg:'#004C3D',dot:'var(--vb-pass)'} }; }
+  STATUS_KEYS(){ return ['not_started','in_progress','blocked','done']; }
+  wsDesc(id){ return ({
+    loc:'Set up the project structure and location tree so every inspection has a home — levels, zones and lots.',
+    tpl:'Configure the ITP and ITC template library so every inspection is standardised and compliant.',
+    trades:'Invite, train and activate each trade partner — from first login to their first completed inspection.',
+    train:'Get the client\u2019s admin and field teams confident in Visibuild with hands-on sessions.',
+    doc:'Connect the drawing register and revision workflow so the field always works from current drawings.',
+    data:'Bring historical NCRs, registers and tickets across so nothing starts from a blank slate.',
+    prog:'Link Visibuild milestones to the master programme and configure the progress trackers.',
+    golive:'Take the project live and drive adoption through the 30 / 60 / 90-day checkpoints.'
+  })[id]||''; }
+  fileExt(n){ const p=(n||'').split('.'); return (p.length>1?p.pop():'file').slice(0,4).toUpperCase(); }
+  sizeLabel(b){ if(b==null) return ''; if(b<1024) return b+' B'; if(b<1048576) return (b/1024).toFixed(0)+' KB'; return (b/1048576).toFixed(1)+' MB'; }
+  isImg(t){ return (t||'').indexOf('image/')===0; }
+  evView(list, kind, ownerId, size){ size=size||30; return (list||[]).map(e=>{ const isImage=this.isImg(e.type)&&!!this.fileUrls[e.id]; return { ...e, isImage, isFile:!isImage, ext:this.fileExt(e.name), sizeLabel:this.sizeLabel(e.size), imgStyle:isImage?{width:size+'px',height:size+'px',flex:'none',borderRadius:'4px',backgroundSize:'cover',backgroundPosition:'center',backgroundImage:'url("'+this.fileUrls[e.id]+'")'}:null, onRemove:(ev)=>{ if(ev&&ev.stopPropagation)ev.stopPropagation(); this.removeFile(kind,ownerId,e.id); } }; }); }
+  removeFile(kind,owner,fileId){ this.mutate(p=>{ let holder=null,key='evidence'; if(kind==='task'){ holder=this.findTask(p,owner); } else if(kind==='item'){ holder=this.findItem(p,owner.sid,owner.tid,owner.cat,owner.iid); } else { holder=(p.correspondences||[]).find(x=>x.id===owner); key='attachments'; } if(holder) holder[key]=(holder[key]||[]).filter(x=>x.id!==fileId); }); }
+
+  /* ---------------- navigation & mutations ---------------- */
+  go(section){ this.setState({section, statusMenuFor:null, pickerOpen:false}, ()=>this.save()); }
+  startGanttDrag(e){ e.preventDefault(); const startX=e.clientX, startW=this.state.ganttNameW||300; const move=ev=>{ const w=Math.max(160,Math.min(560,startW+(ev.clientX-startX))); this.setState({ganttNameW:w}); }; const up=()=>{ window.removeEventListener('mousemove',move); window.removeEventListener('mouseup',up); this.save(); }; window.addEventListener('mousemove',move); window.addEventListener('mouseup',up); }
+  pickProject(id){ this.setState({activeId:id, pickerOpen:false, section:'summary', statusMenuFor:null}, ()=>{ this.save(); this.hydrate(); }); }
+  addProject(){ const id='p-'+Date.now().toString(36); const WS=[['loc','Location tree'],['tpl','Templates & ITP/ITC'],['train','Training'],['doc','Document control'],['data','Data import'],['prog','Programme & milestones'],['golive','Go-live & adoption']]; const proj={id,name:'New project',client:'Client',code:'NEW',sector:'Sector · Type',region:'Region',start:this.state.today,golive:this.addDays(this.state.today,90),csOwner:'',workstreams:WS.map(([wid,name])=>({id:wid,name,tasks:[]})),subcontractors:[],correspondences:[],comments:[]}; this.setState(s=>({projects:[...s.projects,proj],activeId:id,pickerOpen:false,section:'settings',statusMenuFor:null}),()=>{ this.save(); this.hydrate(); }); this.toast('Project created'); }
+  delProject(id){ if(this.state.projects.length<=1){ this.toast('Cannot delete the only project'); return; } this.setState(s=>{ const projects=s.projects.filter(p=>p.id!==id); const activeId=s.activeId===id?projects[0].id:s.activeId; return {projects,activeId,statusMenuFor:null}; },()=>{ this.save(); this.hydrate(); }); this.toast('Project deleted'); }
+  setStatus(id,key){ this.mutate(p=>{ const t=this.findTask(p,id); if(t) t.status=key; }); this.setState({statusMenuFor:null}); }
+  edit(id,field,val){ this.mutate(p=>{ const t=this.findTask(p,id); if(t) t[field]=val; }); }
+  addNote(id){ this.mutate(p=>{ const t=this.findTask(p,id); if(t){ t.notes=t.notes||[]; t.notes.push({id:'n-'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),text:''}); } }); }
+  editNote(id,nid,v){ this.mutate(p=>{ const t=this.findTask(p,id); if(t&&t.notes){ const n=t.notes.find(x=>x.id===nid); if(n)n.text=v; } }); }
+  delNote(id,nid){ this.mutate(p=>{ const t=this.findTask(p,id); if(t)t.notes=(t.notes||[]).filter(x=>x.id!==nid); }); }
+  addTask(wsId){ this.mutate(p=>{ const w=p.workstreams.find(x=>x.id===wsId); if(w){ const ph=this.state.section.indexOf('phase:')===0?this.state.section.slice(6):'60'; w.tasks.push({id:'t-'+Date.now().toString(36),title:'New task',owner:this.active().csOwner,role:'Visibuild CS',phase:ph,status:'not_started',start:this.state.today,due:this.addDays(this.state.today,14),note:'',evidence:[],comments:[]}); } }); }
+  addDays(iso,n){ const d=this.dt(iso); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10); }
+  delTask(id){ this.mutate(p=>{ p.workstreams.forEach(w=>{ w.tasks=w.tasks.filter(t=>t.id!==id); }); }); this.toast('Task deleted'); }
+  reorder(targetId){ const drag=this._dragId; if(!drag||drag===targetId) return; this.mutate(p=>{ for(const w of p.workstreams){ const from=w.tasks.findIndex(t=>t.id===drag); const to=w.tasks.findIndex(t=>t.id===targetId); if(from>-1&&to>-1){ const [m]=w.tasks.splice(from,1); w.tasks.splice(to,0,m); break; } } }); this._dragId=null; }
+  addCorr(){ this.mutate(p=>{ p.correspondences=p.correspondences||[]; p.correspondences.unshift({id:'c-'+Date.now().toString(36),date:this.state.today,who:'',channel:'email',summary:'',attachments:[]}); }); }
+  editCorr(id,f,v){ this.mutate(p=>{ const c=(p.correspondences||[]).find(x=>x.id===id); if(c) c[f]=v; }); }
+  delCorr(id){ this.mutate(p=>{ p.correspondences=(p.correspondences||[]).filter(x=>x.id!==id); }); }
+  addComment(){ this.mutate(p=>{ p.comments=p.comments||[]; p.comments.unshift({id:'m-'+Date.now().toString(36),author:this.active().csOwner,when:this.fmt(this.state.today),text:''}); }); }
+  editComment(id,v){ this.mutate(p=>{ const c=(p.comments||[]).find(x=>x.id===id); if(c) c.text=v; }); }
+  delComment(id){ this.mutate(p=>{ p.comments=(p.comments||[]).filter(x=>x.id!==id); }); }
+  exportPdf(){ window.print(); }
+  toggleGroup(k){ this.setState(s=>({groups:{...s.groups,[k]:!s.groups[k]}})); }
+  toggleNode(k){ this.setState(s=>({expanded:{...s.expanded,[k]:!s.expanded[k]}})); }
+  findSub(p,id){ return (p.subcontractors||[]).find(s=>s.id===id); }
+  findTrade(p,sid,tid){ const s=this.findSub(p,sid); return s?s.trades.find(t=>t.id===tid):null; }
+  ragColorItems(items){ if(items.some(i=>i.status==='blocked'))return 'var(--vb-defect)'; const open=items.filter(i=>i.status!=='done'); if(items.length&&!open.length)return 'var(--vb-pass)'; if(open.length)return 'var(--vb-blue)'; return 'var(--vb-charcoal-20)'; }
+  itemView(sid,tid,cat,list){ const S=this.STATUS, st=this.state; return (list||[]).map(i=>{ const status=i.status||'not_started'; const meta=S[status]||S.not_started; const due=i.due||''; const owner=i.owner||''; const open=st.statusMenuFor===i.id;
+    const risk = status==='done' ? {label:'Complete',color:'var(--vb-pass)',key:'done'} : (due?this.risk({status,due}):{label:'No date',color:'var(--vb-ink-4)',key:''});
+    return { id:i.id, title:i.title, owner, ownerInitials:this.inits(owner)||'–', ownerBg:this.avatarColor(i.role||'Trade partner'), due, phase:i.phase||'60',
+      statusLabel:meta.label, statusBg:meta.bg, statusFg:meta.fg, statusDot:meta.dot, riskLabel:risk.label, riskColor:risk.color, menuOpen:open,
+      cardStyle:'background:var(--vb-surface);border:1px solid '+(risk.key==='overdue'?'var(--vb-defect)':'var(--vb-line)')+';border-radius:8px;padding:12px 13px',
+      dropStyle:'display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:11px',
+      onTitle:e=>this.editItem(sid,tid,cat,i.id,'title',e.target.value),
+      onOwner:e=>this.editItem(sid,tid,cat,i.id,'owner',e.target.value),
+      onDue:e=>this.editItem(sid,tid,cat,i.id,'due',e.target.value),
+      onPhase:e=>this.editItem(sid,tid,cat,i.id,'phase',e.target.value),
+      onOpenStatus:()=>this.setState(s=>({statusMenuFor:s.statusMenuFor===i.id?null:i.id})),
+      statusMenu:this.STATUS_KEYS().map(k=>({label:S[k].label,dot:S[k].dot,onPick:()=>this.setItemStatus(sid,tid,cat,i.id,k)})),
+      onDelete:()=>this.delItem(sid,tid,cat,i.id),
+      onDragOverFiles:e=>e.preventDefault(), onDropFiles:e=>{ e.preventDefault(); if(e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files.length) this.ingest(e.dataTransfer.files,{kind:'item',sid,tid,cat,id:i.id}); },
+      onAttach:()=>this.openPicker({kind:'item',sid,tid,cat,id:i.id}),
+      evidence:this.evView(i.evidence,'item',{sid,tid,cat,iid:i.id}) }; }); }
+  editSub(id,v){ this.mutate(p=>{ const s=this.findSub(p,id); if(s)s.name=v; }); }
+  editTrade(sid,tid,v){ this.mutate(p=>{ const t=this.findTrade(p,sid,tid); if(t)t.name=v; }); }
+  editItem(sid,tid,cat,iid,f,v){ this.mutate(p=>{ const t=this.findTrade(p,sid,tid); if(t){ const it=(t[cat]||[]).find(x=>x.id===iid); if(it)it[f]=v; } }); }
+  cycleItem(sid,tid,cat,iid){ const K=this.STATUS_KEYS(); this.mutate(p=>{ const t=this.findTrade(p,sid,tid); if(t){ const it=(t[cat]||[]).find(x=>x.id===iid); if(it) it.status=K[(K.indexOf(it.status)+1)%K.length]; } }); }
+  addSub(){ this.mutate(p=>{ p.subcontractors=p.subcontractors||[]; p.subcontractors.push({id:'s-'+Date.now().toString(36),name:'New subcontractor',trades:[]}); }); }
+  delSub(id){ this.mutate(p=>{ p.subcontractors=(p.subcontractors||[]).filter(s=>s.id!==id); }); this.toast('Subcontractor removed'); }
+  addTrade(sid){ const tid='t-'+Date.now().toString(36); this.mutate(p=>{ const s=this.findSub(p,sid); if(s){ s.trades.push({id:tid,name:'New trade',itps:[this.newItem('ITP submission & digitisation')],training:[this.newItem('Field training')]}); } }); this.setState(s=>({expanded:{...s.expanded,['sub:'+sid]:true,['trade:'+tid]:true}})); }
+  delTrade(sid,tid){ this.mutate(p=>{ const s=this.findSub(p,sid); if(s)s.trades=s.trades.filter(t=>t.id!==tid); }); }
+  addItem(sid,tid,cat){ this.mutate(p=>{ const t=this.findTrade(p,sid,tid); if(t){ t[cat]=t[cat]||[]; t[cat].push(this.newItem(cat==='itps'?'New ITP':'New training')); } }); }
+  delItem(sid,tid,cat,iid){ this.mutate(p=>{ const t=this.findTrade(p,sid,tid); if(t)t[cat]=(t[cat]||[]).filter(x=>x.id!==iid); }); }
+  findItem(p,sid,tid,cat,iid){ const t=this.findTrade(p,sid,tid); return t?(t[cat]||[]).find(x=>x.id===iid):null; }
+  newItem(title){ return {id:'it-'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),title,status:'not_started',owner:'',role:'Trade partner',phase:'60',due:this.addDays(this.state.today,21),evidence:[]}; }
+  setItemStatus(sid,tid,cat,iid,key){ this.mutate(p=>{ const it=this.findItem(p,sid,tid,cat,iid); if(it)it.status=key; }); this.setState({statusMenuFor:null}); }
+  editProject(f,v){ this.mutate(p=>{ p[f]=v; }); }
+  editWs(id,v){ this.mutate(p=>{ const w=p.workstreams.find(x=>x.id===id); if(w)w.name=v; }); }
+  delWs(id){ this.mutate(p=>{ p.workstreams=p.workstreams.filter(w=>w.id!==id); }); this.setState({section:'summary'}); this.toast('Workstream deleted'); }
+  addWs(){ const id='ws-'+Date.now().toString(36); this.mutate(p=>{ p.workstreams.push({id,name:'New workstream',tasks:[]}); }); this.go('ws:'+id); }
+  setFilter(f,v){ this.setState({[f]:v}); }
+
+  /* ---------------- view models ---------------- */
+  navRow(active){ return 'display:flex;align-items:center;gap:10px;width:100%;padding:9px 11px;margin-bottom:2px;border:none;border-radius:8px;cursor:pointer;font-size:13.5px;font-weight:'+(active?'600':'400')+';color:'+(active?'#fff':'var(--vb-charcoal-20)')+';background:'+(active?'rgba(41,255,122,.12)':'transparent')+';box-shadow:'+(active?'inset 3px 0 0 var(--vb-green)':'none')+';transition:background .12s'; }
+  badge(active){ return 'font-size:11px;font-variant-numeric:tabular-nums;padding:1px 7px;border-radius:10px;background:'+(active?'rgba(255,255,255,.16)':'rgba(255,255,255,.08)')+';color:'+(active?'#fff':'var(--vb-charcoal-20)'); }
+  ragColor(tasks){ const win=this.riskWin(); let overdue=0,soon=0,open=0; tasks.forEach(t=>{ if(t.status==='done')return; open++; const d=this.diff(this.state.today,t.due); if(d<0)overdue++; else if(d<=win)soon++; }); if(overdue)return 'var(--vb-defect)'; if(soon)return 'var(--vb-hold)'; if(open)return 'var(--vb-blue)'; return 'var(--vb-pass)'; }
+
+  renderVals(){
+    const S=this.STATUS, p=this.active(), st=this.state;
+    const all=this.allTasks(p);
+    const done=all.filter(t=>t.status==='done').length, total=all.length;
+    const pct=total?Math.round(done/total*100):0;
+    const legend=this.STATUS_KEYS().map(k=>({label:S[k].label,color:S[k].bar,count:all.filter(t=>t.status===k).length}));
+    const sec=st.section;
+    const out={
+      userInitials:'NP', csOwner:p.csOwner,
+      projectName:p.name, projectClient:p.client, projectCode:p.code, projectMeta:p.sector+' · '+p.region,
+      progressPct:pct, printDate:this.fmt(st.today)+' 2026',
+      saveDotColor: st.saving?'var(--vb-hold)':'var(--vb-green)', savedLabel: st.saving?'Saving…':'All changes saved',
+      toast: st.toast, pickerOpen: st.pickerOpen,
+      onExport:()=>this.exportPdf(), onOpenPicker:()=>this.setState({pickerOpen:true}), onClosePicker:()=>this.setState({pickerOpen:false}), stop:(e)=>e.stopPropagation(),
+      fileInputRef:this.fileInputRef, onFilesPicked:(e)=>{ if(this.pending) this.ingest(e.target.files,this.pending); e.target.value=''; },
+      showTodayLine: this.props.showTodayLine!==false,
+      isSummary:sec==='summary', isProgramme:sec==='programme', isCorr:sec==='correspondences', isComments:sec==='comments', isSettings:sec==='settings',
+      isTaskList: sec.indexOf('ws:')===0 || sec.indexOf('phase:')===0,
+      statusLegend:legend,
+      phaseOptions:[{value:'30',label:'30-day'},{value:'60',label:'60-day'},{value:'90',label:'90-day'}],
+      channelOptions:[{value:'email',label:'Email'},{value:'call',label:'Call'},{value:'meeting',label:'Meeting'},{value:'site',label:'Site visit'}],
+    };
+
+    // ---- nav ----
+    const mk=(key,label,badge)=>({label,badge,onClick:()=>this.go(key),rowStyle:this.navRow(sec===key),badgeStyle:this.badge(sec===key)});
+    out.topNav=[ mk('summary','Onboarding summary',null), mk('programme','Programme',null), mk('correspondences','Correspondences',(p.correspondences||[]).length||null) ];
+    out.wsNav=p.workstreams.map(w=>{ const key='ws:'+w.id; const outstanding=w.tasks.filter(t=>t.status!=='done').length; const r=mk(key,w.name,outstanding||null); r.dot=this.ragColor(w.tasks); return r; });
+    out.rollNav=['30','60','90'].map(ph=>{ const key='phase:'+ph; const ts=all.filter(t=>t.phase===ph); const d=ts.filter(t=>t.status==='done').length; const r=mk(key,ph+'-day',ts.length?Math.round(d/ts.length*100)+'%':'0%'); return r; });
+    out.commentsNav=mk('comments','Comments',(p.comments||[]).length||null);
+    out.settingsNav=mk('settings','Settings',null);
+    out.onAddWs=()=>this.addWs();
+    out.groupWsOpen=st.groups.workstreams!==false; out.groupSubsOpen=st.groups.subs!==false; out.groupRollOpen=st.groups.rollout!==false;
+    out.wsChevron=out.groupWsOpen?'▾':'▸'; out.subsChevron=out.groupSubsOpen?'▾':'▸'; out.rollChevron=out.groupRollOpen?'▾':'▸';
+    out.toggleWs=()=>this.toggleGroup('workstreams'); out.toggleSubs=()=>this.toggleGroup('subs'); out.toggleRoll=()=>this.toggleGroup('rollout');
+    out.goSubs=()=>this.go('subs'); out.isSubs=sec==='subs'; out.subsHeaderColor=sec==='subs'?'#fff':'#6b7683';
+    out.subsNav=(p.subcontractors||[]).map(s=>{ const items=[]; s.trades.forEach(t=>{(t.itps||[]).forEach(i=>items.push(i));(t.training||[]).forEach(i=>items.push(i));}); const outstanding=items.filter(i=>i.status!=='done').length; return {label:s.name,badge:outstanding||null,dot:this.ragColorItems(items),onClick:()=>{ this.setState(z=>({section:'subs',pickerOpen:false,statusMenuFor:null,expanded:{...z.expanded,['sub:'+s.id]:true}}),()=>this.save()); },rowStyle:this.navRow(false),badgeStyle:this.badge(false)}; });
+    out.hasSubs=(p.subcontractors||[]).length>0; out.noSubs=!out.hasSubs;
+
+    // ---- summary ----
+    if(out.isSummary){
+      const outstanding=total-done;
+      const overdue=all.filter(t=>t.status!=='done'&&this.diff(st.today,t.due)<0).length;
+      const dtg=this.diff(st.today,p.golive);
+      const dayNo=this.diff(p.start,st.today), span=this.diff(p.start,p.golive);
+      out.progressRing='conic-gradient(var(--vb-pass) '+pct+'%, var(--vb-charcoal-10) 0)';
+      out.progressSub=done+' of '+total+' tasks complete';
+      out.dayCounter='Day '+dayNo+' of '+span;
+      const curPhase=dayNo<=30?'30':dayNo<=60?'60':'90';
+      out.phaseLabel=({'30':'Setup phase','60':'First-inspections phase','90':'Adoption phase'})[curPhase];
+      out.phaseColor=({'30':'var(--vb-blue)','60':'var(--vb-hold)','90':'var(--vb-mid-green)'})[curPhase];
+      out.kpis=[
+        {label:'Complete',value:String(done),sub:'signed off',color:'var(--vb-ink)'},
+        {label:'Outstanding',value:String(outstanding),sub:'still to do',color:'var(--vb-ink)'},
+        {label:'Overdue',value:String(overdue),sub:overdue?'need attention now':'nothing overdue',color:overdue?'var(--vb-defect)':'var(--vb-ink)'},
+        {label:'Days to go-live',value:String(dtg),sub:this.fmt(p.golive)+' target',color:'var(--vb-ink)'},
+      ];
+      out.workstreamBars=p.workstreams.map(w=>{ const tt=w.tasks.length; const segs=this.STATUS_KEYS().slice().reverse().map(k=>{ const c=w.tasks.filter(t=>t.status===k).length; return {style:{width:(tt?c/tt*100:0)+'%',height:'100%',background:S[k].bar},title:c?c+' '+S[k].label.toLowerCase():''}; }); const d=w.tasks.filter(t=>t.status==='done').length; const od=w.tasks.filter(t=>t.status!=='done'&&this.diff(st.today,t.due)<0).length; const breakdown=this.STATUS_KEYS().map(k=>{const c=w.tasks.filter(t=>t.status===k).length; return c?c+' '+S[k].label.toLowerCase():null;}).filter(Boolean).join(', '); const isOpen=!!st.expanded['sumws:'+w.id];
+        return {name:w.name,segments:segs,countLabel:tt?d+'/'+tt:'—',countColor:od?'var(--vb-defect)':'var(--vb-ink-3)',title:w.name+' — '+(breakdown||'no tasks')+(od?' · '+od+' overdue':''),open:isOpen,caret:isOpen?'▾':'›',
+          onToggle:()=>this.setState(s=>({expanded:{...s.expanded,['sumws:'+w.id]:!s.expanded['sumws:'+w.id]}})),
+          onOpen:()=>this.go('ws:'+w.id),
+          tasks:w.tasks.map(t=>{ const m=S[t.status]||S.not_started; const r=this.risk(t); return {title:t.title,dot:m.dot,statusLabel:m.label,riskLabel:t.status==='done'?'':r.label,riskColor:r.color,due:this.fmt(t.due),onClick:()=>this.go('ws:'+w.id)}; }) }; });
+      out.phaseHealth=['30','60','90'].map(ph=>{ const ts=all.filter(t=>t.phase===ph); const d=ts.filter(t=>t.status==='done').length; const od=ts.filter(t=>t.status!=='done'&&this.diff(st.today,t.due)<0).length; const pc=ts.length?Math.round(d/ts.length*100):0; const win=({'30':'Setup & config','60':'First live inspections','90':'Full adoption'})[ph]; let sl='On track',pb='var(--vb-info-soft)',pf='#2947C4'; if(pc===100){sl='Complete';pb='var(--vb-pass-soft)';pf='#004C3D';} else if(od){sl='At risk';pb='var(--vb-defect-soft)';pf='#9A2617';} return {label:ph+'-day',window:win,statusLabel:sl,pillBg:pb,pillFg:pf,barStyle:{width:pc+'%',height:'100%',background:od?'var(--vb-defect)':'var(--vb-pass)'},detail:d+' of '+ts.length+' done'+(od?' · '+od+' overdue':'')}; });
+      const bmap={}; all.forEach(t=>{ if(t.status==='done')return; const r=this.risk(t); if(r.key==='overdue'||r.key==='soon'){ const k=t.owner; bmap[k]=bmap[k]||{name:t.owner,role:t.role,overdue:0,soon:0}; if(r.key==='overdue')bmap[k].overdue++; else bmap[k].soon++; } });
+      out.behind=Object.values(bmap).sort((a,b)=>b.overdue-a.overdue||b.soon-a.soon).map(x=>({name:x.name,role:x.role,initials:this.inits(x.name),avatarBg:this.avatarColor(x.role),color:x.overdue?'var(--vb-defect)':'var(--vb-hold)',summary:(x.overdue?x.overdue+' overdue':'')+(x.overdue&&x.soon?' · ':'')+(x.soon?x.soon+' due soon':'')}));
+      out.hasBehind=out.behind.length>0; out.noBehind=out.behind.length===0;
+      out.upcoming=all.filter(t=>t.status!=='done').sort((a,b)=>this.dt(a.due)-this.dt(b.due)).slice(0,6).map(t=>{ const r=this.risk(t); return {title:t.title,meta:t.wsName+' · '+t.owner+' · due '+this.fmt(t.due),riskColor:r.color,riskLabel:r.label,onClick:()=>this.go('ws:'+t.wsId)}; });
+    }
+
+    // ---- programme (gantt) ----
+    if(out.isProgramme){
+      out.ganttNameW=(st.ganttNameW||300)+'px'; out.onGanttDrag=e=>this.startGanttDrag(e);
+      const winDays=Math.max(1,this.diff(p.start,p.golive));
+      const pos=iso=>Math.max(0,Math.min(100,this.diff(p.start,iso)/winDays*100));
+      out.windowLabel=this.fmt(p.start)+' – '+this.fmt(p.golive)+' 2026';
+      const p30=pos(this.addDays(p.start,30)), p60=pos(this.addDays(p.start,60));
+      out.phaseCells=[
+        {label:'0–30 days',sub:'Setup & config',style:{width:p30+'%',flex:'none',padding:'12px 16px',fontSize:'11px',fontWeight:'600',letterSpacing:'.05em',textTransform:'uppercase',color:'var(--vb-ink-3)',borderRight:'1px solid var(--vb-line)'}},
+        {label:'30–60 days',sub:'First inspections',style:{width:(p60-p30)+'%',flex:'none',padding:'12px 16px',fontSize:'11px',fontWeight:'600',letterSpacing:'.05em',textTransform:'uppercase',color:'var(--vb-ink-3)',borderRight:'1px solid var(--vb-line)'}},
+        {label:'60–90 days',sub:'Full adoption',style:{flex:'1',padding:'12px 16px',fontSize:'11px',fontWeight:'600',letterSpacing:'.05em',textTransform:'uppercase',color:'var(--vb-ink-3)'}},
+      ];
+      out.gridlines=[p30,p60].map(x=>({style:{position:'absolute',top:'0',bottom:'0',left:x+'%',width:'1px',background:'var(--vb-line)'}}));
+      out.todayStyle={position:'absolute',top:'0',bottom:'0',left:pos(st.today)+'%',width:'2px',background:'var(--vb-defect)',zIndex:'3'};
+      out.ganttGroups=p.workstreams.filter(w=>w.tasks.length).map(w=>({ name:w.name, meta:w.tasks.filter(t=>t.status==='done').length+'/'+w.tasks.length+' done',
+        rows:w.tasks.slice().sort((a,b)=>this.dt(a.start)-this.dt(b.start)).map(t=>{ const l=pos(t.start), r=pos(t.due), width=Math.max(r-l,1.4); const meta=S[t.status]; const risk=this.risk(t);
+          return { title:t.title, dot:meta.dot, dueLabel:this.fmt(t.due),
+            barStyle:{position:'absolute',top:'11px',height:'18px',left:l+'%',width:width+'%',minWidth:'8px',borderRadius:'5px',background:meta.bar,display:'flex',alignItems:'center',boxShadow:risk.key==='overdue'?'0 0 0 1.5px var(--vb-defect)':'none',zIndex:'2'},
+            barLabelStyle:{position:'absolute',left:'calc(100% + 6px)',fontSize:'11px',whiteSpace:'nowrap',color:risk.color,fontWeight:'500'},
+            onClick:()=>this.go('ws:'+w.id) }; }) }));
+    }
+
+    // ---- task list (workstream or phase) ----
+    if(out.isTaskList){
+      let tasks=[], title='', kicker='', desc='', canAdd=false, addFn=()=>{};
+      const isWs=sec.indexOf('ws:')===0;
+      if(isWs){ const wsId=sec.slice(3); const w=p.workstreams.find(x=>x.id===wsId); tasks=w?w.tasks:[]; title=w?w.name:''; kicker='Workstream'; desc=this.wsDesc(wsId); canAdd=true; addFn=()=>this.addTask(wsId); }
+      else { const ph=sec.slice(6); tasks=all.filter(t=>t.phase===ph); title=ph+'-day milestone'; kicker='Rollout'; desc=({'30':'Everything that must be set up and configured in the first 30 days.','60':'First live inspections on site — the product proving itself with real work.','90':'Full adoption: every trade active and the project self-sufficient.'})[ph]; canAdd=false; }
+      out.isWorkstream=isWs; out.isPhaseList=!isWs; out.wsId=isWs?sec.slice(3):null; out.onWsTitle=e=>this.editWs(out.wsId,e.target.value); out.onWsDelete=()=>this.delWs(out.wsId);
+      // filters
+      const sf=st.taskStatusFilter||'all', pf=st.taskPhaseFilter||'all', sort=st.taskSort||'order';
+      const chip=(active)=>'padding:6px 12px;border-radius:7px;border:1px solid '+(active?'var(--vb-ink)':'var(--vb-line-strong)')+';background:'+(active?'var(--vb-ink)':'var(--vb-surface)')+';color:'+(active?'#fff':'var(--vb-ink-3)')+';font-size:12.5px;font-weight:500;cursor:pointer';
+      out.statusFilters=[['all','All'],['outstanding','Outstanding'],['overdue','Overdue'],['done','Complete']].map(x=>({label:x[1],onClick:()=>this.setFilter('taskStatusFilter',x[0]),style:chip(sf===x[0])}));
+      out.showPhaseFilter=isWs;
+      out.phaseFilters=[['all','All phases'],['30','30-day'],['60','60-day'],['90','90-day']].map(x=>({label:x[1],onClick:()=>this.setFilter('taskPhaseFilter',x[0]),style:chip(pf===x[0])}));
+      out.sortToggle={label:sort==='due'?'▾ Due date':'↕ Manual order',onClick:()=>this.setFilter('taskSort',sort==='due'?'order':'due'),style:chip(sort==='due')};
+      let filtered=tasks.slice();
+      if(sf==='outstanding') filtered=filtered.filter(t=>t.status!=='done');
+      else if(sf==='done') filtered=filtered.filter(t=>t.status==='done');
+      else if(sf==='overdue') filtered=filtered.filter(t=>t.status!=='done'&&this.diff(st.today,t.due)<0);
+      if(isWs && pf!=='all') filtered=filtered.filter(t=>t.phase===pf);
+      if(sort==='due') filtered=filtered.slice().sort((a,b)=>this.dt(a.due)-this.dt(b.due));
+      const canDrag=(sort==='order'&&sf==='all'&&pf==='all');
+      const dn=tasks.filter(t=>t.status==='done').length;
+      out.listTitle=title; out.listKicker=kicker; out.listDesc=desc; out.listPct=tasks.length?Math.round(dn/tasks.length*100):0; out.listCountLabel=(filtered.length!==tasks.length?filtered.length+' of '+tasks.length+' shown · ':'')+dn+' of '+tasks.length+' done'; out.canAddTask=canAdd; out.onAddTask=addFn; out.listEmpty=tasks.length===0; out.filterEmpty=filtered.length===0&&tasks.length>0;
+      out.tasks=filtered.map(t=>{ const meta=S[t.status]; const risk=this.risk(t); const open=st.statusMenuFor===t.id;
+        return { id:t.id, title:t.title, owner:t.owner, ownerRole:t.role, ownerInitials:this.inits(t.owner), ownerBg:this.avatarColor(t.role), due:t.due, phase:t.phase,
+          onPhase:e=>this.edit(t.id,'phase',e.target.value),
+          phaseLabel:t.phase+'-day', statusLabel:meta.label, statusBg:meta.bg, statusFg:meta.fg, statusDot:meta.dot, riskLabel:risk.label, riskColor:risk.color,
+          menuOpen:open, canDrag,
+          cardStyle:'background:var(--vb-surface);border:1px solid '+(risk.key==='overdue'?'var(--vb-defect)':'var(--vb-line)')+';border-radius:8px;box-shadow:var(--vb-shadow-sm);padding:15px 16px',
+          gripStyle:'flex:none;width:16px;height:36px;display:flex;align-items:center;justify-content:center;cursor:grab;color:var(--vb-ink-4)',
+          dropStyle:'display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:11px;padding:6px;border-radius:8px;padding-left:5px',
+          notesList:(t.notes||(t.note?[{id:t.id+'-lg',text:t.note}]:[])).map(n=>({id:n.id,text:n.text,onText:e=>this.editNote(t.id,n.id,e.target.value),onDelete:()=>this.delNote(t.id,n.id)})), hasNotes:(t.notes||[]).length>0, onAddNote:()=>this.addNote(t.id),
+          onTitle:e=>this.edit(t.id,'title',e.target.value), onOwner:e=>this.edit(t.id,'owner',e.target.value), onDue:e=>this.edit(t.id,'due',e.target.value),
+          onOpenStatus:()=>this.setState(s=>({statusMenuFor:s.statusMenuFor===t.id?null:t.id})),
+          statusMenu:this.STATUS_KEYS().map(k=>({label:S[k].label,dot:S[k].dot,onPick:()=>this.setStatus(t.id,k)})),
+          onDelete:()=>this.delTask(t.id),
+          onDragStart:()=>{ this._dragId=t.id; }, onDragOver:e=>e.preventDefault(), onDropRow:e=>{ e.preventDefault(); this.reorder(t.id); },
+          onDragOverFiles:e=>e.preventDefault(), onDropFiles:e=>{ e.preventDefault(); if(e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files.length) this.ingest(e.dataTransfer.files,{kind:'task',id:t.id}); }, onAttach:()=>this.openPicker({kind:'task',id:t.id}),
+          evidence:this.evView(t.evidence,'task',t.id) }; });
+    }
+
+    // ---- subcontractors ----
+    if(out.isSubs){
+      out.onAddSub=()=>this.addSub();
+      out.subs=(p.subcontractors||[]).map(s=>{ const items=[]; s.trades.forEach(t=>{(t.itps||[]).forEach(i=>items.push(i));(t.training||[]).forEach(i=>items.push(i));}); const dn=items.filter(i=>i.status==='done').length; const open=!!st.expanded['sub:'+s.id];
+        return { id:s.id, name:s.name, open, chevron:open?'▾':'▸', dot:this.ragColorItems(items), summary:s.trades.length+' trade'+(s.trades.length!==1?'s':'')+' · '+dn+'/'+items.length+' items', noTrades:s.trades.length===0,
+          onToggle:()=>this.toggleNode('sub:'+s.id), onName:e=>this.editSub(s.id,e.target.value), onDelete:()=>this.delSub(s.id), onAddTrade:()=>this.addTrade(s.id),
+          trades:s.trades.map(t=>{ const ti=(t.itps||[]).concat(t.training||[]); const tdn=ti.filter(i=>i.status==='done').length; const topen=!!st.expanded['trade:'+t.id];
+            return { id:t.id, name:t.name, open:topen, chevron:topen?'▾':'▸', progress:tdn+'/'+ti.length, onToggle:()=>this.toggleNode('trade:'+t.id), onName:e=>this.editTrade(s.id,t.id,e.target.value), onDelete:()=>this.delTrade(s.id,t.id), onAddItp:()=>this.addItem(s.id,t.id,'itps'), onAddTraining:()=>this.addItem(s.id,t.id,'training'), itps:this.itemView(s.id,t.id,'itps',t.itps), training:this.itemView(s.id,t.id,'training',t.training) }; }) }; });
+    }
+
+    // ---- correspondences ----
+    if(out.isCorr){
+      const cc={email:{bg:'var(--vb-info-soft)',fg:'#2947C4'},call:{bg:'#EAE0FF',fg:'#6B3FB0'},meeting:{bg:'var(--vb-pass-soft)',fg:'#004C3D'},site:{bg:'var(--vb-hold-soft)',fg:'#8A4200'}};
+      out.onAddCorr=()=>this.addCorr();
+      out.correspondences=(p.correspondences||[]).map(c=>({ id:c.id, who:c.who, date:c.date, channel:c.channel, summary:c.summary, channelBg:(cc[c.channel]||cc.email).bg, channelFg:(cc[c.channel]||cc.email).fg,
+        onWho:e=>this.editCorr(c.id,'who',e.target.value), onDate:e=>this.editCorr(c.id,'date',e.target.value), onChannel:e=>this.editCorr(c.id,'channel',e.target.value), onSummary:e=>this.editCorr(c.id,'summary',e.target.value), onDelete:()=>this.delCorr(c.id),
+        onDragOverFiles:e=>e.preventDefault(), onDropFiles:e=>{ e.preventDefault(); if(e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files.length) this.ingest(e.dataTransfer.files,{kind:'corr',id:c.id}); }, onAttach:()=>this.openPicker({kind:'corr',id:c.id}),
+        attachments:this.evView(c.attachments,'corr',c.id,26) }));
+    }
+
+    // ---- comments ----
+    if(out.isComments){
+      out.onAddComment=()=>this.addComment();
+      out.comments=(p.comments||[]).map(c=>({ author:c.author, when:c.when, text:c.text, initials:this.inits(c.author), onText:e=>this.editComment(c.id,e.target.value), onDelete:()=>this.delComment(c.id) }));
+    }
+
+    // ---- settings ----
+    if(out.isSettings){
+      out.setName=p.name; out.setClient=p.client; out.setSector=p.sector; out.setRegion=p.region; out.setStart=p.start; out.setGolive=p.golive; out.setOwner=p.csOwner;
+      out.onProjName=e=>this.editProject('name',e.target.value); out.onProjClient=e=>this.editProject('client',e.target.value); out.onProjSector=e=>this.editProject('sector',e.target.value); out.onProjRegion=e=>this.editProject('region',e.target.value); out.onProjStart=e=>this.editProject('start',e.target.value); out.onProjGolive=e=>this.editProject('golive',e.target.value); out.onProjOwner=e=>this.editProject('csOwner',e.target.value);
+      out.settingsSpan=Math.max(1,this.diff(p.start,p.golive));
+      out.phaseWindows=[
+        {label:'30-day phase',window:this.fmt(p.start)+' → '+this.fmt(this.addDays(p.start,30)),detail:'Setup & configuration'},
+        {label:'60-day phase',window:this.fmt(this.addDays(p.start,30))+' → '+this.fmt(this.addDays(p.start,60)),detail:'First live inspections'},
+        {label:'90-day phase',window:this.fmt(this.addDays(p.start,60))+' → '+this.fmt(p.golive),detail:'Full adoption'},
+      ];
+    }
+
+    // ---- picker ----
+    out.projectList=this.state.projects.map(pr=>{ const a=this.allTasks(pr); const d=a.filter(t=>t.status==='done').length; const pc=a.length?Math.round(d/a.length*100):0; const od=a.filter(t=>t.status!=='done'&&this.diff(st.today,t.due)<0).length; const activeP=pr.id===st.activeId;
+      return { code:pr.code, name:pr.name, client:pr.client, meta:pr.sector.split(' · ')[0]+' · '+pr.region, pct:pc, pctColor:od?'var(--vb-defect)':pc===100?'var(--vb-pass)':'var(--vb-ink)', riskLabel:od?od+' overdue':pc===100?'complete':'on track', active:activeP,
+        wrapStyle:'display:flex;align-items:center;gap:2px;border-radius:8px;background:'+(activeP?'var(--vb-paper-2)':'transparent'),
+        rowStyle:'display:flex;align-items:center;gap:12px;flex:1;min-width:0;padding:11px 12px;border:none;border-radius:8px;cursor:pointer;background:transparent', onPick:()=>this.pickProject(pr.id), onDelete:()=>this.delProject(pr.id) }; });
+    out.onAddProject=()=>this.addProject();
+
+    // ---- print ----
+    out.printKpis=[{label:'Progress',value:pct+'%'},{label:'Complete',value:done+' / '+total},{label:'Overdue',value:String(all.filter(t=>t.status!=='done'&&this.diff(st.today,t.due)<0).length)},{label:'Go-live',value:this.fmt(p.golive)}];
+    out.printPhases=['30','60','90'].map(ph=>{ const ts=all.filter(t=>t.phase===ph).sort((a,b)=>this.dt(a.due)-this.dt(b.due)); const d=ts.filter(t=>t.status==='done').length; const win=({'30':'Setup & config','60':'First live inspections','90':'Full adoption'})[ph];
+      return { label:ph+'-day milestone', window:win, detail:d+' of '+ts.length+' complete', tasks:ts.map(t=>{ const risk=this.risk(t); return {title:t.title,owner:t.owner,box:t.status==='done'?'\u2713':'\u25A1',mark:t.status==='done'?'var(--vb-pass)':'var(--vb-ink-4)',dueLabel:this.fmt(t.due),riskColor:risk.color}; }) }; });
+
+    return out;
+  }
+
+  /* ---------------- seed data ---------------- */
+  seed(){
+    const WS=[['loc','Location tree'],['tpl','Templates & ITP/ITC'],['train','Training'],['doc','Document control'],['data','Data import'],['prog','Programme & milestones'],['golive','Go-live & adoption']];
+    const mkWs=()=>WS.map(([id,name])=>({id,name,tasks:[]}));
+    const roleFor=n=>/Visibuild|Nick/.test(n)?'Visibuild CS':/Doyle|Reilly|Multiplex|Global Switch|Capital|Bishop|Client|Costa|Bruno/.test(n)?'Client':'Trade partner';
+    const P=(id,client,name,code,sector,region,start,golive)=>({id,client,name,code,sector,region,csOwner:'Nick P.',start,golive,workstreams:mkWs(),correspondences:[],comments:[],subcontractors:[]});
+    const put=(proj,wsId,rows)=>{ const w=proj.workstreams.find(x=>x.id===wsId); if(!w) return; rows.forEach((r,i)=>w.tasks.push({id:wsId+'-'+(i+1)+'-'+proj.id,title:r[0],owner:r[1],role:roleFor(r[1]),phase:r[2],status:r[3],start:r[4],due:r[5],notes:r[6]?[{id:wsId+'-'+(i+1)+'-n-'+proj.id,text:r[6]}]:[],evidence:[],comments:[]})); };
+
+    const a=P('p-99cr','Multiplex','99 City Road','99CR','Mixed-use · 36-level development','London','2026-06-15','2026-08-17');
+    put(a,'loc',[
+      ['Schedule model review session to understand project hierarchy','Nick P.','30','done','2026-06-15','2026-07-10','Meeting booked with Bianca 10/07 to review model hierarchy'],
+      ['Confirm naming conventions & project zones for the location tree','Multiplex','30','done','2026-06-15','2026-07-10','Reviewed with Bianca 10/07'],
+      ['Build location tree aligned to Vista naming conventions','Nick P.','60','in_progress','2026-07-13','2026-07-24','JT issued mark-up pack 15/07. NP updating tree; wider-team review targeted for Fri 24/07 after the 14/07 session with John & Simon'],
+      ['Validate location tree, templates & milestones','Nick P.','90','not_started','2026-07-27','2026-08-17',''] ]);
+    put(a,'tpl',[
+      ['Digitise ITPs and critical checks','Nick P.','30','done','2026-06-15','2026-07-12','Erith ITPs digitised. Any other ITPs to be issued to Visibuild'],
+      ['Issue MPX critical check inspections','Multiplex','30','not_started','2026-06-15','2026-07-12','Yet to be issued'],
+      ['Issue subcontractor ITPs / ITCs','Multiplex','60','not_started','2026-07-13','2026-07-26',''],
+      ['Digitise all subcontractor ITPs','Nick P.','90','not_started','2026-07-27','2026-08-17',''] ]);
+    put(a,'train',[
+      ['Train core team members','Nick P.','30','in_progress','2026-06-15','2026-07-12','Ongoing — training to take place July / August'],
+      ['Deliver Multiplex internal training','Nick P.','60','not_started','2026-07-13','2026-07-26',''],
+      ['Familiarisation with the Visibuild platform & functionality','Multiplex','60','not_started','2026-07-13','2026-07-26',''],
+      ['Review Visibuild tracking tools','Multiplex','60','not_started','2026-07-13','2026-07-26',''],
+      ['Organise further training sessions as required','Multiplex','60','not_started','2026-07-13','2026-07-26',''],
+      ['Train up MPX QA Manager','Multiplex','60','not_started','2026-07-13','2026-07-26',''],
+      ['Deliver subcontractor group training sessions on site','Multiplex','90','not_started','2026-07-27','2026-08-17','Erith trained & onboarded first'] ]);
+    put(a,'prog',[
+      ['Send detailed onboarding plan with clear actions & timelines','Nick P.','30','done','2026-06-15','2026-07-12',''],
+      ['Issue project org chart','Multiplex','30','done','2026-06-15','2026-07-12','Issued'],
+      ['Issue full subcontractor list for the project','Multiplex','30','in_progress','2026-06-15','2026-07-12','Key subcontractors have been issued'],
+      ['Provide programme for sequencing alignment','Multiplex','30','not_started','2026-06-15','2026-07-12','Programme to be issued'] ]);
+    put(a,'golive',[
+      ['Configure platform: users, roles & permissions','Nick P.','30','in_progress','2026-06-15','2026-07-12','Erith governance ongoing'],
+      ['Establish reviewer workflows for different inspection types','Nick P.','60','not_started','2026-07-13','2026-07-26',''],
+      ['Transition QA onto Visibuild','Multiplex','60','not_started','2026-07-13','2026-07-26','MPX critical checks + subcontractor QA'],
+      ['Review KPIs defined by Multiplex','Multiplex','60','not_started','2026-07-13','2026-07-26','Yet to be issued'],
+      ['Review subcontractor quality in Visibuild','Multiplex','90','not_started','2026-07-27','2026-08-17',''],
+      ['Review features e.g. QR codes to assist on-site works','Multiplex','90','not_started','2026-07-27','2026-08-17',''],
+      ['Drive consistent adoption across the project','Multiplex','90','not_started','2026-07-27','2026-08-17',''],
+      ['Dry-run: concrete pour checks & pre-sheet inspections with Erith','Multiplex + Visibuild','90','not_started','2026-07-27','2026-08-17','Joint Visibuild + Multiplex exercise'] ]);
+    a.correspondences=[
+      {id:'c1',date:'2026-07-15',who:'John (Multiplex)',channel:'email',summary:'JT issued the location-tree mark-up pack. NP to update the tree; aiming for a wider-team review meeting Fri 24/07.',attachments:[]},
+      {id:'c2',date:'2026-07-14',who:'John & Simon (Multiplex)',channel:'meeting',summary:'Location tree review. A further meeting with the wider team is required before sign-off.',attachments:[]},
+      {id:'c3',date:'2026-07-10',who:'Bianca (Multiplex)',channel:'meeting',summary:'Model review session to confirm project hierarchy and naming conventions for the location tree.',attachments:[]},
+      {id:'c4',date:'2026-06-09',who:'Erith',channel:'meeting',summary:'Kick-start onboarding session. ITPs since digitised — Erith is the first trade to be trained and onboarded.',attachments:[]} ];
+    a.comments=[
+      {id:'m1',author:'Nick P.',when:'15 Jul',text:'Location tree is the critical path — JT mark-up pack landed 15/07, targeting a wider-team review Fri 24/07 before sign-off. Everything downstream (façade ITCs, subcontractor ITPs) waits on it.'},
+      {id:'m2',author:'Nick P.',when:'20 Jul',text:'Erith is trained, onboarded and ITPs digitised — first trade live. Hares onsite Jan 2027, so plenty of runway. Org chart done; chasing Multiplex on the programme and the full subcontractor list.'} ];
+    a.subcontractors=[
+      {id:'s1',name:'Erith',trades:[
+        {id:'s1t1',name:'Site works · onsite Aug 2026',itps:[{id:'s1t1i0',title:'ITP submission & digitisation',status:'done',owner:'Erith',role:'Trade partner',phase:'30',due:'2026-07-01'}],training:[{id:'s1t1r0',title:'Initial onboarding session',status:'done',owner:'Erith',role:'Trade partner',phase:'30',due:'2026-06-30'}]} ]},
+      {id:'s2',name:'Hares',trades:[
+        {id:'s2t1',name:'Site works · onsite Jan 2027',itps:[{id:'s2t1i0',title:'ITP submission & digitisation',status:'not_started',owner:'Hares',role:'Trade partner',phase:'90',due:'2026-12-15'}],training:[{id:'s2t1r0',title:'Field training',status:'not_started',owner:'Hares',role:'Trade partner',phase:'90',due:'2026-12-20'}]} ]} ];
+
+    const b=P('p-lons','Global Switch','LONS','LON','Data centre','London','2026-07-06','2026-10-04');
+    put(b,'loc',[['Confirm data hall & white space structure','Bruno Costa','30','in_progress','2026-07-08','2026-07-22'],['Build location tree','Nick P.','30','not_started','2026-07-20','2026-07-31']]);
+    put(b,'tpl',[['Scope commissioning (CX) ITP templates','Nick P.','30','in_progress','2026-07-10','2026-07-24']]);
+    put(b,'trades',[['Collect trade contacts','Bruno Costa','30','not_started','2026-07-15','2026-07-25']]);
+    put(b,'train',[['Kick-off & admin training','Nick P.','30','not_started','2026-07-22','2026-07-29']]);
+    put(b,'golive',[['30-day go / no-go review','Nick P.','30','not_started','2026-08-03','2026-08-05']]);
+    b.correspondences=[{id:'c1',date:'2026-07-08',who:'Bruno Costa (Global Switch)',channel:'meeting',summary:'Kick-off call. Commissioning-heavy project; CX templates are the priority.',attachments:[]}];
+
+    const c=P('p-mad2','Global Switch','MAD2','MAD','Data centre','Madrid','2026-07-13','2026-10-11');
+    put(c,'loc',[['Confirm project structure','Nick P.','30','in_progress','2026-07-15','2026-07-29']]);
+    put(c,'tpl',[['Reuse LONS template library','Nick P.','30','not_started','2026-07-20','2026-07-31']]);
+    put(c,'train',[['Schedule admin training','Nick P.','30','not_started','2026-07-27','2026-08-03']]);
+
+    const d=P('p-capt','Capital Towers','Capital Towers','CAP','Residential','Victoria','2026-05-18','2026-08-16');
+    put(d,'loc',[['Build location tree','Nick P.','30','done','2026-05-20','2026-05-30'],['Client sign-off','Client PM','30','done','2026-05-30','2026-06-06']]);
+    put(d,'tpl',[['Configure ITP library','Nick P.','30','done','2026-05-25','2026-06-08'],['Publish to trades','Nick P.','60','done','2026-06-15','2026-06-22']]);
+    put(d,'trades',[['Onboard all Tier-1 trades','Nick P.','60','done','2026-06-10','2026-06-24'],['Tier-2 trades active','Nick P.','90','in_progress','2026-07-14','2026-07-28']]);
+    put(d,'golive',[['First live inspections','Client PM','60','done','2026-06-20','2026-06-27'],['90-day adoption review','Nick P.','90','not_started','2026-08-09','2026-08-16']]);
+
+    const e=P('p-43bt','Client','43 Bishopsgate Tower','43B','Commercial','London','2026-04-13','2026-07-12');
+    put(e,'loc',[['Location tree complete','Nick P.','30','done','2026-04-15','2026-04-25']]);
+    put(e,'tpl',[['Template library published','Nick P.','30','done','2026-04-20','2026-05-02']]);
+    put(e,'trades',[['All trades active','Nick P.','60','done','2026-05-10','2026-05-24']]);
+    put(e,'golive',[['Full adoption achieved','Nick P.','90','done','2026-06-20','2026-07-01'],['Handover to CSM','Nick P.','90','done','2026-07-05','2026-07-10']]);
+
+    return [a,b,c,d,e];
+  }
+}
+</script>
+</body>
+</html>
