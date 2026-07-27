@@ -68,6 +68,9 @@ export function useStore(userName) {
       if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA')) return;
       try {
         const remote = await fetchState();
+        // Re-check focus — user may have started typing during the async fetch.
+        const el2 = document.activeElement;
+        if (el2 && (el2.tagName === 'INPUT' || el2.tagName === 'TEXTAREA')) return;
         if (remote && Array.isArray(remote.projects)) {
           setState((s) => {
             const stillActive = remote.projects.find((p) => p.id === s.activeId);
