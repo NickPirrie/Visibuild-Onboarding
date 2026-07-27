@@ -4,9 +4,9 @@ import { LocalInput } from '../LocalField.jsx';
 export default function SettingsView({ active, store }) {
   const span = Math.max(1, diffDays(active.start, active.golive));
   const phaseWindows = [
-    { label: '30-day phase', window: fmtDate(active.start) + ' → ' + fmtDate(addDays(active.start, 30)), detail: 'Setup & configuration' },
-    { label: '60-day phase', window: fmtDate(addDays(active.start, 30)) + ' → ' + fmtDate(addDays(active.start, 60)), detail: 'First live inspections' },
-    { label: '90-day phase', window: fmtDate(addDays(active.start, 60)) + ' → ' + fmtDate(active.golive), detail: 'Full adoption' },
+    { label: 'Phase 1', window: fmtDate(active.start) + ' → ' + fmtDate(addDays(active.start, 30)), detail: 'Setup & configuration' },
+    { label: 'Phase 2', window: fmtDate(addDays(active.start, 30)) + ' → ' + fmtDate(addDays(active.start, 60)), detail: 'First live inspections' },
+    { label: 'Phase 3', window: fmtDate(addDays(active.start, 60)) + ' → ' + fmtDate(active.golive), detail: 'Full adoption' },
   ];
 
   const field = (label, value, field, type = 'text') => (
@@ -24,7 +24,7 @@ export default function SettingsView({ active, store }) {
       <div style={{ marginBottom: 22 }}>
         <div className="vb-eyebrow" style={{ marginBottom: 9 }}>Project settings</div>
         <h1 style={{ fontFamily: 'var(--vb-font-serif)', fontWeight: 400, fontSize: 32, letterSpacing: '-.01em', margin: 0 }}>Settings</h1>
-        <p style={{ fontSize: 14, color: 'var(--vb-ink-3)', margin: '8px 0 0', lineHeight: 1.5 }}>Adjust the onsite start date, go-live target and project details. The 30 / 60 / 90-day phase windows and all risk flags recalculate automatically.</p>
+        <p style={{ fontSize: 14, color: 'var(--vb-ink-3)', margin: '8px 0 0', lineHeight: 1.5 }}>Adjust the onsite start date, go-live target and project details. The Phase 1 / Phase 2 / Phase 3 windows and all risk flags recalculate automatically.</p>
       </div>
 
       <div className="vb-settings-grid">

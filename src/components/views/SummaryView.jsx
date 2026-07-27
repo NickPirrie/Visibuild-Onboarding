@@ -1,4 +1,4 @@
-import { STATUS, STATUS_KEYS, PHASE_META } from '../../lib/constants.js';
+import { STATUS, STATUS_KEYS, PHASE_META, PHASE_LABEL } from '../../lib/constants.js';
 import { allTasks, diffDays, fmtDate, initials, avatarColor, risk, todayIso } from '../../lib/utils.js';
 
 export default function SummaryView({ active, state, store }) {
@@ -146,7 +146,7 @@ export default function SummaryView({ active, state, store }) {
           {phaseHealth.map((p) => (
             <div key={p.ph} className="vb-phase-health-row">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 7 }}>
-                <div><span style={{ fontSize: 14, fontWeight: 600, color: 'var(--vb-ink)' }}>{p.ph}-day</span> <span style={{ fontSize: 12.5, color: 'var(--vb-ink-4)' }}>· {p.window}</span></div>
+                <div><span style={{ fontSize: 14, fontWeight: 600, color: 'var(--vb-ink)' }}>{PHASE_LABEL[p.ph]}</span> <span style={{ fontSize: 12.5, color: 'var(--vb-ink-4)' }}>· {p.window}</span></div>
                 <span className="vb-pill" style={{ background: p.pillBg, color: p.pillFg }}>{p.statusLabel}</span>
               </div>
               <div className="vb-phase-health-track"><div style={{ width: p.pc + '%', height: '100%', background: p.od ? 'var(--vb-defect)' : 'var(--vb-pass)' }} /></div>

@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { allTasks, ragColor, ragColorItems, todayIso } from '../lib/utils.js';
+import { PHASE_LABEL } from '../lib/constants.js';
 
 function NavRow({ active, dot, label, badge, onClick }) {
   return (
@@ -126,7 +127,7 @@ export default function Sidebar({ state, active, store, onOpenPicker }) {
           const d = ts.filter((t) => t.status === 'done').length;
           const pct = ts.length ? Math.round((d / ts.length) * 100) : 0;
           return (
-            <NavRow key={ph} active={sec === 'phase:' + ph} label={ph + '-day'} badge={pct + '%'} onClick={() => store.go('phase:' + ph)} />
+            <NavRow key={ph} active={sec === 'phase:' + ph} label={PHASE_LABEL[ph]} badge={pct + '%'} onClick={() => store.go('phase:' + ph)} />
           );
         })}
 

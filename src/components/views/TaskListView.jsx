@@ -1,4 +1,4 @@
-import { WS_DESCRIPTIONS } from '../../lib/constants.js';
+import { WS_DESCRIPTIONS, PHASE_LABEL } from '../../lib/constants.js';
 import { allTasks, diffDays, todayIso, ownerColor, initials } from '../../lib/utils.js';
 import TaskCard from '../TaskCard.jsx';
 import { LocalInput } from '../LocalField.jsx';
@@ -14,7 +14,7 @@ function groupByOwner(tasks) {
 }
 
 const PHASE_DESC = {
-  '30': 'Everything that must be set up and configured in the first 30 days.',
+  '30': 'Everything that must be set up and configured in Phase 1.',
   '60': 'First live inspections on site — the product proving itself with real work.',
   '90': 'Full adoption: every trade active and the project self-sufficient.',
 };
@@ -38,7 +38,7 @@ export default function TaskListView({ active, state, store }) {
   } else {
     ph = sec.slice(6);
     tasks = allTasks(active).filter((t) => t.phase === ph);
-    title = ph + '-day milestone';
+    title = PHASE_LABEL[ph] + ' milestone';
     kicker = 'Rollout';
     desc = PHASE_DESC[ph] || '';
   }
@@ -97,7 +97,7 @@ export default function TaskListView({ active, state, store }) {
         {isWs && (
           <>
             <span className="vb-filter-sep" />
-            {[['all', 'All phases'], ['30', '30-day'], ['60', '60-day'], ['90', '90-day']].map(([v, l]) => (
+            {[['all', 'All phases'], ['30', 'Phase 1'], ['60', 'Phase 2'], ['90', 'Phase 3']].map(([v, l]) => (
               <button key={v} type="button" className={'vb-chip' + (pf === v ? ' active' : '')} onClick={() => store.setFilter('taskPhaseFilter', v)}>{l}</button>
             ))}
           </>

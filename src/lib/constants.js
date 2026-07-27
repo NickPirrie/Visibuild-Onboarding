@@ -8,10 +8,12 @@ export const STATUS = {
 export const STATUS_KEYS = ['not_started', 'in_progress', 'blocked', 'done'];
 
 export const PHASE_OPTIONS = [
-  { value: '30', label: '30-day' },
-  { value: '60', label: '60-day' },
-  { value: '90', label: '90-day' },
+  { value: '30', label: 'Phase 1' },
+  { value: '60', label: 'Phase 2' },
+  { value: '90', label: 'Phase 3' },
 ];
+
+export const PHASE_LABEL = { '30': 'Phase 1', '60': 'Phase 2', '90': 'Phase 3' };
 
 export const CHANNEL_OPTIONS = [
   { value: 'email', label: 'Email' },
@@ -45,7 +47,7 @@ export const WS_DESCRIPTIONS = {
   doc: 'Connect the drawing register and revision workflow so the field always works from current drawings.',
   data: 'Bring historical NCRs, registers and tickets across so nothing starts from a blank slate.',
   prog: 'Link Visibuild milestones to the master programme and configure the progress trackers.',
-  golive: 'Take the project live and drive adoption through the 30 / 60 / 90-day checkpoints.',
+  golive: 'Take the project live and drive adoption through the Phase 1 / Phase 2 / Phase 3 checkpoints.',
 };
 
 export const PHASE_META = {

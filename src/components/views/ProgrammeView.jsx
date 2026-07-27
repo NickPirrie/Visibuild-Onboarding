@@ -32,7 +32,7 @@ export default function ProgrammeView({ active, state, store }) {
   return (
     <>
       <div style={{ marginBottom: 20 }}>
-        <div className="vb-eyebrow" style={{ marginBottom: 9 }}>90-day programme</div>
+        <div className="vb-eyebrow" style={{ marginBottom: 9 }}>Phased rollout</div>
         <h1 style={{ fontFamily: 'var(--vb-font-serif)', fontWeight: 400, fontSize: 32, letterSpacing: '-.01em', margin: 0 }}>Rollout programme</h1>
         <div className="sub">{fmtDate(active.start)} – {fmtDate(active.golive)} · risk auto-flagged from due dates</div>
       </div>
@@ -44,9 +44,9 @@ export default function ProgrammeView({ active, state, store }) {
             <div className="vb-gantt-resize-handle" title="Drag to resize" onMouseDown={startDrag} />
           </div>
           <div className="vb-gantt-phase-cells">
-            <div className="vb-gantt-phase-cell" style={{ width: p30 + '%' }}>0–30 days<span className="sub">Setup &amp; config</span></div>
-            <div className="vb-gantt-phase-cell" style={{ width: (p60 - p30) + '%' }}>30–60 days<span className="sub">First inspections</span></div>
-            <div className="vb-gantt-phase-cell" style={{ flex: 1 }}>60–90 days<span className="sub">Full adoption</span></div>
+            <div className="vb-gantt-phase-cell" style={{ width: p30 + '%' }}>Phase 1<span className="sub">Setup &amp; config</span></div>
+            <div className="vb-gantt-phase-cell" style={{ width: (p60 - p30) + '%' }}>Phase 2<span className="sub">First inspections</span></div>
+            <div className="vb-gantt-phase-cell" style={{ flex: 1 }}>Phase 3<span className="sub">Full adoption</span></div>
           </div>
         </div>
         <div className="vb-gantt-body">
