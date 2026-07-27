@@ -1,4 +1,5 @@
 import { addDays, diffDays, fmtDate } from '../../lib/utils.js';
+import { LocalInput } from '../LocalField.jsx';
 
 export default function SettingsView({ active, store }) {
   const span = Math.max(1, diffDays(active.start, active.golive));
@@ -8,10 +9,13 @@ export default function SettingsView({ active, store }) {
     { label: '90-day phase', window: fmtDate(addDays(active.start, 60)) + ' → ' + fmtDate(active.golive), detail: 'Full adoption' },
   ];
 
-  const field = (label, value, onChange, type = 'text') => (
+  const field = (label, value, field, type = 'text') => (
     <label className="vb-field-block">
       <span className="flabel">{label}</span>
-      <input type={type} className="vb-settings-input" value={value} onChange={onChange} />
+      {type === 'date'
+        ? <input type="date" className="vb-settings-input" value={value} onChange={(e) => store.editProject(field, e.target.value)} />
+        : <LocalInput className="vb-settings-input" value={value} onCommit={(v) => store.editProject(field, v)} />
+      }
     </label>
   );
 
@@ -27,8 +31,8 @@ export default function SettingsView({ active, store }) {
         <div className="vb-card vb-card-pad">
           <h3 style={{ marginBottom: 18 }}>Programme dates</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            {field('Onsite start date', active.start, (e) => store.editProject('start', e.target.value), 'date')}
-            {field('Go-live target', active.golive, (e) => store.editProject('golive', e.target.value), 'date')}
+            {field('Onsite start date', active.start, 'start', 'date')}
+            {field('Go-live target', active.golive, 'golive', 'date')}
             <div style={{ fontSize: 12.5, color: 'var(--vb-ink-4)', paddingTop: 2 }}>Programme span: <b style={{ color: 'var(--vb-ink-2)', fontWeight: 600 }}>{span} days</b></div>
           </div>
           <div style={{ height: 1, background: 'var(--vb-line)', margin: '20px 0' }} />
@@ -47,13 +51,13 @@ export default function SettingsView({ active, store }) {
         <div className="vb-card vb-card-pad">
           <h3 style={{ marginBottom: 18 }}>Project details</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            {field('Project name', active.name, (e) => store.editProject('name', e.target.value))}
-            {field('Client', active.client, (e) => store.editProject('client', e.target.value))}
+            {field('Project name', active.name, 'name')}
+            {field('Client', active.client, 'client')}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-              {field('Sector', active.sector, (e) => store.editProject('sector', e.target.value))}
-              {field('Region', active.region, (e) => store.editProject('region', e.target.value))}
+              {field('Sector', active.sector, 'sector')}
+              {field('Region', active.region, 'region')}
             </div>
-            {field('Onboarding lead', active.csOwner, (e) => store.editProject('csOwner', e.target.value))}
+            {field('Onboarding lead', active.csOwner, 'csOwner')}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginTop: -4 }}>
               <span style={{ fontSize: 12, color: 'var(--vb-ink-4)', lineHeight: 1.4 }}>Default owner for all new tasks</span>
               <button

@@ -1,5 +1,6 @@
 import { CHANNEL_OPTIONS, CHANNEL_COLORS } from '../../lib/constants.js';
 import EvidenceDrop from '../EvidenceDrop.jsx';
+import { LocalInput, LocalTextarea } from '../LocalField.jsx';
 
 export default function CorrespondencesView({ active, store }) {
   const correspondences = active.correspondences || [];
@@ -24,16 +25,16 @@ export default function CorrespondencesView({ active, store }) {
                 <select className="vb-channel-select" style={{ background: cc.bg, color: cc.fg }} value={c.channel} onChange={(e) => store.editCorr(c.id, 'channel', e.target.value)}>
                   {CHANNEL_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
                 </select>
-                <input className="vb-corr-who-input" placeholder="Who" value={c.who} onChange={(e) => store.editCorr(c.id, 'who', e.target.value)} />
+                <LocalInput className="vb-corr-who-input" placeholder="Who" value={c.who} onCommit={(v) => store.editCorr(c.id, 'who', v)} />
                 <input type="date" className="vb-corr-date-input" value={c.date} onChange={(e) => store.editCorr(c.id, 'date', e.target.value)} />
                 <button type="button" className="vb-task-delete" onClick={() => store.delCorr(c.id)}>×</button>
               </div>
-              <textarea
+              <LocalTextarea
                 className="vb-corr-summary"
                 rows={2}
                 placeholder="What was discussed or sent…"
                 value={c.summary}
-                onChange={(e) => store.editCorr(c.id, 'summary', e.target.value)}
+                onCommit={(v) => store.editCorr(c.id, 'summary', v)}
               />
               <EvidenceDrop
                 evidence={c.attachments}

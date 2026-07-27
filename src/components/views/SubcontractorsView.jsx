@@ -1,5 +1,6 @@
 import { todayIso } from '../../lib/utils.js';
 import ItemCard from '../ItemCard.jsx';
+import { LocalInput } from '../LocalField.jsx';
 
 export default function SubcontractorsView({ active, state, store }) {
   const today = todayIso();
@@ -34,7 +35,7 @@ export default function SubcontractorsView({ active, state, store }) {
               <div className="vb-sub-head">
                 <button type="button" className="vb-chevron-btn" onClick={() => store.toggleNode('sub:' + s.id)}>{open ? '▾' : '▸'}</button>
                 <span style={{ width: 9, height: 9, borderRadius: '50%', flex: 'none', background: 'var(--vb-blue)' }} />
-                <input className="vb-sub-name-input" value={s.name} onChange={(e) => store.editSub(s.id, e.target.value)} />
+                <LocalInput className="vb-sub-name-input" value={s.name} onCommit={(v) => store.editSub(s.id, v)} />
                 <span style={{ fontSize: 12.5, color: 'var(--vb-ink-4)', whiteSpace: 'nowrap' }}>{s.trades.length} trade{s.trades.length !== 1 ? 's' : ''} · {dn}/{items.length} items</span>
                 <button type="button" className="vb-btn-danger-outline" style={{ padding: '6px 11px', fontSize: 12 }} onClick={() => store.addTrade(s.id)}>+ Trade</button>
                 <button type="button" className="vb-task-delete" onClick={() => store.delSub(s.id)}>×</button>
@@ -50,7 +51,7 @@ export default function SubcontractorsView({ active, state, store }) {
                         <div className="vb-trade-head">
                           <button type="button" className="vb-chevron-btn sm" onClick={() => store.toggleNode('trade:' + t.id)}>{topen ? '▾' : '▸'}</button>
                           <span style={{ fontSize: 10.5, fontWeight: 600, letterSpacing: '.05em', textTransform: 'uppercase', color: 'var(--vb-ink-4)' }}>Trade</span>
-                          <input className="vb-trade-name-input" value={t.name} onChange={(e) => store.editTrade(s.id, t.id, e.target.value)} />
+                          <LocalInput className="vb-trade-name-input" value={t.name} onCommit={(v) => store.editTrade(s.id, t.id, v)} />
                           <span style={{ fontSize: 12, color: 'var(--vb-ink-4)', fontVariantNumeric: 'tabular-nums' }}>{tdn}/{ti.length}</span>
                           <button type="button" className="vb-task-delete" style={{ fontSize: 15 }} onClick={() => store.delTrade(s.id, t.id)}>×</button>
                         </div>

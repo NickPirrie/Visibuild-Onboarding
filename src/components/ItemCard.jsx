@@ -2,6 +2,13 @@ import { STATUS, PHASE_OPTIONS } from '../lib/constants.js';
 import { risk, initials, ownerColor } from '../lib/utils.js';
 import StatusPicker from './StatusPicker.jsx';
 import EvidenceDrop from './EvidenceDrop.jsx';
+import { LocalInput } from './LocalField.jsx';
+
+function roleBg(role) {
+  if (role === 'Visibuild CS') return '#F2F9F6';
+  if (role === 'Client') return '#F3F4F5';
+  return '#F8F9FF';
+}
 
 export default function ItemCard({ item, today, sid, tid, cat, menuOpen, store }) {
   const r = item.due ? risk(item, today) : { label: 'No date', color: 'var(--vb-ink-4)', key: '' };
@@ -9,15 +16,15 @@ export default function ItemCard({ item, today, sid, tid, cat, menuOpen, store }
   return (
     <div
       className="vb-item-card"
-      style={{ border: '1px solid ' + (r.key === 'overdue' ? 'var(--vb-defect)' : 'var(--vb-line)') }}
+      style={{ background: roleBg(item.role), border: '1px solid ' + (r.key === 'overdue' ? 'var(--vb-defect)' : 'var(--vb-line)') }}
       onDragOver={(e) => e.preventDefault()}
     >
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <input
+          <LocalInput
             className="vb-item-title-input"
             value={item.title}
-            onChange={(e) => store.editItem(sid, tid, cat, item.id, 'title', e.target.value)}
+            onCommit={(v) => store.editItem(sid, tid, cat, item.id, 'title', v)}
           />
           <div className="vb-item-controls">
             <div className="vb-field-col">
@@ -47,11 +54,11 @@ export default function ItemCard({ item, today, sid, tid, cat, menuOpen, store }
               <span className="vb-field-label">Owner</span>
               <div className="vb-owner-row">
                 <div className="vb-owner-avatar" style={{ background: ownerColor(item.owner) }}>{initials(item.owner) || '–'}</div>
-                <input
+                <LocalInput
                   className="vb-owner-input"
                   placeholder="Assign owner"
                   value={item.owner}
-                  onChange={(e) => store.editItem(sid, tid, cat, item.id, 'owner', e.target.value)}
+                  onCommit={(v) => store.editItem(sid, tid, cat, item.id, 'owner', v)}
                   list="vb-owners-list"
                 />
               </div>

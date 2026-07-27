@@ -3,6 +3,13 @@ import { risk, initials, ownerColor } from '../lib/utils.js';
 import StatusPicker from './StatusPicker.jsx';
 import EvidenceDrop from './EvidenceDrop.jsx';
 import NotesList from './NotesList.jsx';
+import { LocalInput } from './LocalField.jsx';
+
+function roleBg(role) {
+  if (role === 'Visibuild CS') return '#F2F9F6';
+  if (role === 'Client') return '#F3F4F5';
+  return '#F8F9FF';
+}
 
 export default function TaskCard({ task, today, menuOpen, canDrag, store }) {
   const meta = STATUS[task.status] || STATUS.not_started;
@@ -12,7 +19,7 @@ export default function TaskCard({ task, today, menuOpen, canDrag, store }) {
   return (
     <div
       className="vb-task-card"
-      style={{ border: '1px solid ' + (r.key === 'overdue' ? 'var(--vb-defect)' : 'var(--vb-line)') }}
+      style={{ background: roleBg(task.role), border: '1px solid ' + (r.key === 'overdue' ? 'var(--vb-defect)' : 'var(--vb-line)') }}
       onDragOver={(e) => e.preventDefault()}
       onDrop={(e) => { e.preventDefault(); store.reorderTask(task.id); }}
     >
@@ -30,11 +37,12 @@ export default function TaskCard({ task, today, menuOpen, canDrag, store }) {
           }} />
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <input
+          <LocalInput
             className="vb-task-title-input"
             value={task.title}
-            onChange={(e) => store.editTask(task.id, 'title', e.target.value)}
+            onCommit={(v) => store.editTask(task.id, 'title', v)}
           />
+          <div className="vb-task-title-divider" />
           <div className="vb-task-controls">
             <div className="vb-field-col">
               <span className="vb-field-label">Status</span>
@@ -63,7 +71,12 @@ export default function TaskCard({ task, today, menuOpen, canDrag, store }) {
               <span className="vb-field-label">Owner · {task.role}</span>
               <div className="vb-owner-row">
                 <div className="vb-owner-avatar" style={{ background: ownerColor(task.owner) }}>{initials(task.owner) || '–'}</div>
-                <input className="vb-owner-input" value={task.owner} onChange={(e) => store.editTask(task.id, 'owner', e.target.value)} list="vb-owners-list" />
+                <LocalInput
+                  className="vb-owner-input"
+                  value={task.owner}
+                  onCommit={(v) => store.editTask(task.id, 'owner', v)}
+                  list="vb-owners-list"
+                />
               </div>
             </div>
           </div>

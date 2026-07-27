@@ -1,3 +1,5 @@
+import { LocalTextarea } from './LocalField.jsx';
+
 function fmtNoteTime(iso) {
   if (!iso) return '';
   const d = new Date(iso);
@@ -19,12 +21,12 @@ export default function NotesList({ notes, onAddNote, onEditNote, onDeleteNote }
               </div>
             )}
             <div className="vb-note-row-inner">
-              <textarea
+              <LocalTextarea
                 className="vb-note-textarea"
                 rows={1}
                 placeholder="Add a note…"
                 value={n.text}
-                onChange={(e) => onEditNote(n.id, e.target.value)}
+                onCommit={(v) => onEditNote(n.id, v)}
               />
               <button type="button" className="vb-note-remove" onClick={() => onDeleteNote(n.id)} title="Remove note">×</button>
             </div>

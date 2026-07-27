@@ -1,6 +1,7 @@
 import { WS_DESCRIPTIONS } from '../../lib/constants.js';
 import { allTasks, diffDays, todayIso, ownerColor, initials } from '../../lib/utils.js';
 import TaskCard from '../TaskCard.jsx';
+import { LocalInput } from '../LocalField.jsx';
 
 function groupByOwner(tasks) {
   const map = new Map();
@@ -66,10 +67,10 @@ export default function TaskListView({ active, state, store }) {
           <div className="vb-eyebrow" style={{ marginBottom: 9 }}>{kicker}</div>
           {isWs ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <input
+              <LocalInput
                 className="vb-ws-title-input"
                 value={title}
-                onChange={(e) => store.editWs(wsId, e.target.value)}
+                onCommit={(v) => store.editWs(wsId, v)}
                 title="Rename workstream"
               />
               <button type="button" className="vb-btn-danger-outline" onClick={() => store.delWs(wsId)}>Delete</button>
