@@ -23,7 +23,8 @@ export default function NotesList({ notes, onAddNote, onEditNote, onDeleteNote }
             <div className="vb-note-row-inner">
               <LocalTextarea
                 className="vb-note-textarea"
-                rows={1}
+                rows={2}
+                autoGrow
                 placeholder="Add a note…"
                 value={n.text}
                 onCommit={(v) => onEditNote(n.id, v)}

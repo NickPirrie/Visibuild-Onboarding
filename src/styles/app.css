@@ -212,37 +212,38 @@ button { -webkit-appearance: none; }
 
 .vb-task-card { background: var(--vb-surface); border-radius: 8px; box-shadow: var(--vb-shadow-sm); padding: 15px 16px; }
 .vb-task-card-row { display: flex; align-items: flex-start; gap: 12px; }
-.vb-task-grip { flex: none; width: 16px; display: flex; align-items: flex-start; justify-content: center; padding-top: 9px; cursor: grab; color: var(--vb-ink-4); }
-.vb-task-title-input { width: 100%; border: none; background: transparent; font: 500 15.5px var(--vb-font-sans); color: var(--vb-ink); padding: 2px 5px; border-radius: 5px; }
+.vb-task-grip { flex: none; width: 16px; display: flex; align-items: flex-start; justify-content: center; padding-top: 11px; cursor: grab; color: var(--vb-ink-4); }
+.vb-task-title-input { width: 100%; border: none; background: transparent; font: 600 17px/1.3 var(--vb-font-sans); color: var(--vb-ink); padding: 2px 5px; border-radius: 5px; letter-spacing: -.01em; }
 .vb-task-title-input:focus { outline: none; background: var(--vb-paper-2); box-shadow: inset 0 0 0 1.5px var(--vb-blue); }
-.vb-task-controls { display: grid; grid-template-columns: repeat(4,1fr) 1.5fr; gap: 16px; margin-top: 13px; padding-left: 5px; align-items: end; }
-.vb-field-col { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.vb-field-label { font-size: 10px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--vb-ink-4); }
-.vb-status-btn { display: flex; align-items: center; justify-content: space-between; gap: 7px; width: 100%; padding: 6px 11px; border-radius: 6px; border: none; cursor: pointer; font-size: 12.5px; font-weight: 500; }
-.vb-status-dot { width: 7px; height: 7px; border-radius: 50%; }
+.vb-task-title-divider { height: 1px; background: var(--vb-line); margin: 10px 5px 0; }
+.vb-task-controls { display: grid; grid-template-columns: repeat(4,1fr) 1.5fr; gap: 10px; margin-top: 10px; padding-left: 5px; align-items: end; }
+.vb-field-col { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.vb-field-label { font-size: 9px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--vb-ink-4); }
+.vb-status-btn { display: flex; align-items: center; justify-content: space-between; gap: 7px; width: 100%; padding: 5px 9px; border-radius: 6px; border: none; cursor: pointer; font-size: 11.5px; font-weight: 500; }
+.vb-status-dot { width: 6px; height: 6px; border-radius: 50%; }
 .vb-status-menu { position: absolute; top: calc(100% + 5px); left: 0; z-index: 20; background: var(--vb-surface); border: 1px solid var(--vb-line-strong); border-radius: 8px; box-shadow: var(--vb-shadow-md); padding: 5px; min-width: 150px; }
 .vb-status-menu-item { display: flex; align-items: center; gap: 9px; width: 100%; padding: 8px 10px; border: none; background: transparent; border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--vb-ink); text-align: left; }
 .vb-status-menu-item:hover { background: var(--vb-paper-2); }
 .vb-status-menu-backdrop { position: fixed; inset: 0; z-index: 15; }
 .vb-select, .vb-date-input {
-  width: 100%; font-size: 12.5px; color: var(--vb-ink-2); background: var(--vb-paper-2); border: 1px solid var(--vb-line);
-  border-radius: 6px; padding: 6px 9px; cursor: pointer;
+  width: 100%; font-size: 11.5px; color: var(--vb-ink-2); background: var(--vb-paper-2); border: 1px solid var(--vb-line);
+  border-radius: 6px; padding: 5px 8px; cursor: pointer;
 }
-.vb-risk-label { font-size: 12.5px; font-weight: 600; padding: 6px 0; }
-.vb-owner-row { display: flex; align-items: center; gap: 8px; }
-.vb-owner-avatar { width: 28px; height: 28px; border-radius: 50%; flex: none; display: flex; align-items: center; justify-content: center; font-size: 10.5px; font-weight: 600; color: #fff; }
-.vb-owner-input { flex: 1; min-width: 0; border: 1px solid var(--vb-line); background: var(--vb-paper-2); font-size: 13px; color: var(--vb-ink-2); padding: 6px 9px; border-radius: 6px; }
+.vb-risk-label { font-size: 11.5px; font-weight: 600; padding: 5px 0; }
+.vb-owner-row { display: flex; align-items: center; gap: 6px; }
+.vb-owner-avatar { width: 24px; height: 24px; border-radius: 50%; flex: none; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: #fff; }
+.vb-owner-input { flex: 1; min-width: 0; border: 1px solid var(--vb-line); background: var(--vb-paper-2); font-size: 11.5px; color: var(--vb-ink-2); padding: 5px 8px; border-radius: 6px; }
 .vb-owner-input:focus { outline: none; background: var(--vb-surface); box-shadow: inset 0 0 0 1.5px var(--vb-blue); }
 
-.vb-notes-row { display: flex; align-items: flex-start; gap: 8px; margin-top: 11px; padding-left: 5px; }
-.vb-notes-label { flex: none; font-size: 10px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--vb-ink-4); padding-top: 8px; width: 44px; }
-.vb-notes-list { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.vb-notes-row { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; padding-left: 5px; border-top: 1px solid var(--vb-line); padding-top: 10px; }
+.vb-notes-label { font-size: 9px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--vb-ink-4); }
+.vb-notes-list { display: flex; flex-direction: column; gap: 6px; }
 .vb-note-row { display: flex; flex-direction: column; gap: 2px; }
 .vb-note-row-inner { display: flex; align-items: flex-start; gap: 6px; }
 .vb-note-meta { display: flex; align-items: center; gap: 5px; padding-left: 2px; }
 .vb-note-author { font-size: 11px; font-weight: 600; color: var(--vb-ink-2); }
 .vb-note-time { font-size: 11px; color: var(--vb-ink-4); }
-.vb-note-textarea { flex: 1; min-width: 0; resize: vertical; border: 1px solid var(--vb-line); background: var(--vb-paper-2); border-radius: 7px; padding: 7px 10px; font: 400 13px/1.5 var(--vb-font-sans); color: var(--vb-ink-2); }
+.vb-note-textarea { flex: 1; min-width: 0; resize: none; overflow: hidden; border: 1px solid var(--vb-line); background: transparent; border-radius: 6px; padding: 5px 8px; font: 400 12px/1.5 var(--vb-font-sans); color: var(--vb-ink-3); }
 .vb-note-textarea:focus { outline: none; background: var(--vb-surface); box-shadow: inset 0 0 0 1.5px var(--vb-blue); }
 .vb-note-remove { flex: none; border: none; background: transparent; color: var(--vb-ink-4); cursor: pointer; font-size: 15px; padding: 6px 5px; border-radius: 6px; line-height: 1; }
 .vb-note-remove:hover { background: var(--vb-defect-soft); color: var(--vb-defect); }
