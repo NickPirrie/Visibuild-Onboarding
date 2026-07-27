@@ -27,6 +27,7 @@ export default function CommentsView({ active, store }) {
               <LocalTextarea
                 className="vb-comment-textarea"
                 rows={2}
+                autoGrow
                 placeholder="Write a note…"
                 value={c.text}
                 onCommit={(v) => store.editComment(c.id, v)}

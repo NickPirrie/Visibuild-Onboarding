@@ -32,6 +32,7 @@ export default function CorrespondencesView({ active, store }) {
               <LocalTextarea
                 className="vb-corr-summary"
                 rows={2}
+                autoGrow
                 placeholder="What was discussed or sent…"
                 value={c.summary}
                 onCommit={(v) => store.editCorr(c.id, 'summary', v)}

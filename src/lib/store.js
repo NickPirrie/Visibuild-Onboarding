@@ -64,6 +64,8 @@ export function useStore(userName) {
   useEffect(() => {
     const iv = setInterval(async () => {
       if (Date.now() - lastEditRef.current < QUIET_WINDOW_MS) return;
+      const el = document.activeElement;
+      if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA')) return;
       try {
         const remote = await fetchState();
         if (remote && Array.isArray(remote.projects)) {
