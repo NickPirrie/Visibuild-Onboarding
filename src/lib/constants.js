@@ -3,9 +3,10 @@ export const STATUS = {
   in_progress: { label: 'In progress', bar: 'var(--vb-blue)', bg: '#E3EAFF', fg: '#2947C4', dot: 'var(--vb-blue)' },
   blocked: { label: 'Waiting on issue of information', bar: 'var(--vb-defect)', bg: 'var(--vb-defect-soft)', fg: '#9A2617', dot: 'var(--vb-defect)' },
   done: { label: 'Done', bar: 'var(--vb-pass)', bg: 'var(--vb-pass-soft)', fg: '#004C3D', dot: 'var(--vb-pass)' },
+  completed: { label: 'Completed', bar: '#00875A', bg: '#D3F5E9', fg: '#00543A', dot: '#00875A' },
 };
 
-export const STATUS_KEYS = ['not_started', 'in_progress', 'blocked', 'done'];
+export const STATUS_KEYS = ['not_started', 'in_progress', 'blocked', 'done', 'completed'];
 
 export const PHASE_OPTIONS = [
   { value: '30', label: 'Phase 1' },

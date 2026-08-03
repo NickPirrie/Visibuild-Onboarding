@@ -221,7 +221,7 @@ button { -webkit-appearance: none; }
 .vb-field-label { font-size: 9px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--vb-ink-4); }
 .vb-status-btn { display: flex; align-items: center; justify-content: space-between; gap: 7px; width: 100%; padding: 5px 9px; border-radius: 6px; border: none; cursor: pointer; font-size: 11.5px; font-weight: 500; }
 .vb-status-dot { width: 6px; height: 6px; border-radius: 50%; }
-.vb-status-menu { position: absolute; top: calc(100% + 5px); left: 0; z-index: 20; background: var(--vb-surface); border: 1px solid var(--vb-line-strong); border-radius: 8px; box-shadow: var(--vb-shadow-md); padding: 5px; min-width: 150px; }
+.vb-status-menu { position: absolute; top: calc(100% + 5px); left: 0; z-index: 20; background: var(--vb-surface); border: 1px solid var(--vb-line-strong); border-radius: 8px; box-shadow: var(--vb-shadow-md); padding: 5px; min-width: 200px; max-height: 260px; overflow-y: auto; }
 .vb-status-menu-item { display: flex; align-items: center; gap: 9px; width: 100%; padding: 8px 10px; border: none; background: transparent; border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--vb-ink); text-align: left; }
 .vb-status-menu-item:hover { background: var(--vb-paper-2); }
 .vb-status-menu-backdrop { position: fixed; inset: 0; z-index: 15; }
