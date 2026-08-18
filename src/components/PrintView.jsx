@@ -1,4 +1,5 @@
-import { allTasks, diffDays, fmtDate, todayIso } from '../lib/utils.js';
+import { addDays, allTasks, diffDays, fmtDate, todayIso } from '../lib/utils.js';
+import { PHASE_LABEL } from '../lib/constants.js';
 
 export default function PrintView({ active, userName }) {
   const today = todayIso();
@@ -15,11 +16,16 @@ export default function PrintView({ active, userName }) {
     { label: 'Go-live', value: fmtDate(active.golive) },
   ];
 
+  const phaseWindows = {
+    '30': fmtDate(active.start) + ' → ' + fmtDate(addDays(active.start, 30)),
+    '60': fmtDate(addDays(active.start, 30)) + ' → ' + fmtDate(addDays(active.start, 60)),
+    '90': fmtDate(addDays(active.start, 60)) + ' → ' + fmtDate(active.golive),
+  };
+
   const printPhases = ['30', '60', '90'].map((ph) => {
     const ts = all.filter((t) => t.phase === ph).sort((a, b) => new Date(a.due) - new Date(b.due));
     const d = ts.filter((t) => t.status === 'done').length;
-    const window = ({ '30': 'Setup & config', '60': 'First live inspections', '90': 'Full adoption' })[ph];
-    return { ph, window, detail: d + ' of ' + ts.length + ' complete', tasks: ts };
+    return { ph, label: PHASE_LABEL[ph], window: phaseWindows[ph], detail: d + ' of ' + ts.length + ' complete', tasks: ts };
   });
 
   return (
@@ -47,7 +53,7 @@ export default function PrintView({ active, userName }) {
       {printPhases.map((p) => (
         <div key={p.ph} className="vb-print-phase">
           <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--vb-line-strong)', paddingBottom: 5, marginBottom: 8 }}>
-            <div style={{ fontFamily: 'var(--vb-font-serif)', fontSize: 17 }}>{p.ph}-day milestone — {p.window}</div>
+            <div style={{ fontFamily: 'var(--vb-font-serif)', fontSize: 17 }}>{p.label} — {p.window}</div>
             <div style={{ fontSize: 13, color: 'var(--vb-ink-3)' }}>{p.detail}</div>
           </div>
           {p.tasks.map((t) => {

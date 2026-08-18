@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { STATUS, PHASE_OPTIONS } from '../lib/constants.js';
 import { risk, initials, ownerColor } from '../lib/utils.js';
 import StatusPicker from './StatusPicker.jsx';
@@ -12,6 +13,7 @@ function roleBg(role) {
 }
 
 export default function TaskCard({ task, today, menuOpen, canDrag, store }) {
+  const [dragOver, setDragOver] = useState(false);
   const meta = STATUS[task.status] || STATUS.not_started;
   const r = risk(task, today);
   const notes = task.notes || (task.note ? [{ id: task.id + '-lg', text: task.note }] : []);
@@ -19,9 +21,10 @@ export default function TaskCard({ task, today, menuOpen, canDrag, store }) {
   return (
     <div
       className="vb-task-card"
-      style={{ background: roleBg(task.role), border: '1px solid ' + (r.key === 'overdue' ? 'var(--vb-defect)' : 'var(--vb-line)') }}
-      onDragOver={(e) => e.preventDefault()}
-      onDrop={(e) => { e.preventDefault(); store.reorderTask(task.id); }}
+      style={{ background: roleBg(task.role), border: '1px solid ' + (dragOver ? 'var(--vb-mid-green)' : r.key === 'overdue' ? 'var(--vb-defect)' : 'var(--vb-line)'), boxShadow: dragOver ? '0 0 0 3px var(--vb-pass-soft)' : undefined }}
+      onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+      onDragLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setDragOver(false); }}
+      onDrop={(e) => { e.preventDefault(); setDragOver(false); store.reorderTask(task.id); }}
     >
       <div className="vb-task-card-row">
         <div

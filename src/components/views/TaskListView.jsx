@@ -121,20 +121,28 @@ export default function TaskListView({ active, state, store }) {
       )}
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-        {groupByOwner(filtered).map(({ owner, tasks: group }) => (
-          <div key={owner} style={{ marginBottom: 20 }}>
-            <div className="vb-owner-group-header">
-              <div className="vb-owner-group-avatar" style={{ background: ownerColor(owner) }}>{initials(owner) || '?'}</div>
-              <span className="vb-owner-group-label">{owner || 'Unassigned'}</span>
-              <span className="vb-owner-group-count">{group.length} task{group.length !== 1 ? 's' : ''}</span>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              {group.map((t) => (
-                <TaskCard key={t.id} task={t} today={today} menuOpen={state.statusMenuFor === t.id} canDrag={canDrag} store={store} />
-              ))}
-            </div>
+        {canDrag ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {filtered.map((t) => (
+              <TaskCard key={t.id} task={t} today={today} menuOpen={state.statusMenuFor === t.id} canDrag={canDrag} store={store} />
+            ))}
           </div>
-        ))}
+        ) : (
+          groupByOwner(filtered).map(({ owner, tasks: group }) => (
+            <div key={owner} style={{ marginBottom: 20 }}>
+              <div className="vb-owner-group-header">
+                <div className="vb-owner-group-avatar" style={{ background: ownerColor(owner) }}>{initials(owner) || '?'}</div>
+                <span className="vb-owner-group-label">{owner || 'Unassigned'}</span>
+                <span className="vb-owner-group-count">{group.length} task{group.length !== 1 ? 's' : ''}</span>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {group.map((t) => (
+                  <TaskCard key={t.id} task={t} today={today} menuOpen={state.statusMenuFor === t.id} canDrag={canDrag} store={store} />
+                ))}
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </>
   );
