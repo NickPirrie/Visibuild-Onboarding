@@ -1,6 +1,26 @@
 import { addDays, allTasks, diffDays, fmtDate, todayIso } from '../lib/utils.js';
 import { PHASE_LABEL } from '../lib/constants.js';
 
+function StatusIcon({ status }) {
+  if (status === 'done') {
+    return <span style={{ width: 14, display: 'inline-block', color: '#006E57', fontWeight: 700 }}>✓</span>;
+  }
+  if (status === 'in_progress') {
+    return (
+      <span style={{ width: 14, display: 'inline-block' }}>
+        <svg width="11" height="11" viewBox="0 0 12 12" style={{ display: 'block' }}>
+          <circle cx="6" cy="6" r="5" fill="none" stroke="#C6CAD0" strokeWidth="1.5" />
+          <path d="M6,1 A5,5 0 0,1 6,11 L6,6 Z" fill="#4272FF" />
+        </svg>
+      </span>
+    );
+  }
+  if (status === 'blocked') {
+    return <span style={{ width: 14, display: 'inline-block', color: '#C8331E', fontWeight: 700 }}>!</span>;
+  }
+  return <span style={{ width: 14, display: 'inline-block', color: '#C6CAD0' }}>○</span>;
+}
+
 export default function PrintView({ active, userName }) {
   const today = todayIso();
   const all = allTasks(active);
@@ -63,7 +83,7 @@ export default function PrintView({ active, userName }) {
             const overdueTask = t.status !== 'done' && diffDays(today, t.due) < 0;
             return (
               <div key={t.id} className="vb-print-task-row">
-                <span style={{ width: 14, color: t.status === 'done' ? 'var(--vb-pass)' : 'var(--vb-ink-4)' }}>{t.status === 'done' ? '✓' : '□'}</span>
+                <StatusIcon status={t.status} />
                 <span style={{ flex: 1 }}>{t.title}</span>
                 <span style={{ width: 130, color: 'var(--vb-ink-3)' }}>{t.owner}</span>
                 <span style={{ width: 70, textAlign: 'right', color: overdueTask ? 'var(--vb-defect)' : 'var(--vb-ink-3)' }}>{fmtDate(t.due)}</span>
