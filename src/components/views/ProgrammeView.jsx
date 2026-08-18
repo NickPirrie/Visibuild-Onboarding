@@ -7,8 +7,8 @@ export default function ProgrammeView({ active, state, store }) {
   const nameW = state.ganttNameW || 300;
   const winDays = Math.max(1, diffDays(active.start, active.golive));
   const pos = (iso) => Math.max(0, Math.min(100, (diffDays(active.start, iso) / winDays) * 100));
-  const p30 = pos(addDays(active.start, 30));
-  const p60 = pos(addDays(active.start, 60));
+  const p30 = pos(active.phase1End || addDays(active.start, 30));
+  const p60 = pos(active.phase2End || addDays(active.start, 60));
 
   const startDrag = useCallback((e) => {
     e.preventDefault();

@@ -16,10 +16,12 @@ export default function PrintView({ active, userName }) {
     { label: 'Go-live', value: fmtDate(active.golive) },
   ];
 
+  const p1End = active.phase1End || addDays(active.start, 30);
+  const p2End = active.phase2End || addDays(active.start, 60);
   const phaseWindows = {
-    '30': fmtDate(active.start) + ' → ' + fmtDate(addDays(active.start, 30)),
-    '60': fmtDate(addDays(active.start, 30)) + ' → ' + fmtDate(addDays(active.start, 60)),
-    '90': fmtDate(addDays(active.start, 60)) + ' → ' + fmtDate(active.golive),
+    '30': fmtDate(active.start) + ' → ' + fmtDate(p1End),
+    '60': fmtDate(p1End) + ' → ' + fmtDate(p2End),
+    '90': fmtDate(p2End) + ' → ' + fmtDate(active.golive),
   };
 
   const printPhases = ['30', '60', '90'].map((ph) => {

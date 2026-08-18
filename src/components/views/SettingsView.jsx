@@ -3,10 +3,12 @@ import { LocalInput } from '../LocalField.jsx';
 
 export default function SettingsView({ active, store }) {
   const span = Math.max(1, diffDays(active.start, active.golive));
+  const p1End = active.phase1End || addDays(active.start, 30);
+  const p2End = active.phase2End || addDays(active.start, 60);
   const phaseWindows = [
-    { label: 'Phase 1', window: fmtDate(active.start) + ' → ' + fmtDate(addDays(active.start, 30)), detail: 'Setup & configuration' },
-    { label: 'Phase 2', window: fmtDate(addDays(active.start, 30)) + ' → ' + fmtDate(addDays(active.start, 60)), detail: 'First live inspections' },
-    { label: 'Phase 3', window: fmtDate(addDays(active.start, 60)) + ' → ' + fmtDate(active.golive), detail: 'Full adoption' },
+    { label: 'Phase 1', window: fmtDate(active.start) + ' → ' + fmtDate(p1End), detail: 'Setup & configuration' },
+    { label: 'Phase 2', window: fmtDate(p1End) + ' → ' + fmtDate(p2End), detail: 'First live inspections' },
+    { label: 'Phase 3', window: fmtDate(p2End) + ' → ' + fmtDate(active.golive), detail: 'Full adoption' },
   ];
 
   const field = (label, value, field, type = 'text') => (
@@ -36,7 +38,18 @@ export default function SettingsView({ active, store }) {
             <div style={{ fontSize: 12.5, color: 'var(--vb-ink-4)', paddingTop: 2 }}>Programme span: <b style={{ color: 'var(--vb-ink-2)', fontWeight: 600 }}>{span} days</b></div>
           </div>
           <div style={{ height: 1, background: 'var(--vb-line)', margin: '20px 0' }} />
-          <div style={{ fontSize: 11, fontWeight: 500, letterSpacing: '.06em', textTransform: 'uppercase', color: 'var(--vb-ink-3)', marginBottom: 12 }}>Phase windows</div>
+          <div style={{ fontSize: 11, fontWeight: 500, letterSpacing: '.06em', textTransform: 'uppercase', color: 'var(--vb-ink-3)', marginBottom: 12 }}>Phase boundaries</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 16 }}>
+            <label className="vb-field-block">
+              <span className="flabel">Phase 1 ends</span>
+              <input type="date" className="vb-settings-input" value={p1End} onChange={(e) => store.editProject('phase1End', e.target.value)} />
+            </label>
+            <label className="vb-field-block">
+              <span className="flabel">Phase 2 ends</span>
+              <input type="date" className="vb-settings-input" value={p2End} onChange={(e) => store.editProject('phase2End', e.target.value)} />
+            </label>
+            <div style={{ fontSize: 12, color: 'var(--vb-ink-4)' }}>Phase 3 ends at the go-live target set above.</div>
+          </div>
           {phaseWindows.map((w) => (
             <div key={w.label} className="vb-phase-window-row">
               <div>
