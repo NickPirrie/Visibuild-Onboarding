@@ -4,11 +4,12 @@ import { LocalInput } from '../LocalField.jsx';
 export default function SettingsView({ active, store }) {
   const span = Math.max(1, diffDays(active.start, active.golive));
   const p1End = active.phase1End || addDays(active.start, 30);
-  const p2End = active.phase2End || addDays(active.start, 60);
+  const p2End = active.phase2End || active.golive;
+  const p3End = active.phase3End || addDays(active.golive, 60);
   const phaseWindows = [
     { label: 'Phase 1', window: fmtDate(active.start) + ' → ' + fmtDate(p1End), detail: 'Setup & configuration' },
-    { label: 'Phase 2', window: fmtDate(p1End) + ' → ' + fmtDate(p2End), detail: 'First live inspections' },
-    { label: 'Phase 3', window: fmtDate(p2End) + ' → ' + fmtDate(active.golive), detail: 'Full adoption' },
+    { label: 'Phase 2', window: fmtDate(p1End) + ' → ' + fmtDate(p2End), detail: 'Go-live' },
+    { label: 'Phase 3', window: fmtDate(p2End) + ' → ' + fmtDate(p3End), detail: 'Full adoption' },
   ];
 
   const field = (label, value, field, type = 'text') => (
@@ -26,7 +27,7 @@ export default function SettingsView({ active, store }) {
       <div style={{ marginBottom: 22 }}>
         <div className="vb-eyebrow" style={{ marginBottom: 9 }}>Project settings</div>
         <h1 style={{ fontFamily: 'var(--vb-font-serif)', fontWeight: 400, fontSize: 32, letterSpacing: '-.01em', margin: 0 }}>Settings</h1>
-        <p style={{ fontSize: 14, color: 'var(--vb-ink-3)', margin: '8px 0 0', lineHeight: 1.5 }}>Adjust the onsite start date, go-live target and project details. The Phase 1 / Phase 2 / Phase 3 windows and all risk flags recalculate automatically.</p>
+        <p style={{ fontSize: 14, color: 'var(--vb-ink-3)', margin: '8px 0 0', lineHeight: 1.5 }}>Adjust programme dates and phase boundaries. Phase windows update automatically across the programme view, PDF export and summary.</p>
       </div>
 
       <div className="vb-settings-grid">
@@ -45,10 +46,13 @@ export default function SettingsView({ active, store }) {
               <input type="date" className="vb-settings-input" value={p1End} onChange={(e) => store.editProject('phase1End', e.target.value)} />
             </label>
             <label className="vb-field-block">
-              <span className="flabel">Phase 2 ends</span>
+              <span className="flabel">Phase 2 ends · Go-live</span>
               <input type="date" className="vb-settings-input" value={p2End} onChange={(e) => store.editProject('phase2End', e.target.value)} />
             </label>
-            <div style={{ fontSize: 12, color: 'var(--vb-ink-4)' }}>Phase 3 ends at the go-live target set above.</div>
+            <label className="vb-field-block">
+              <span className="flabel">Phase 3 ends · Full adoption</span>
+              <input type="date" className="vb-settings-input" value={p3End} onChange={(e) => store.editProject('phase3End', e.target.value)} />
+            </label>
           </div>
           {phaseWindows.map((w) => (
             <div key={w.label} className="vb-phase-window-row">

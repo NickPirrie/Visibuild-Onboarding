@@ -17,11 +17,12 @@ export default function PrintView({ active, userName }) {
   ];
 
   const p1End = active.phase1End || addDays(active.start, 30);
-  const p2End = active.phase2End || addDays(active.start, 60);
+  const p2End = active.phase2End || active.golive;
+  const p3End = active.phase3End || addDays(active.golive, 60);
   const phaseWindows = {
     '30': fmtDate(active.start) + ' → ' + fmtDate(p1End),
     '60': fmtDate(p1End) + ' → ' + fmtDate(p2End),
-    '90': fmtDate(p2End) + ' → ' + fmtDate(active.golive),
+    '90': fmtDate(p2End) + ' → ' + fmtDate(p3End),
   };
 
   const printPhases = ['30', '60', '90'].map((ph) => {
