@@ -65,6 +65,19 @@ export default function PrintView({ active, userName }) {
           <div>{pct}% complete</div>
         </div>
       </div>
+      <div style={{ display: 'flex', gap: 20, marginBottom: 20, padding: '10px 14px', background: '#F5F6F7', borderRadius: 7, flexWrap: 'wrap' }}>
+        {[
+          { status: 'not_started', label: 'Not started' },
+          { status: 'in_progress', label: 'In progress' },
+          { status: 'done', label: 'Done' },
+          { status: 'blocked', label: 'Waiting on information' },
+        ].map(({ status, label }) => (
+          <div key={status} style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 12, color: '#4B545C' }}>
+            <StatusIcon status={status} />
+            {label}
+          </div>
+        ))}
+      </div>
       <div className="vb-print-kpis">
         {printKpis.map((k) => (
           <div key={k.label} style={{ flex: 1 }}>
