@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { allTasks, ragColor, ragColorItems, todayIso } from '../lib/utils.js';
+import { allTasks, ragColorItems } from '../lib/utils.js';
 import { PHASE_LABEL } from '../lib/constants.js';
 
 function NavRow({ active, dot, label, badge, onClick }) {
@@ -37,7 +37,6 @@ function DragRow({ id, active, dot, label, badge, onClick, dragRef, onReorder })
 export default function Sidebar({ state, active, store, onOpenPicker }) {
   const wsDragRef = useRef(null);
   const subDragRef = useRef(null);
-  const today = todayIso();
   const sec = state.section;
   const all = allTasks(active);
 
@@ -75,7 +74,7 @@ export default function Sidebar({ state, active, store, onOpenPicker }) {
                   key={w.id}
                   id={w.id}
                   active={sec === 'ws:' + w.id}
-                  dot={ragColor(w.tasks, today)}
+                  dot={ragColorItems(w.tasks)}
                   label={w.name}
                   badge={outstanding || null}
                   onClick={() => store.go('ws:' + w.id)}

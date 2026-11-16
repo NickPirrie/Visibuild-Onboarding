@@ -55,21 +55,6 @@ export function risk(task, today) {
   return { key: 'ontrack', label: 'On track', color: 'var(--vb-ink-4)' };
 }
 
-export function ragColor(tasks, today) {
-  let overdue = 0, soon = 0, open = 0;
-  tasks.forEach((t) => {
-    if (t.status === 'done') return;
-    open++;
-    const d = diffDays(today, t.due);
-    if (d < 0) overdue++;
-    else if (d <= RISK_WINDOW_DAYS) soon++;
-  });
-  if (overdue) return 'var(--vb-defect)';
-  if (soon) return 'var(--vb-hold)';
-  if (open) return 'var(--vb-blue)';
-  return 'var(--vb-pass)';
-}
-
 export function ragColorItems(items) {
   if (items.some((i) => i.status === 'blocked')) return 'var(--vb-defect)';
   const open = items.filter((i) => i.status !== 'done');
