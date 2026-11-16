@@ -56,11 +56,13 @@ export function risk(task, today) {
 }
 
 export function ragColorItems(items) {
+  if (!items.length) return 'var(--vb-charcoal-20)';
   if (items.some((i) => i.status === 'blocked')) return 'var(--vb-defect)';
-  const open = items.filter((i) => i.status !== 'done');
-  if (items.length && !open.length) return 'var(--vb-pass)';
-  if (open.length) return 'var(--vb-blue)';
-  return 'var(--vb-charcoal-20)';
+  const doneCount = items.filter((i) => i.status === 'done').length;
+  if (doneCount === items.length) return 'var(--vb-pass)';
+  const hasInProgress = items.some((i) => i.status === 'in_progress');
+  if (doneCount > 0 && hasInProgress) return 'var(--vb-blue)';
+  return 'var(--vb-defect)';
 }
 
 export function fileExt(name) {
